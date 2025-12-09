@@ -65,7 +65,8 @@
             margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; 
         }
         
-        input, textarea, select {
+        /* ESTILO GENERAL DE INPUTS (TEXTO) */
+        input:not([type="checkbox"]), textarea, select {
             width: 100%; padding: 14px 16px; 
             border: 1px solid var(--border); border-radius: 12px;
             font-size: 1rem; background: #fff; color: var(--text-main); 
@@ -75,6 +76,21 @@
         
         input:focus, textarea:focus, select:focus { 
             border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05); 
+        }
+
+        /* --- ARREGLO ESPECÍFICO PARA CHECKBOXES --- */
+        input[type="checkbox"] {
+            appearance: auto !important;     /* Restaura el estilo nativo */
+            -webkit-appearance: checkbox !important; /* Para iOS/Safari */
+            width: 20px !important;          
+            height: 20px !important;
+            accent-color: var(--primary);    /* Color al marcar */
+            margin: 0 8px 0 0 !important;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            outline: none;
+            display: inline-block;
         }
 
         select {
@@ -98,7 +114,6 @@
         .btn-secondary:hover { background-color: #f9fafb; border-color: var(--text-sec); }
         .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
         
-        /* Botón Danger actualizado para contener icono */
         .btn-danger-text { 
             background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
             border: 1px dashed var(--danger); padding: 10px; opacity: 0.7; 
@@ -109,8 +124,8 @@
         .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
-        .add-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; background: var(--accent); color: white; } 
+        .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
+        .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; background: var(--accent); color: white; height: 52px; } 
         
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         
@@ -119,6 +134,7 @@
             display: flex; justify-content: space-between; align-items: center;
             font-weight: 500; font-size: 0.95rem;
         }
+        .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
         
         .btn-icon-delete { background: none; border: none; padding: 4px; color: #9ca3af; margin-top: 0; width: auto; cursor: pointer; transition: color 0.2s; }
         .btn-icon-delete:hover { color: var(--danger); }
@@ -197,31 +213,21 @@
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin: 0 5px; border: 1px solid #d1d5db; }
         .link-box { background: #f9fafb; padding: 20px; border-radius: 12px; word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); user-select: all; }
         
-        /* ESTILOS ACTUALIZADOS PARA LA LISTA DE DESEOS Y LINKS */
         .wishes-list { 
-            margin: 25px 0 0 0; 
-            padding: 0; 
-            list-style: none; 
-            font-size: 1.1rem; 
-            text-align: left; 
-            display: inline-block; 
-            max-width: 100%; /* Asegura que no se salga */
+            margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; 
+            text-align: left; display: inline-block; max-width: 100%; 
         }
-        
         .wishes-list li { 
-            margin-bottom: 12px; 
-            padding-left: 5px; 
-            border-left: 2px solid rgba(255,255,255,0.3); 
-            overflow-wrap: break-word; /* Rompe palabras largas */
-            word-wrap: break-word;
-            word-break: break-word;
+            margin-bottom: 12px; padding-left: 5px; border-left: 2px solid rgba(255,255,255,0.3); 
+            overflow-wrap: break-word; word-wrap: break-word; word-break: break-word;
         }
+        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
 
-        /* Estilo para los enlaces detectados dentro de la tarjeta */
-        .wishes-list a, .info-extra-link a {
-            color: #93c5fd; /* Azul claro para contraste en fondo oscuro */
-            text-decoration: underline;
-            font-weight: 500;
+        /* Estilo para el Switcher de Perfiles */
+        #profile-switcher {
+            background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; 
+            box-shadow: var(--card-shadow); border: 1px solid var(--primary);
+            animation: fadeIn 0.3s ease;
         }
     </style>
 </head>
@@ -287,13 +293,19 @@
             </div>
             <div style="flex:1">
                 <label>¿Qué se regala?</label>
-                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas (Opcional)">
+                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas">
             </div>
         </div>
         
         <label>Participantes</label>
         <div class="add-row">
-            <input type="text" id="input-new-name" placeholder="Escribe un nombre...">
+            <div style="flex:1">
+                <input type="text" id="input-new-name" placeholder="Nombre...">
+                <div style="margin-top:8px; display:flex; align-items:center;">
+                    <input type="checkbox" id="check-is-child">
+                    <label for="check-is-child" style="margin:0; font-size:0.8em; font-weight:500; cursor:pointer; text-transform:none;">Es menor (Sin celular)</label>
+                </div>
+            </div>
             <button class="btn-add-small" id="btn-add-name">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             </button>
@@ -339,9 +351,15 @@
     </div>
 
     <div id="screen-dashboard" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:20px;">
+        <div id="profile-switcher" class="hidden">
+            <label style="margin:0 0 5px 0; font-size:0.7em;">Viendo perfil de:</label>
+            <select id="select-active-profile" onchange="switchProfileView(this.value)" style="border:none; background:#f3f4f6; font-weight:700; color:var(--primary); padding:10px;">
+                </select>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:10px;">
             <h3 style="margin:0; text-align:left;">Tu Resultado</h3>
-            <small style="color:var(--text-sec); cursor:pointer; font-size:0.8rem; font-weight:600; letter-spacing:0.05em;" onclick="location.reload()">CERRAR SESIÓN</small>
+            <small style="color:var(--text-sec); cursor:pointer; font-size:0.8rem; font-weight:600; letter-spacing:0.05em;" onclick="location.reload()">SALIR</small>
         </div>
         
         <div class="info-card">
@@ -358,7 +376,7 @@
         </div>
 
         <div style="margin-top: 40px; padding-bottom: 20px;">
-            <h3>Llena tu Perfil</h3>
+            <h3>Llena el Perfil</h3>
             <p style="font-size:0.9em; margin-bottom:25px; opacity:0.8;">Ayuda a tu amigo secreto:</p>
             
             <label>Opción 1</label>
@@ -392,6 +410,13 @@
         <div id="form-register" class="hidden">
             <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña">
             <label>Palabra clave (Recuperación)</label> <input type="text" id="reg-secret" placeholder="Ej. Nombre mascota">
+            
+            <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
+                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
+                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+
             <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
         </div>
 
@@ -440,11 +465,15 @@
     const MASTER_KEY = "admin123"; 
 
     let eventId = new URLSearchParams(window.location.search).get('id');
+    
+    // Lista ahora guardará objetos: {name: "Juan", isChild: false}
     let participantsList = [];
+    
     let selectedUserDoc = null;
-    let currentUserId = null;
+    let currentUserId = null; // ID del perfil que se está VIENDO actualmente
     let currentTargetId = null;
     let currentGiftLabel = ""; 
+    let linkedProfiles = []; // Lista de perfiles (Yo + Hijos)
 
     window.onload = () => {
         populateDays();
@@ -498,14 +527,8 @@
                     <div class="master-event-info">
                         <h4>${data.title}</h4>
                         <div class="master-event-meta">
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--text-sec)"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                ${prettyDate}
-                            </span>
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon-sm" viewBox="0 0 24 24" style="color:var(--text-sec)"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                ${data.budget}
-                            </span>
+                            <span style="display:flex; align-items:center; gap:4px;">${prettyDate}</span>
+                            <span style="display:flex; align-items:center; gap:4px;">${data.budget}</span>
                         </div>
                     </div>
                     <div class="master-actions">
@@ -535,7 +558,7 @@
         } catch(e) { alert("Error al borrar"); }
     }
 
-    // --- ADMIN ---
+    // --- ADMIN (CREACIÓN) ---
     window.showAdminSetup = () => {
         document.getElementById('screen-home').classList.add('hidden');
         document.getElementById('screen-admin').classList.remove('hidden');
@@ -546,10 +569,17 @@
 
     function addNameToList() {
         const input = document.getElementById('input-new-name');
+        const check = document.getElementById('check-is-child');
         const name = input.value.trim();
+        
         if(!name) return;
-        participantsList.push(name);
-        input.value = ""; input.focus();
+        
+        // Guardamos objeto: nombre + si es niño
+        participantsList.push({ name: name, isChild: check.checked });
+        
+        input.value = ""; 
+        check.checked = false; 
+        input.focus();
         renderParticipantsList();
     }
 
@@ -559,11 +589,15 @@
         if(participantsList.length === 0) {
             container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return;
         }
-        participantsList.forEach((name, index) => {
+        participantsList.forEach((p, index) => {
             const div = document.createElement('div');
             div.className = 'name-card-admin';
+            
+            // Etiqueta visual si es niño
+            const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
+
             div.innerHTML = `
-                <span>${name}</span>
+                <span>${childTag}${p.name}</span>
                 <button class="btn-icon-delete" onclick="removeName(${index})">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 </button>
@@ -601,13 +635,21 @@
 
             const batch = writeBatch(db);
             let refs = [];
-            for(let name of shuffled) refs.push({ name, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
+            for(let p of shuffled) refs.push({ 
+                name: p.name, 
+                isChild: p.isChild, // Pasamos el flag
+                ref: doc(collection(db, `events/${eventRef.id}/participants`)) 
+            });
 
             for (let i = 0; i < refs.length; i++) {
                 const curr = refs[i];
                 const next = refs[(i + 1) % refs.length];
                 batch.set(curr.ref, {
-                    name: curr.name, targetId: next.ref.id, targetName: next.name,
+                    name: curr.name, 
+                    isChild: curr.isChild || false,
+                    managedBy: null, // Para vincularlo despues
+                    targetId: next.ref.id, 
+                    targetName: next.name,
                     wish1: "", wish2: "", wish3: "", extra: "", 
                     password: null, secretKey: null
                 });
@@ -650,13 +692,8 @@
 
         const parts = data.date.split('-');
         document.getElementById('event-title-display').innerText = data.title;
-        document.getElementById('event-date-display').innerHTML = `
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            ${parts[2]}/${parts[1]}`;
-        
-        document.getElementById('event-budget-display').innerHTML = `
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            ${data.budget}`;
+        document.getElementById('event-date-display').innerHTML = `${parts[2]}/${parts[1]}`;
+        document.getElementById('event-budget-display').innerHTML = `${data.budget}`;
 
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             const list = document.getElementById('names-list');
@@ -671,28 +708,61 @@
                 const p = d.data();
                 const div = document.createElement('div');
                 div.className = 'name-card-user'; 
-                div.innerText = p.name;
+                // Añadir ícono visual en la lista de login si es niño
+                const childIcon = p.isChild ? "👶 " : "";
+                div.innerText = childIcon + p.name;
                 div.onclick = () => prepareAuth(d.id, p);
                 list.appendChild(div);
             });
         });
     }
 
-    function prepareAuth(id, data) {
+    async function prepareAuth(id, data) {
         selectedUserDoc = { id, data };
         const m = document.getElementById('auth-modal');
+        
         document.getElementById('form-register').classList.add('hidden');
         document.getElementById('form-login').classList.add('hidden');
         document.getElementById('form-reset').classList.add('hidden');
         document.getElementById('admin-override-box').classList.add('hidden');
+        document.getElementById('claim-children-section').classList.add('hidden');
         document.querySelectorAll('input').forEach(i => i.value='');
         
         m.classList.remove('hidden');
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
         if(!data.password) {
+            // REGISTRO
             document.getElementById('form-register').classList.remove('hidden');
+
+            // BUSCAR NIÑOS DISPONIBLES (Orphans)
+            const listDiv = document.getElementById('children-list-check');
+            const section = document.getElementById('claim-children-section');
+            listDiv.innerHTML = "Cargando...";
+
+            const q = await getDocs(collection(db, `events/${eventId}/participants`));
+            listDiv.innerHTML = "";
+            let foundChild = false;
+
+            q.forEach(docSnap => {
+                const kid = docSnap.data();
+                // Mostrar si es niño, no soy yo, no tiene dueño y no tiene pass
+                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
+                    foundChild = true;
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;">
+                            <input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}">
+                            ${kid.name}
+                        </label>`;
+                    listDiv.appendChild(div);
+                }
+            });
+
+            if(foundChild && !data.isChild) section.classList.remove('hidden'); // Solo mostrar a adultos
+            
         } else {
+            // LOGIN
             document.getElementById('form-login').classList.remove('hidden');
             document.getElementById('admin-override-box').classList.remove('hidden');
         }
@@ -704,8 +774,27 @@
         const pass = document.getElementById('reg-pass').value;
         const secret = document.getElementById('reg-secret').value;
         if(!pass || !secret) return alert("Llena ambos");
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: pass, secretKey: secret });
+        
+        // Obtener niños seleccionados
+        const checkboxes = document.querySelectorAll('.child-claim-checkbox:checked');
+        const childrenIds = Array.from(checkboxes).map(c => c.value);
+
+        const batch = writeBatch(db);
+
+        // Update Yo
+        const myRef = doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`);
+        batch.update(myRef, { password: pass, secretKey: secret });
+
+        // Update Hijos (Asignar managedBy)
+        childrenIds.forEach(kidId => {
+            const kidRef = doc(db, `events/${eventId}/participants/${kidId}`);
+            batch.update(kidRef, { managedBy: selectedUserDoc.id });
+        });
+
+        await batch.commit();
         window.closeModal();
+        
+        // Entrar
         enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
     };
 
@@ -739,12 +828,11 @@
 
     window.adminOverride = async () => {
         if(prompt("Pass Admin:") === MASTER_KEY) {
-            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null });
+            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null });
             alert("Reseteado"); selectedUserDoc.data.password = null; prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
         } else alert("No");
     };
 
-    // FUNCION PARA CONVERTIR TEXTO URL EN ENLACE CLICABLE
     function makeLinksClickable(text) {
         if (!text) return "";
         const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -753,51 +841,92 @@
         });
     }
 
-    function enterDashboard(uid, userData) {
-        currentUserId = uid;
-        currentTargetId = userData.targetId;
+    async function enterDashboard(uid, userData) {
         document.getElementById('screen-login').classList.add('hidden');
         document.getElementById('screen-dashboard').classList.remove('hidden');
-        document.getElementById('target-name').innerText = userData.targetName;
 
+        // Construir lista de perfiles disponibles (Yo + Hijos)
+        linkedProfiles = [];
+        linkedProfiles.push({ id: uid, ...userData }); // Index 0 siempre soy yo
+
+        // Buscar si gestiono niños
+        const q = await getDocs(collection(db, `events/${eventId}/participants`));
+        q.forEach(docSnap => {
+            const d = docSnap.data();
+            if(d.managedBy === uid) {
+                linkedProfiles.push({ id: docSnap.id, ...d });
+            }
+        });
+
+        // Configurar Selector
+        const switcher = document.getElementById('profile-switcher');
+        const select = document.getElementById('select-active-profile');
+        
+        if(linkedProfiles.length > 1) {
+            switcher.classList.remove('hidden');
+            select.innerHTML = "";
+            linkedProfiles.forEach((p, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)");
+                select.appendChild(opt);
+            });
+        } else {
+            switcher.classList.add('hidden');
+        }
+
+        // Cargar perfil principal
+        loadProfileIndex(0);
+    }
+
+    // Función global para cambiar vista
+    window.switchProfileView = (idx) => {
+        loadProfileIndex(parseInt(idx));
+    }
+
+    function loadProfileIndex(index) {
+        const profile = linkedProfiles[index];
+        currentUserId = profile.id; // IMPORTANTE: Actualizar el ID global para guardar
+        currentTargetId = profile.targetId;
+
+        // Mostrar label extra si aplica
         const extraContainer = document.getElementById('input-container-extra');
         if(currentGiftLabel && currentGiftLabel.trim() !== "") {
             extraContainer.classList.remove('hidden');
             document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; 
-            document.getElementById('my-extra').value = userData.extra || "";
             document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
         } else {
             extraContainer.classList.add('hidden');
         }
 
-        document.getElementById('my-wish-1').value = userData.wish1 || "";
-        document.getElementById('my-wish-2').value = userData.wish2 || "";
-        document.getElementById('my-wish-3').value = userData.wish3 || "";
+        // Cargar MIS datos (inputs)
+        document.getElementById('my-wish-1').value = profile.wish1 || "";
+        document.getElementById('my-wish-2').value = profile.wish2 || "";
+        document.getElementById('my-wish-3').value = profile.wish3 || "";
+        if(document.getElementById('my-extra')) document.getElementById('my-extra').value = profile.extra || "";
 
-        onSnapshot(doc(db, `events/${eventId}/participants/${currentTargetId}`), (d) => {
-            const data = d.data();
-            const list = document.getElementById('target-wishes-list');
-            list.innerHTML = ""; 
+        // UI: Nombre de la VÍCTIMA
+        document.getElementById('target-name').innerText = profile.targetName;
 
-            const w1 = data.wish1;
-            const w2 = data.wish2;
-            const w3 = data.wish3;
+        // Cargar deseos de la VÍCTIMA
+        // Usamos getDoc simple para evitar conflictos de listeners al cambiar rápido
+        getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
+            if(d.exists()) {
+                const data = d.data();
+                const list = document.getElementById('target-wishes-list');
+                list.innerHTML = ""; 
 
-            if(!w1 && !w2 && !w3) {
-                list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
-            } else {
-                // AQUI USAMOS LA FUNCION PARA DETECTAR LINKS
-                if(w1) list.innerHTML += `<li>${makeLinksClickable(w1)}</li>`;
-                if(w2) list.innerHTML += `<li>${makeLinksClickable(w2)}</li>`;
-                if(w3) list.innerHTML += `<li>${makeLinksClickable(w3)}</li>`;
-            }
-            
-            const extraDiv = document.getElementById('target-extra-info');
-            if(currentGiftLabel && data.extra) {
-                // TAMBIEN DETECTAMOS LINKS EN LA INFO EXTRA
-                extraDiv.innerHTML = `${currentGiftLabel}: ${makeLinksClickable(data.extra)}`;
-            } else {
-                extraDiv.innerText = "";
+                if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
+                if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
+                if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
+                if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
+                
+                const extraDiv = document.getElementById('target-extra-info');
+                if(currentGiftLabel && data.extra) {
+                    extraDiv.innerHTML = `${currentGiftLabel}: ${makeLinksClickable(data.extra)}`;
+                } else {
+                    extraDiv.innerText = "";
+                }
             }
         });
     }
@@ -816,9 +945,20 @@
         btn.innerText = "Guardando..."; btn.disabled = true;
 
         try {
+            // Guardamos en el perfil que esté ACTIVO (currentUserId)
             await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { 
                 wish1: w1, wish2: w2, wish3: w3, extra: extra 
             });
+            
+            // Actualizar el array local para que si cambio de perfil y vuelvo, esté actualizado
+            const activeProfileIndex = linkedProfiles.findIndex(p => p.id === currentUserId);
+            if(activeProfileIndex !== -1) {
+                linkedProfiles[activeProfileIndex].wish1 = w1;
+                linkedProfiles[activeProfileIndex].wish2 = w2;
+                linkedProfiles[activeProfileIndex].wish3 = w3;
+                linkedProfiles[activeProfileIndex].extra = extra;
+            }
+
             btn.innerText = "¡Guardado!";
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
         } catch(e) { console.error(e); btn.disabled = false; }
