@@ -196,8 +196,33 @@
         }
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin: 0 5px; border: 1px solid #d1d5db; }
         .link-box { background: #f9fafb; padding: 20px; border-radius: 12px; word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); user-select: all; }
-        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: inline-block; }
-        .wishes-list li { margin-bottom: 12px; padding-left: 5px; border-left: 2px solid rgba(255,255,255,0.3); }
+        
+        /* ESTILOS ACTUALIZADOS PARA LA LISTA DE DESEOS Y LINKS */
+        .wishes-list { 
+            margin: 25px 0 0 0; 
+            padding: 0; 
+            list-style: none; 
+            font-size: 1.1rem; 
+            text-align: left; 
+            display: inline-block; 
+            max-width: 100%; /* Asegura que no se salga */
+        }
+        
+        .wishes-list li { 
+            margin-bottom: 12px; 
+            padding-left: 5px; 
+            border-left: 2px solid rgba(255,255,255,0.3); 
+            overflow-wrap: break-word; /* Rompe palabras largas */
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        /* Estilo para los enlaces detectados dentro de la tarjeta */
+        .wishes-list a, .info-extra-link a {
+            color: #93c5fd; /* Azul claro para contraste en fondo oscuro */
+            text-decoration: underline;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -328,7 +353,7 @@
                 <ul id="target-wishes-list" class="wishes-list">
                     <li>Cargando...</li>
                 </ul>
-                <div id="target-extra-info" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em;"></div>
+                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
             </div>
         </div>
 
@@ -719,6 +744,15 @@
         } else alert("No");
     };
 
+    // FUNCION PARA CONVERTIR TEXTO URL EN ENLACE CLICABLE
+    function makeLinksClickable(text) {
+        if (!text) return "";
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, (url) => {
+            return `<a href="${url}" target="_blank">${url}</a>`;
+        });
+    }
+
     function enterDashboard(uid, userData) {
         currentUserId = uid;
         currentTargetId = userData.targetId;
@@ -752,14 +786,16 @@
             if(!w1 && !w2 && !w3) {
                 list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
             } else {
-                if(w1) list.innerHTML += `<li>${w1}</li>`;
-                if(w2) list.innerHTML += `<li>${w2}</li>`;
-                if(w3) list.innerHTML += `<li>${w3}</li>`;
+                // AQUI USAMOS LA FUNCION PARA DETECTAR LINKS
+                if(w1) list.innerHTML += `<li>${makeLinksClickable(w1)}</li>`;
+                if(w2) list.innerHTML += `<li>${makeLinksClickable(w2)}</li>`;
+                if(w3) list.innerHTML += `<li>${makeLinksClickable(w3)}</li>`;
             }
             
             const extraDiv = document.getElementById('target-extra-info');
             if(currentGiftLabel && data.extra) {
-                extraDiv.innerText = `${currentGiftLabel}: ${data.extra}`;
+                // TAMBIEN DETECTAMOS LINKS EN LA INFO EXTRA
+                extraDiv.innerHTML = `${currentGiftLabel}: ${makeLinksClickable(data.extra)}`;
             } else {
                 extraDiv.innerText = "";
             }
