@@ -80,11 +80,11 @@
 
         /* --- ARREGLO ESPECÍFICO PARA CHECKBOXES --- */
         input[type="checkbox"] {
-            appearance: auto !important;     /* Restaura el estilo nativo */
-            -webkit-appearance: checkbox !important; /* Para iOS/Safari */
+            appearance: auto !important;
+            -webkit-appearance: checkbox !important;
             width: 20px !important;          
             height: 20px !important;
-            accent-color: var(--primary);    /* Color al marcar */
+            accent-color: var(--primary);
             margin: 0 8px 0 0 !important;
             vertical-align: middle;
             cursor: pointer;
@@ -692,8 +692,15 @@
 
         const parts = data.date.split('-');
         document.getElementById('event-title-display').innerText = data.title;
-        document.getElementById('event-date-display').innerHTML = `${parts[2]}/${parts[1]}`;
-        document.getElementById('event-budget-display').innerHTML = `${data.budget}`;
+        
+        // RESTAURADO: Iconos de fecha y presupuesto
+        document.getElementById('event-date-display').innerHTML = `
+            <svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            ${parts[2]}/${parts[1]}`;
+        
+        document.getElementById('event-budget-display').innerHTML = `
+            <svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            ${data.budget}`;
 
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             const list = document.getElementById('names-list');
@@ -706,11 +713,14 @@
 
             qs.forEach(d => {
                 const p = d.data();
+                
+                // --- CAMBIO: OCULTAR NIÑOS EN LISTA LOGIN ---
+                if (p.isChild) return; 
+
                 const div = document.createElement('div');
                 div.className = 'name-card-user'; 
-                // Añadir ícono visual en la lista de login si es niño
-                const childIcon = p.isChild ? "👶 " : "";
-                div.innerText = childIcon + p.name;
+                // Ya no necesitamos icono de niño aquí porque no se muestran
+                div.innerText = p.name;
                 div.onclick = () => prepareAuth(d.id, p);
                 list.appendChild(div);
             });
