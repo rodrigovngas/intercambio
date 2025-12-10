@@ -12,7 +12,7 @@
     <style>
         /* --- ESTILOS GENERALES --- */
         :root {
-            --bg-color: #f3f4f6; /* Ligeramente más oscuro para contraste */
+            --bg-color: #f3f4f6;
             --primary: #111827; 
             --primary-hover: #374151;
             --accent: #000000; 
@@ -39,8 +39,8 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* Fuente Premium */
-            background: linear-gradient(to bottom, #ffffff, #f3f4f6); /* Fondo con profundidad */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(to bottom, #ffffff, #f3f4f6);
             color: var(--text-main);
             margin: 0; padding: 0;
             height: 100dvh; width: 100vw;
@@ -60,7 +60,7 @@
         @media (min-width: 501px) {
             .container { 
                 height: auto; max-height: 90dvh; border-radius: var(--radius); 
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); /* Sombra más suave */
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
                 padding-bottom: 30px; border: 1px solid rgba(0,0,0,0.02);
             }
         }
@@ -121,7 +121,7 @@
 
         .btn-primary, .btn-accent { 
             background: var(--primary); color: white; 
-            background: linear-gradient(135deg, #1f2937 0%, #000000 100%); /* Gradiente sutil */
+            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border-top: 1px solid rgba(255,255,255,0.1);
         }
@@ -191,7 +191,7 @@
         /* MODALES */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); /* Blur para efecto premium */
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
             display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
         }
         @media (min-width: 501px) { .modal-overlay { align-items: center; } }
@@ -475,7 +475,10 @@
         <h3 style="margin-bottom:5px;">Acceso Admin</h3>
         <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
         
-        <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;">
+        <input type="password" id="admin-input-pass" placeholder="Contraseña..." 
+               style="text-align:center; margin-bottom:20px;"
+               autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
+               onkeypress="if(event.key === 'Enter') submitAdminAuth()">
         
         <div style="display:flex; gap:10px;">
             <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
@@ -543,7 +546,9 @@
     };
 
     window.submitAdminAuth = () => {
-        const val = document.getElementById('admin-input-pass').value;
+        const rawVal = document.getElementById('admin-input-pass').value;
+        const val = rawVal.trim(); // Ignorar espacios accidentales
+        
         if(val === MASTER_KEY) {
             closeAdminModal();
             if(pendingAdminCallback) pendingAdminCallback();
