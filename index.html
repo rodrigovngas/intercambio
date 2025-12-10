@@ -547,11 +547,14 @@
 
     window.submitAdminAuth = () => {
         const rawVal = document.getElementById('admin-input-pass').value;
-        const val = rawVal.trim(); // Ignorar espacios accidentales
+        const val = rawVal.trim(); // Ignorar espacios accidentales y corrección de bug anterior
         
+        // Guardar referencia antes de cerrar
+        const callbackToRun = pendingAdminCallback; 
+
         if(val === MASTER_KEY) {
-            closeAdminModal();
-            if(pendingAdminCallback) pendingAdminCallback();
+            closeAdminModal(); // Esto borra pendingAdminCallback
+            if(callbackToRun) callbackToRun(); // Ejecutamos la copia guardada
         } else {
             showToast("Contraseña incorrecta");
             document.getElementById('admin-input-pass').value = '';
