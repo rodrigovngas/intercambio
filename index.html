@@ -257,7 +257,7 @@
     
     <div id="screen-home" class="hidden screen-content">
         <button class="btn-settings" onclick="promptForAdmin(() => goToMasterPanel())">
-            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
 
         <h1>Intercambio</h1>
@@ -430,7 +430,7 @@
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Protege tu resultado</p>
 
         <div id="form-register" class="hidden">
-            <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña" autocapitalize="on">
+            <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña" autocapitalize="sentences">
             
             <label>PIN de recuperación (6 dígitos)</label> 
             <input type="tel" id="reg-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
@@ -445,7 +445,7 @@
         </div>
 
         <div id="form-login" class="hidden">
-            <label>Ingresa contraseña</label> <input type="password" id="login-pass" placeholder="Tu contraseña" autocapitalize="on">
+            <label>Ingresa contraseña</label> <input type="password" id="login-pass" placeholder="Tu contraseña" autocapitalize="sentences">
             <button class="btn-accent" onclick="doLogin()">Entrar</button>
             <button class="btn-text" onclick="showReset()">Olvidé contraseña</button>
         </div>
@@ -454,7 +454,7 @@
             <label>Ingresa tu PIN de 6 dígitos</label> 
             <input type="tel" id="reset-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
 
-            <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass" autocapitalize="on">
+            <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass" autocapitalize="sentences">
             <button class="btn-accent" onclick="doReset()">Restablecer</button>
             <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
         </div>
@@ -476,7 +476,7 @@
         <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
         
         <input type="password" id="admin-input-pass" placeholder="Contraseña..." 
-               style="text-align:center; margin-bottom:20px;"
+               style="text-align:center; margin-bottom:20px;" autocapitalize="sentences"
                onkeypress="if(event.key === 'Enter') submitAdminAuth()">
         
         <div style="display:flex; gap:10px;">
