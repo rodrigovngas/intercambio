@@ -409,7 +409,9 @@
 
         <div id="form-register" class="hidden">
             <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña">
-            <label>Palabra clave (Recuperación)</label> <input type="text" id="reg-secret" placeholder="Ej. Nombre mascota">
+            
+            <label>PIN de recuperación (6 dígitos)</label> 
+            <input type="tel" id="reg-secret" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
             
             <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
                 <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
@@ -427,7 +429,9 @@
         </div>
 
         <div id="form-reset" class="hidden">
-            <label>Palabra Clave</label> <input type="text" id="reset-secret">
+            <label>Ingresa tu PIN de 6 dígitos</label> 
+            <input type="tel" id="reset-secret" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
+
             <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass">
             <button class="btn-accent" onclick="doReset()">Restablecer</button>
             <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
@@ -783,7 +787,14 @@
     window.doRegister = async () => {
         const pass = document.getElementById('reg-pass').value;
         const secret = document.getElementById('reg-secret').value;
-        if(!pass || !secret) return alert("Llena ambos");
+        
+        if(!pass || !secret) return alert("Por favor llena ambos campos.");
+
+        // --- VALIDACIÓN NUEVA PARA PIN ---
+        // Verificamos que sean solo números y exactamente 6 dígitos
+        if(secret.length !== 6 || isNaN(secret)) {
+            return alert("El PIN debe ser de exactamente 6 dígitos numéricos.");
+        }
         
         // Obtener niños seleccionados
         const checkboxes = document.querySelectorAll('.child-claim-checkbox:checked');
@@ -830,10 +841,16 @@
     window.doReset = async () => {
         const s = document.getElementById('reset-secret').value;
         const n = document.getElementById('reset-new-pass').value;
-        if(s.toLowerCase().trim() === selectedUserDoc.data.secretKey.toLowerCase().trim()) {
+        
+        // Comparamos el PIN ingresado con el guardado (validamos trim por seguridad)
+        if(s.trim() === selectedUserDoc.data.secretKey.trim()) {
             await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: n });
-            alert("Listo"); selectedUserDoc.data.password = n; window.showLoginFromReset();
-        } else alert("Palabra clave mal");
+            alert("Contraseña restablecida."); 
+            selectedUserDoc.data.password = n; 
+            window.showLoginFromReset();
+        } else {
+            alert("El PIN es incorrecto.");
+        }
     };
 
     window.adminOverride = async () => {
