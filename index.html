@@ -454,6 +454,22 @@
     </div>
 </div>
 
+<div id="confirm-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px; text-align:center;">
+        <svg class="icon icon-lg" style="color:var(--danger); margin:0 auto 10px; display:block;" viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <h3 id="confirm-title" style="margin-bottom:5px;">¿Estás seguro?</h3>
+        <p id="confirm-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Esta acción es irreversible.</p>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
+            <button class="btn-accent" onclick="executeConfirm()" style="background:var(--danger); border-color:var(--danger);">Sí, eliminar</button>
+        </div>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
@@ -510,6 +526,26 @@
             showToast("Contraseña incorrecta");
             document.getElementById('admin-input-pass').value = '';
         }
+    };
+
+    // --- CONFIRMATION MODAL SYSTEM (NUEVO) ---
+    let pendingConfirmAction = null;
+
+    window.openConfirmModal = (title, message, callback) => {
+        document.getElementById('confirm-title').innerText = title;
+        document.getElementById('confirm-desc').innerText = message;
+        pendingConfirmAction = callback;
+        document.getElementById('confirm-modal').classList.remove('hidden');
+    };
+
+    window.closeConfirmModal = () => {
+        document.getElementById('confirm-modal').classList.add('hidden');
+        pendingConfirmAction = null;
+    };
+
+    window.executeConfirm = () => {
+        if (pendingConfirmAction) pendingConfirmAction();
+        closeConfirmModal();
     };
 
     // --- LOGICA PARA REVELAR SOLO 1 VEZ Y GUARDAR EN DB ---
@@ -577,16 +613,24 @@
         } catch(e) { console.error(e); listDiv.innerHTML = "<p style='text-align:center; color:red'>Error al cargar</p>"; }
     }
 
-    window.deleteGlobalEvent = async (id) => {
-        if(!confirm("¿Borrar evento?")) return;
-        try {
-            const partsRef = collection(db, `events/${id}/participants`);
-            const partsSnap = await getDocs(partsRef);
-            const batch = writeBatch(db);
-            partsSnap.forEach(d => batch.delete(d.ref));
-            await batch.commit(); await deleteDoc(doc(db, "events", id));
-            showToast("Evento eliminado"); loadAllEvents();
-        } catch(e) { showToast("Error al borrar"); }
+    // MODIFICADO: Usa el modal de confirmación en lugar de confirm()
+    window.deleteGlobalEvent = (id) => {
+        openConfirmModal(
+            "¿Borrar evento?", 
+            "Se eliminarán todos los datos y participantes permanentemente.", 
+            async () => {
+                try {
+                    const partsRef = collection(db, `events/${id}/participants`);
+                    const partsSnap = await getDocs(partsRef);
+                    const batch = writeBatch(db);
+                    partsSnap.forEach(d => batch.delete(d.ref));
+                    await batch.commit(); 
+                    await deleteDoc(doc(db, "events", id));
+                    showToast("Evento eliminado"); 
+                    loadAllEvents();
+                } catch(e) { showToast("Error al borrar"); }
+            }
+        );
     }
 
     window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
@@ -644,15 +688,24 @@
     window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
     window.goToEvent = () => { window.location.href = "?id=" + eventId; };
 
-    window.deleteEvent = async () => {
-        if(!confirm("¿Borrar este evento?")) return;
-        try {
-            const partsRef = collection(db, `events/${eventId}/participants`);
-            const snapshot = await getDocs(partsRef); const batch = writeBatch(db);
-            snapshot.forEach(doc => batch.delete(doc.ref));
-            await batch.commit(); await deleteDoc(doc(db, "events", eventId));
-            showToast("Evento eliminado"); setTimeout(() => window.location.href = window.location.pathname, 1500);
-        } catch(e) { showToast("Error al eliminar"); }
+    // MODIFICADO: Usa el modal de confirmación en lugar de confirm()
+    window.deleteEvent = () => {
+        openConfirmModal(
+            "¿Borrar este evento?",
+            "Esta acción eliminará el sorteo actual y a todos sus participantes para siempre.",
+            async () => {
+                try {
+                    const partsRef = collection(db, `events/${eventId}/participants`);
+                    const snapshot = await getDocs(partsRef); 
+                    const batch = writeBatch(db);
+                    snapshot.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit(); 
+                    await deleteDoc(doc(db, "events", eventId));
+                    showToast("Evento eliminado"); 
+                    setTimeout(() => window.location.href = window.location.pathname, 1500);
+                } catch(e) { showToast("Error al eliminar"); }
+            }
+        );
     };
 
     async function loadEventData(id) {
