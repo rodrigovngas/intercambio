@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        /* --- ESTILOS GENERALES --- */
         :root {
             --bg-color: #f3f4f6;
             --primary: #111827; 
@@ -24,37 +25,21 @@
             --danger: #ef4444;
         }
 
-        /* BLOQUEO DE SELECCIÓN DE TEXTO GLOBAL */
-        * { 
-            box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent; 
-            user-select: none; 
-            -webkit-user-select: none; 
-        }
-
-        /* EXCEPCIÓN: Permitir escribir */
-        input, textarea, select {
-            user-select: text !important;
-            -webkit-user-select: text !important;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+        input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(to bottom, #ffffff, #f3f4f6);
-            color: var(--text-main);
-            margin: 0; padding: 0;
-            height: 100dvh; width: 100vw;
-            overflow: hidden; 
+            color: var(--text-main); margin: 0; padding: 0;
+            height: 100dvh; width: 100vw; overflow: hidden; 
             display: flex; justify-content: center; align-items: center;
         }
 
         .container {
-            background: #ffffff;
-            width: 100%; height: 100%; max-width: 500px;
-            overflow-y: auto;
-            padding: 30px 25px 0 25px;
-            display: flex; flex-direction: column;
-            position: relative;
+            background: #ffffff; width: 100%; height: 100%; max-width: 500px;
+            overflow-y: auto; padding: 30px 25px 0 25px;
+            display: flex; flex-direction: column; position: relative;
         }
 
         @media (min-width: 501px) {
@@ -65,11 +50,9 @@
             }
         }
 
-        .screen-content {
-            flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative;
-        }
+        .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
 
-        /* --- UI ELEMENTS --- */
+        /* UI ELEMENTS */
         .btn-settings {
             position: absolute; top: 0; right: 0; 
             background: transparent; border: none; padding: 10px; cursor: pointer;
@@ -81,24 +64,16 @@
         h1 { font-size: 2.2rem; font-weight: 800; }
         p { color: var(--text-sec); line-height: 1.6; margin-bottom: 25px; text-align: center; font-size: 0.95rem; }
 
-        label { 
-            display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); 
-            margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; 
-        }
+        label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
         
         input:not([type="checkbox"]), textarea, select {
-            width: 100%; padding: 14px 16px; 
-            border: 1px solid var(--border); border-radius: 12px;
+            width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
             font-size: 1rem; background: #fff; color: var(--text-main); 
             font-family: inherit; appearance: none; outline: none;
             transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        
-        input:focus, textarea:focus, select:focus { 
-            border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); 
-        }
+        input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
 
-        /* Checkbox Custom */
         input[type="checkbox"] {
             appearance: auto !important; -webkit-appearance: checkbox !important;
             width: 20px !important; height: 20px !important; accent-color: var(--primary);
@@ -110,7 +85,6 @@
             background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
         }
 
-        /* BOTONES PREMIUM */
         button {
             width: 100%; padding: 16px; border: none; border-radius: 12px; 
             font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 24px; 
@@ -120,16 +94,13 @@
         button:active { transform: scale(0.98); }
 
         .btn-primary, .btn-accent { 
-            background: var(--primary); color: white; 
-            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
+            background: linear-gradient(135deg, #1f2937 0%, #000000 100%); color: white; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border-top: 1px solid rgba(255,255,255,0.1);
         }
         .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
-        
         .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
-        
         .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
         .btn-danger-text { 
             background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
@@ -141,7 +112,6 @@
         .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
-        /* Helpers */
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
         .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; height: 52px; background: linear-gradient(135deg, #374151 0%, #111827 100%); } 
         
@@ -157,12 +127,17 @@
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
         .name-card-user { 
             background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; 
-            text-align: center; font-weight: 600; cursor: pointer; user-select: none;
+            text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
             box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
         }
         .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
+        
+        /* Indicador de "VISTO" (Ojo verde) */
+        .seen-badge {
+            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; 
+            background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
+        }
 
-        /* PANEL MAESTRO */
         #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
         .master-event-card {
             background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
@@ -175,9 +150,8 @@
         .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
         .master-actions { display: flex; gap: 10px; }
         .btn-icon-action { 
-            padding: 10px; border-radius: 10px; border: 1px solid var(--border); 
-            cursor: pointer; background: white; color: var(--primary); margin: 0; width: auto;
-            transition: all 0.2s;
+            padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; 
+            background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
         }
         .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
         .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
@@ -185,10 +159,8 @@
 
         .date-picker-row { display: flex; gap: 10px; }
         .date-picker-row select { flex: 1; }
-
         .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* MODALES */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
@@ -207,14 +179,25 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .hidden { display: none !important; }
 
-        /* RESULT CARD */
+        /* RESULT CARD & REVEAL */
         .info-card { 
             background: linear-gradient(135deg, #374151 0%, #111827 100%); 
             color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
         }
+        
+        /* Botón de Revelar (Cubre el nombre) */
+        #reveal-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 10; cursor: pointer; transition: opacity 0.5s ease;
+        }
+        #reveal-overlay.faded { opacity: 0; pointer-events: none; }
+        
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
+        
         .link-box { 
             background: #f9fafb; padding: 20px; border-radius: 12px; 
             word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); 
@@ -222,29 +205,16 @@
             user-select: all !important; -webkit-user-select: all !important; 
         }
         
-        /* CORRECCION AQUI: Forzar display block y ruptura de palabras */
-        .wishes-list { 
-            margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; 
-            text-align: left; display: block; width: 100%;
-        }
+        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; }
         .wishes-list li { 
             margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); 
             overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
         }
-        .wishes-list a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
-        
-        /* CORRECCION AQUI TAMBIEN */
-        .info-extra-link { 
-            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
-            display: block; width: 100%;
-        }
-        .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
+        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
+        .info-extra-link { overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal; display: block; width: 100%; }
 
         #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
 
-        /* --- NUEVOS ELEMENTOS PREMIUM --- */
-        
-        /* TOAST (Notificaciones Flotantes) */
         #toast-container {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             z-index: 2000; display: flex; flex-direction: column; gap: 10px;
@@ -259,7 +229,6 @@
         }
         .toast.show { opacity: 1; transform: translateY(0); }
 
-        /* SPINNER DE CARGA */
         .spinner {
             width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
             border-radius: 50%; border-top-color: var(--primary);
@@ -293,17 +262,12 @@
     <div id="screen-master" class="hidden screen-content">
         <h2>Panel Maestro</h2>
         <p>Historial de todos los eventos.</p>
-        
-        <div id="master-list-container">
-            <div class="spinner"></div>
-        </div>
-
+        <div id="master-list-container"><div class="spinner"></div></div>
         <button class="btn-secondary" onclick="exitMasterPanel()">← Volver al Inicio</button>
     </div>
 
     <div id="screen-admin" class="hidden screen-content">
         <h2>Configurar Evento</h2>
-        
         <label>Título del Evento</label>
         <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad" autocapitalize="sentences">
         
@@ -350,11 +314,9 @@
                 <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             </button>
         </div>
-        
         <div id="participants-container" class="participants-container">
             <small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>
         </div>
-        
         <div style="margin-top: 30px; margin-bottom: 20px;">
             <button class="btn-accent" id="btn-create-event">Generar Sorteo</button>
             <button class="btn-text" onclick="location.reload()">Cancelar</button>
@@ -368,12 +330,13 @@
             <p>Envía este enlace por WhatsApp:</p>
         </div>
         <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
-        <button class="btn-accent" onclick="copyLink()">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar Enlace
-        </button>
-        <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
         
+        <button class="btn-accent" onclick="shareLink()">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+            Compartir Link
+        </button>
+        
+        <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
         <button class="btn-danger-text" onclick="promptForAdmin(() => deleteEvent())" style="width:100%; margin-top:40px;">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             Eliminar este evento (Admin)
@@ -387,16 +350,13 @@
             <span class="pill" id="event-budget-display"></span>
         </div>
         <p style="font-weight:600; font-size:1rem; color:var(--primary);">¿Quién eres?</p>
-        <div id="names-list" class="name-grid">
-            <div class="spinner"></div>
-        </div>
+        <div id="names-list" class="name-grid"><div class="spinner"></div></div>
     </div>
 
     <div id="screen-dashboard" class="hidden">
         <div id="profile-switcher" class="hidden">
             <label style="margin:0 0 5px 0; font-size:0.7em;">Viendo perfil de:</label>
-            <select id="select-active-profile" onchange="switchProfileView(this.value)" style="border:none; background:#f3f4f6; font-weight:700; color:var(--primary); padding:10px;">
-                </select>
+            <select id="select-active-profile" onchange="switchProfileView(this.value)" style="border:none; background:#f3f4f6; font-weight:700; color:var(--primary); padding:10px;"></select>
         </div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:10px;">
@@ -405,6 +365,11 @@
         </div>
         
         <div class="info-card">
+            <div id="reveal-overlay" onclick="revealName()">
+                <svg class="icon icon-lg" style="color:white; margin-bottom:10px; opacity:0.8;" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                <span style="color:white; font-weight:700; letter-spacing:1px; font-size:0.9rem;">TOCA PARA REVELAR</span>
+            </div>
+
             <small style="opacity: 0.7; text-transform: uppercase; font-weight:700; font-size:0.75rem; letter-spacing:1px;">Te tocó regalar a</small>
             <h1 id="target-name" style="color:white; margin: 15px 0; font-size: 2.5rem; letter-spacing:-0.03em;">...</h1>
             <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15);">
@@ -413,34 +378,24 @@
                 <ul id="target-wishes-list" class="wishes-list">
                     <li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white;"></div></li>
                 </ul>
-                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em;"></div>
+                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
             </div>
         </div>
 
         <div style="margin-top: 40px; padding-bottom: 20px;">
             <h3>Llena el Perfil</h3>
             <p style="font-size:0.9em; margin-bottom:25px; opacity:0.8;">Ayuda a tu amigo secreto:</p>
-            
-            <label>Opción 1</label>
-            <input type="text" id="my-wish-1" placeholder="Ej. Libro de terror" autocapitalize="sentences">
-            <label>Opción 2</label>
-            <input type="text" id="my-wish-2" placeholder="Ej. Taza de Batman" autocapitalize="sentences">
-            <label>Opción 3</label>
-            <input type="text" id="my-wish-3" placeholder="Ej. Calcetas (Link)" autocapitalize="sentences">
-
+            <label>Opción 1</label> <input type="text" id="my-wish-1" placeholder="Ej. Libro de terror" autocapitalize="sentences">
+            <label>Opción 2</label> <input type="text" id="my-wish-2" placeholder="Ej. Taza de Batman" autocapitalize="sentences">
+            <label>Opción 3</label> <input type="text" id="my-wish-3" placeholder="Ej. Calcetas (Link)" autocapitalize="sentences">
             <div id="input-container-extra" class="hidden">
-                <label id="label-extra">Info Extra</label>
-                <input type="text" id="my-extra" placeholder="Escribe aquí..." autocapitalize="sentences">
+                <label id="label-extra">Info Extra</label> <input type="text" id="my-extra" placeholder="Escribe aquí..." autocapitalize="sentences">
             </div>
-            
             <button class="btn-accent" type="button" id="btn-save-wishes">Guardar Preferencias</button>
         </div>
     </div>
 
-    <footer class="app-footer">
-        Development by VNGAS
-    </footer>
-
+    <footer class="app-footer">Development by VNGAS</footer>
 </div>
 
 <div id="auth-modal" class="modal-overlay hidden">
@@ -451,16 +406,12 @@
 
         <div id="form-register" class="hidden">
             <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña">
-            
-            <label>PIN de recuperación (6 dígitos)</label> 
-            <input type="tel" id="reg-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-            
+            <label>PIN de recuperación (6 dígitos)</label> <input type="tel" id="reg-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
             <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
                 <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
                 <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
                 <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
             </div>
-
             <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
         </div>
 
@@ -471,9 +422,7 @@
         </div>
 
         <div id="form-reset" class="hidden">
-            <label>Ingresa tu PIN de 6 dígitos</label> 
-            <input type="tel" id="reset-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-
+            <label>Ingresa tu PIN de 6 dígitos</label> <input type="tel" id="reset-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
             <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass">
             <button class="btn-accent" onclick="doReset()">Restablecer</button>
             <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
@@ -494,11 +443,7 @@
         <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 10px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <h3 style="margin-bottom:5px;">Acceso Admin</h3>
         <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
-        
-        <input type="password" id="admin-input-pass" placeholder="Contraseña..." 
-               style="text-align:center; margin-bottom:20px;"
-               onkeypress="if(event.key === 'Enter') submitAdminAuth()">
-        
+        <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;" onkeypress="if(event.key === 'Enter') submitAdminAuth()">
         <div style="display:flex; gap:10px;">
             <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
             <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
@@ -522,8 +467,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const MASTER_KEY = "admin123"; 
-    
-    // --- Array para convertir número de mes a texto ---
     const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 
     let eventId = new URLSearchParams(window.location.search).get('id');
@@ -534,23 +477,18 @@
     let currentGiftLabel = ""; 
     let linkedProfiles = [];
 
-    // --- TOAST SYSTEM (Reemplaza Alerts) ---
+    // --- TOAST SYSTEM ---
     window.showToast = (message, duration = 3000) => {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
-        el.className = 'toast';
-        el.innerText = message;
+        el.className = 'toast'; el.innerText = message;
         container.appendChild(el);
         requestAnimationFrame(() => el.classList.add('show'));
-        setTimeout(() => {
-            el.classList.remove('show');
-            setTimeout(() => el.remove(), 300);
-        }, duration);
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
     };
 
-    // --- ADMIN MODAL SYSTEM (Reemplaza Prompts) ---
+    // --- ADMIN MODAL SYSTEM ---
     let pendingAdminCallback = null;
-    
     window.promptForAdmin = (callback) => {
         pendingAdminCallback = callback;
         const m = document.getElementById('admin-modal');
@@ -558,25 +496,42 @@
         m.classList.remove('hidden');
         setTimeout(() => document.getElementById('admin-input-pass').focus(), 100);
     };
-
-    window.closeAdminModal = () => {
-        document.getElementById('admin-modal').classList.add('hidden');
-        pendingAdminCallback = null;
-    };
-
+    window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
     window.submitAdminAuth = () => {
-        const val = document.getElementById('admin-input-pass').value; // Sin trim(), nativo
-        
-        // Guardamos referencia antes de cerrar (EL ARREGLO REAL)
+        const val = document.getElementById('admin-input-pass').value; 
         const callbackToRun = pendingAdminCallback; 
-
         if(val === MASTER_KEY) {
-            closeAdminModal(); // Esto borra pendingAdminCallback
-            if(callbackToRun) callbackToRun(); // Ejecutamos la copia guardada
+            closeAdminModal();
+            if(callbackToRun) callbackToRun();
         } else {
             showToast("Contraseña incorrecta");
             document.getElementById('admin-input-pass').value = '';
         }
+    };
+
+    // --- NATIVE SHARE ---
+    window.shareLink = async () => {
+        const url = document.getElementById('share-link-text').innerText;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Intercambio',
+                    text: '¡Entra al sorteo de intercambio!',
+                    url: url
+                });
+            } catch (err) { console.log('Share canceled'); }
+        } else {
+            window.copyLink();
+        }
+    };
+
+    // --- CONFETI REVEAL ---
+    window.revealName = () => {
+        const overlay = document.getElementById('reveal-overlay');
+        overlay.classList.add('faded');
+        // Confeti explosión
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        // Efecto sonido opcional (sin audio para no molestar)
     };
 
     window.onload = () => {
@@ -594,14 +549,11 @@
         }
     }
 
-    // --- PANEL MAESTRO ---
     window.goToMasterPanel = () => {
-        // La autenticación ya se manejó en promptForAdmin
         document.getElementById('screen-home').classList.add('hidden');
         document.getElementById('screen-master').classList.remove('hidden');
         loadAllEvents();
     };
-
     window.exitMasterPanel = () => {
         document.getElementById('screen-master').classList.add('hidden');
         document.getElementById('screen-home').classList.remove('hidden');
@@ -609,105 +561,56 @@
 
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
-        listDiv.innerHTML = '<div class="spinner"></div>'; // SPINNER
-        
+        listDiv.innerHTML = '<div class="spinner"></div>'; 
         try {
             const snap = await getDocs(collection(db, "events"));
             listDiv.innerHTML = "";
             if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; return; }
-
             snap.forEach(docSnap => {
                 const data = docSnap.data();
                 const id = docSnap.id;
                 let parts = (data.date || "2025-01-01").split('-');
                 let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-
                 const div = document.createElement('div');
                 div.className = 'master-event-card';
                 div.innerHTML = `
-                    <div class="master-event-info">
-                        <h4>${data.title}</h4>
-                        <div class="master-event-meta" style="margin-top:5px;">
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                ${prettyDate}
-                            </span>
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                ${data.budget.replace('$', '')}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="master-actions">
-                        <button class="btn-icon-action" onclick="window.location.href='?id=${id}'" title="Ir al evento">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        </button>
-                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))" title="Borrar">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        </button>
-                    </div>
-                `;
+                    <div class="master-event-info"><h4>${data.title}</h4><div class="master-event-meta" style="margin-top:5px;"><span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}</span><span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}</span></div></div>
+                    <div class="master-actions"><button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button><button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
                 listDiv.appendChild(div);
             });
         } catch(e) { console.error(e); listDiv.innerHTML = "<p style='text-align:center; color:red'>Error al cargar</p>"; }
     }
 
     window.deleteGlobalEvent = async (id) => {
-        if(!confirm("¿Borrar evento y todos sus datos para siempre?")) return;
+        if(!confirm("¿Borrar evento?")) return;
         try {
             const partsRef = collection(db, `events/${id}/participants`);
             const partsSnap = await getDocs(partsRef);
             const batch = writeBatch(db);
             partsSnap.forEach(d => batch.delete(d.ref));
-            await batch.commit();
-            await deleteDoc(doc(db, "events", id));
-            showToast("Evento eliminado");
-            loadAllEvents();
+            await batch.commit(); await deleteDoc(doc(db, "events", id));
+            showToast("Evento eliminado"); loadAllEvents();
         } catch(e) { showToast("Error al borrar"); }
     }
 
-    // --- ADMIN (CREACIÓN) ---
-    window.showAdminSetup = () => {
-        document.getElementById('screen-home').classList.add('hidden');
-        document.getElementById('screen-admin').classList.remove('hidden');
-    };
-
+    window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
     document.getElementById('btn-add-name').addEventListener('click', addNameToList);
     document.getElementById('input-new-name').addEventListener('keypress', (e) => { if(e.key === 'Enter') addNameToList(); });
 
     function addNameToList() {
-        const input = document.getElementById('input-new-name');
-        const check = document.getElementById('check-is-child');
-        const name = input.value.trim();
-        
-        if(!name) return;
-        
-        // Guardamos objeto: nombre + si es niño
+        const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
+        const name = input.value.trim(); if(!name) return;
         participantsList.push({ name: name, isChild: check.checked });
-        
-        input.value = ""; 
-        check.checked = false; 
-        input.focus();
-        renderParticipantsList();
+        input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
     }
 
     function renderParticipantsList() {
-        const container = document.getElementById('participants-container');
-        container.innerHTML = "";
-        if(participantsList.length === 0) {
-            container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return;
-        }
+        const container = document.getElementById('participants-container'); container.innerHTML = "";
+        if(participantsList.length === 0) { container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return; }
         participantsList.forEach((p, index) => {
-            const div = document.createElement('div');
-            div.className = 'name-card-admin';
+            const div = document.createElement('div'); div.className = 'name-card-admin';
             const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
-
-            div.innerHTML = `
-                <span>${childTag}${p.name}</span>
-                <button class="btn-icon-delete" onclick="removeName(${index})">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                </button>
-            `;
+            div.innerHTML = `<span>${childTag}${p.name}</span><button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
             container.appendChild(div);
         });
         window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
@@ -720,53 +623,24 @@
         const budget = document.getElementById('setup-budget').value;
         const giftType = document.getElementById('setup-gift-type').value; 
         const names = [...participantsList];
-
         if(names.length < 2) return showToast("Mínimo 2 personas");
         if(!title || !day || !month) return showToast("Completa los datos");
-
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
-        const btn = document.getElementById('btn-create-event');
-        const originalText = btn.innerText;
+        const btn = document.getElementById('btn-create-event'); const originalText = btn.innerText;
         btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0;"></div>';
-
         try {
-            const eventRef = await addDoc(collection(db, "events"), { 
-                title, date: fullDate, budget, giftType, createdAt: serverTimestamp() 
-            });
-            
+            const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
             let shuffled = [...names];
-            for (let i = shuffled.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-            }
-
-            const batch = writeBatch(db);
-            let refs = [];
-            for(let p of shuffled) refs.push({ 
-                name: p.name, 
-                isChild: p.isChild,
-                ref: doc(collection(db, `events/${eventRef.id}/participants`)) 
-            });
-
+            for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+            const batch = writeBatch(db); let refs = [];
+            for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
             for (let i = 0; i < refs.length; i++) {
-                const curr = refs[i];
-                const next = refs[(i + 1) % refs.length];
-                batch.set(curr.ref, {
-                    name: curr.name, 
-                    isChild: curr.isChild || false,
-                    managedBy: null,
-                    targetId: next.ref.id, 
-                    targetName: next.name,
-                    wish1: "", wish2: "", wish3: "", extra: "", 
-                    password: null, secretKey: null
-                });
+                const curr = refs[i]; const next = refs[(i + 1) % refs.length];
+                batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false });
             }
             await batch.commit();
-
-            eventId = eventRef.id;
-            const link = window.location.origin + window.location.pathname + "?id=" + eventId;
-            document.getElementById('screen-admin').classList.add('hidden');
-            document.getElementById('screen-share').classList.remove('hidden');
+            eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
+            document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
             document.getElementById('share-link-text').innerText = link;
         } catch(e) { console.error(e); btn.disabled = false; btn.innerText = originalText; showToast("Error al crear"); }
     });
@@ -774,59 +648,34 @@
     window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
     window.goToEvent = () => { window.location.href = "?id=" + eventId; };
 
-    // --- DELETE SINGLE EVENT ---
     window.deleteEvent = async () => {
-        // Auth handled by promptForAdmin wrapper
         if(!confirm("¿Borrar este evento?")) return;
         try {
             const partsRef = collection(db, `events/${eventId}/participants`);
-            const snapshot = await getDocs(partsRef);
-            const batch = writeBatch(db);
+            const snapshot = await getDocs(partsRef); const batch = writeBatch(db);
             snapshot.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-            await deleteDoc(doc(db, "events", eventId));
-            showToast("Evento eliminado"); 
-            setTimeout(() => window.location.href = window.location.pathname, 1500);
-        } catch(e) { console.error(e); showToast("Error al eliminar"); }
+            await batch.commit(); await deleteDoc(doc(db, "events", eventId));
+            showToast("Evento eliminado"); setTimeout(() => window.location.href = window.location.pathname, 1500);
+        } catch(e) { showToast("Error al eliminar"); }
     };
 
-    // --- CARGAR EVENTO ---
     async function loadEventData(id) {
-        const snap = await getDoc(doc(db, "events", id));
-        if(!snap.exists()) return showToast("Evento no encontrado");
-        
-        const data = snap.data();
-        currentGiftLabel = data.giftType || ""; 
-
-        const parts = data.date.split('-');
+        const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
+        const data = snap.data(); currentGiftLabel = data.giftType || ""; 
+        const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
         document.getElementById('event-title-display').innerText = data.title;
-        
-        let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-
-        document.getElementById('event-date-display').innerHTML = `
-            <svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            ${prettyDate}`;
-        
-        document.getElementById('event-budget-display').innerHTML = `
-            <svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            ${data.budget.replace('$', '')}`;
+        document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
+        document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
 
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
-            const list = document.getElementById('names-list');
-            list.innerHTML = "";
-            
-            if(!currentUserId) {
-                document.getElementById('screen-home').classList.add('hidden');
-                document.getElementById('screen-login').classList.remove('hidden');
-            }
-
+            const list = document.getElementById('names-list'); list.innerHTML = "";
+            if(!currentUserId) { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-login').classList.remove('hidden'); }
             qs.forEach(d => {
-                const p = d.data();
-                if (p.isChild) return; 
-
-                const div = document.createElement('div');
-                div.className = 'name-card-user'; 
+                const p = d.data(); if (p.isChild) return; 
+                const div = document.createElement('div'); div.className = 'name-card-user'; 
                 div.innerText = p.name;
+                // INDICADOR DE "VISTO"
+                if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
                 div.onclick = () => prepareAuth(d.id, p);
                 list.appendChild(div);
             });
@@ -836,235 +685,133 @@
     async function prepareAuth(id, data) {
         selectedUserDoc = { id, data };
         const m = document.getElementById('auth-modal');
-        
-        document.getElementById('form-register').classList.add('hidden');
-        document.getElementById('form-login').classList.add('hidden');
-        document.getElementById('form-reset').classList.add('hidden');
-        document.getElementById('admin-override-box').classList.add('hidden');
-        document.getElementById('claim-children-section').classList.add('hidden');
-        document.querySelectorAll('input').forEach(i => i.value='');
-        
-        m.classList.remove('hidden');
-        document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
+        document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-reset').classList.add('hidden'); document.getElementById('admin-override-box').classList.add('hidden'); document.getElementById('claim-children-section').classList.add('hidden'); document.querySelectorAll('input').forEach(i => i.value='');
+        m.classList.remove('hidden'); document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
         if(!data.password) {
             document.getElementById('form-register').classList.remove('hidden');
-            const listDiv = document.getElementById('children-list-check');
-            const section = document.getElementById('claim-children-section');
+            const listDiv = document.getElementById('children-list-check'); const section = document.getElementById('claim-children-section');
             listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
-
             const q = await getDocs(collection(db, `events/${eventId}/participants`));
-            listDiv.innerHTML = "";
-            let foundChild = false;
-
+            listDiv.innerHTML = ""; let foundChild = false;
             q.forEach(docSnap => {
                 const kid = docSnap.data();
                 if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
                     foundChild = true;
                     const div = document.createElement('div');
-                    div.innerHTML = `
-                        <label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;">
-                            <input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}">
-                            ${kid.name}
-                        </label>`;
+                    div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
                     listDiv.appendChild(div);
                 }
             });
-
             if(foundChild && !data.isChild) section.classList.remove('hidden'); 
-            
         } else {
-            document.getElementById('form-login').classList.remove('hidden');
-            document.getElementById('admin-override-box').classList.remove('hidden');
+            document.getElementById('form-login').classList.remove('hidden'); document.getElementById('admin-override-box').classList.remove('hidden');
         }
     }
 
     window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
 
     window.doRegister = async () => {
-        const pass = document.getElementById('reg-pass').value;
-        const secret = document.getElementById('reg-secret').value;
-        
+        const pass = document.getElementById('reg-pass').value; const secret = document.getElementById('reg-secret').value;
         if(!pass || !secret) return showToast("Por favor llena ambos campos.");
         if(secret.length !== 6 || isNaN(secret)) return showToast("El PIN debe ser de 6 dígitos.");
         
-        const checkboxes = document.querySelectorAll('.child-claim-checkbox:checked');
-        const childrenIds = Array.from(checkboxes).map(c => c.value);
-
+        const checkboxes = document.querySelectorAll('.child-claim-checkbox:checked'); const childrenIds = Array.from(checkboxes).map(c => c.value);
         const batch = writeBatch(db);
         const myRef = doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`);
         batch.update(myRef, { password: pass, secretKey: secret });
-
-        childrenIds.forEach(kidId => {
-            const kidRef = doc(db, `events/${eventId}/participants/${kidId}`);
-            batch.update(kidRef, { managedBy: selectedUserDoc.id });
-        });
-
-        await batch.commit();
-        window.closeModal();
-        enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
+        childrenIds.forEach(kidId => { const kidRef = doc(db, `events/${eventId}/participants/${kidId}`); batch.update(kidRef, { managedBy: selectedUserDoc.id }); });
+        await batch.commit(); window.closeModal(); enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
     };
 
     window.doLogin = () => {
         if(document.getElementById('login-pass').value === selectedUserDoc.data.password) {
-            window.closeModal();
-            enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+            window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else showToast("Contraseña incorrecta");
     };
 
-    window.showReset = () => {
-        document.getElementById('form-login').classList.add('hidden');
-        document.getElementById('admin-override-box').classList.add('hidden');
-        document.getElementById('form-reset').classList.remove('hidden');
-    };
-    
-    window.showLoginFromReset = () => {
-        document.getElementById('form-reset').classList.add('hidden');
-        document.getElementById('form-login').classList.remove('hidden');
-        document.getElementById('admin-override-box').classList.remove('hidden');
-    };
+    window.showReset = () => { document.getElementById('form-login').classList.add('hidden'); document.getElementById('admin-override-box').classList.add('hidden'); document.getElementById('form-reset').classList.remove('hidden'); };
+    window.showLoginFromReset = () => { document.getElementById('form-reset').classList.add('hidden'); document.getElementById('form-login').classList.remove('hidden'); document.getElementById('admin-override-box').classList.remove('hidden'); };
 
     window.doReset = async () => {
-        const s = document.getElementById('reset-secret').value;
-        const n = document.getElementById('reset-new-pass').value;
-        
+        const s = document.getElementById('reset-secret').value; const n = document.getElementById('reset-new-pass').value;
         if(s.trim() === selectedUserDoc.data.secretKey.trim()) {
             await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: n });
-            showToast("Contraseña restablecida"); 
-            selectedUserDoc.data.password = n; 
-            window.showLoginFromReset();
-        } else {
-            showToast("PIN incorrecto");
-        }
+            showToast("Contraseña restablecida"); selectedUserDoc.data.password = n; window.showLoginFromReset();
+        } else { showToast("PIN incorrecto"); }
     };
 
     window.adminOverride = async () => {
-        // Auth handled by promptForAdmin wrapper
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null });
-        showToast("Cuenta reseteada"); 
-        selectedUserDoc.data.password = null; 
-        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false });
+        showToast("Cuenta reseteada"); selectedUserDoc.data.password = null; prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
     function makeLinksClickable(text) {
-        if (!text) return "";
-        const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, (url) => {
-            return `<a href="${url}" target="_blank">${url}</a>`;
-        });
+        if (!text) return ""; const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, (url) => { return `<a href="${url}" target="_blank">${url}</a>`; });
     }
 
     async function enterDashboard(uid, userData) {
         document.getElementById('screen-login').classList.add('hidden');
         document.getElementById('screen-dashboard').classList.remove('hidden');
 
-        linkedProfiles = [];
-        linkedProfiles.push({ id: uid, ...userData });
+        // MARCAR COMO VISTO AL ENTRAR
+        if(!userData.seen) { updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true }); }
 
+        linkedProfiles = []; linkedProfiles.push({ id: uid, ...userData });
         const q = await getDocs(collection(db, `events/${eventId}/participants`));
-        q.forEach(docSnap => {
-            const d = docSnap.data();
-            if(d.managedBy === uid) {
-                linkedProfiles.push({ id: docSnap.id, ...d });
-            }
-        });
+        q.forEach(docSnap => { const d = docSnap.data(); if(d.managedBy === uid) { linkedProfiles.push({ id: docSnap.id, ...d }); } });
 
-        const switcher = document.getElementById('profile-switcher');
-        const select = document.getElementById('select-active-profile');
-        
+        const switcher = document.getElementById('profile-switcher'); const select = document.getElementById('select-active-profile');
         if(linkedProfiles.length > 1) {
-            switcher.classList.remove('hidden');
-            select.innerHTML = "";
-            linkedProfiles.forEach((p, idx) => {
-                const opt = document.createElement('option');
-                opt.value = idx;
-                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)");
-                select.appendChild(opt);
-            });
-        } else {
-            switcher.classList.add('hidden');
-        }
-
+            switcher.classList.remove('hidden'); select.innerHTML = "";
+            linkedProfiles.forEach((p, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)"); select.appendChild(opt); });
+        } else { switcher.classList.add('hidden'); }
         loadProfileIndex(0);
     }
 
-    window.switchProfileView = (idx) => {
-        loadProfileIndex(parseInt(idx));
-    }
+    window.switchProfileView = (idx) => { loadProfileIndex(parseInt(idx)); }
 
     function loadProfileIndex(index) {
-        const profile = linkedProfiles[index];
-        currentUserId = profile.id;
-        currentTargetId = profile.targetId;
-
+        const profile = linkedProfiles[index]; currentUserId = profile.id; currentTargetId = profile.targetId;
         const extraContainer = document.getElementById('input-container-extra');
         if(currentGiftLabel && currentGiftLabel.trim() !== "") {
-            extraContainer.classList.remove('hidden');
-            document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; 
-            document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
-        } else {
-            extraContainer.classList.add('hidden');
-        }
+            extraContainer.classList.remove('hidden'); document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
+        } else { extraContainer.classList.add('hidden'); }
 
         document.getElementById('my-wish-1').value = profile.wish1 || "";
         document.getElementById('my-wish-2').value = profile.wish2 || "";
         document.getElementById('my-wish-3').value = profile.wish3 || "";
         if(document.getElementById('my-extra')) document.getElementById('my-extra').value = profile.extra || "";
 
+        // RESETEAR ESTADO DE REVELADO VISUAL
+        document.getElementById('reveal-overlay').classList.remove('faded');
         document.getElementById('target-name').innerText = profile.targetName;
         document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
 
         getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
             if(d.exists()) {
-                const data = d.data();
-                const list = document.getElementById('target-wishes-list');
-                list.innerHTML = ""; 
-
+                const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
                 if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
                 if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
                 if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
                 if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
-                
                 const extraDiv = document.getElementById('target-extra-info');
-                if(currentGiftLabel && data.extra) {
-                    extraDiv.innerHTML = `${currentGiftLabel}: ${makeLinksClickable(data.extra)}`;
-                } else {
-                    extraDiv.innerText = "";
-                }
+                if(currentGiftLabel && data.extra) { extraDiv.innerHTML = `${currentGiftLabel}: ${makeLinksClickable(data.extra)}`; } else { extraDiv.innerText = ""; }
             }
         });
     }
 
     document.getElementById('btn-save-wishes').addEventListener('click', async () => {
-        const w1 = document.getElementById('my-wish-1').value;
-        const w2 = document.getElementById('my-wish-2').value;
-        const w3 = document.getElementById('my-wish-3').value;
-        let extra = "";
-        
-        if(!document.getElementById('input-container-extra').classList.contains('hidden')) {
-            extra = document.getElementById('my-extra').value;
-        }
-
-        const btn = document.getElementById('btn-save-wishes');
-        const originalText = btn.innerText;
-        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; 
-        btn.disabled = true;
-
+        const w1 = document.getElementById('my-wish-1').value; const w2 = document.getElementById('my-wish-2').value; const w3 = document.getElementById('my-wish-3').value;
+        let extra = ""; if(!document.getElementById('input-container-extra').classList.contains('hidden')) { extra = document.getElementById('my-extra').value; }
+        const btn = document.getElementById('btn-save-wishes'); const originalText = btn.innerText;
+        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; btn.disabled = true;
         try {
-            await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { 
-                wish1: w1, wish2: w2, wish3: w3, extra: extra 
-            });
-            
+            await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { wish1: w1, wish2: w2, wish3: w3, extra: extra });
             const activeProfileIndex = linkedProfiles.findIndex(p => p.id === currentUserId);
-            if(activeProfileIndex !== -1) {
-                linkedProfiles[activeProfileIndex].wish1 = w1;
-                linkedProfiles[activeProfileIndex].wish2 = w2;
-                linkedProfiles[activeProfileIndex].wish3 = w3;
-                linkedProfiles[activeProfileIndex].extra = extra;
-            }
-
-            btn.innerText = "¡Guardado!";
-            showToast("Preferencias guardadas");
+            if(activeProfileIndex !== -1) { linkedProfiles[activeProfileIndex].wish1 = w1; linkedProfiles[activeProfileIndex].wish2 = w2; linkedProfiles[activeProfileIndex].wish3 = w3; linkedProfiles[activeProfileIndex].extra = extra; }
+            btn.innerText = "¡Guardado!"; showToast("Preferencias guardadas");
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
         } catch(e) { console.error(e); btn.innerText = originalText; btn.disabled = false; showToast("Error al guardar"); }
     });
