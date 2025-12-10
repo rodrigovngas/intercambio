@@ -477,7 +477,6 @@
         
         <input type="password" id="admin-input-pass" placeholder="Contraseña..." 
                style="text-align:center; margin-bottom:20px;"
-               autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false"
                onkeypress="if(event.key === 'Enter') submitAdminAuth()">
         
         <div style="display:flex; gap:10px;">
@@ -546,10 +545,9 @@
     };
 
     window.submitAdminAuth = () => {
-        const rawVal = document.getElementById('admin-input-pass').value;
-        const val = rawVal.trim(); // Ignorar espacios accidentales y corrección de bug anterior
+        const val = document.getElementById('admin-input-pass').value; // Sin trim(), nativo
         
-        // Guardar referencia antes de cerrar
+        // Guardamos referencia antes de cerrar (EL ARREGLO REAL)
         const callbackToRun = pendingAdminCallback; 
 
         if(val === MASTER_KEY) {
