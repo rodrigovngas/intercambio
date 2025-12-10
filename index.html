@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>Intercambio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         /* --- ESTILOS GENERALES --- */
         :root {
-            --bg-color: #f9fafb;
+            --bg-color: #f3f4f6; /* Ligeramente más oscuro para contraste */
             --primary: #111827; 
             --primary-hover: #374151;
             --accent: #000000; 
@@ -15,8 +20,8 @@
             --text-sec: #6b7280;
             --border: #e5e7eb;
             --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            --danger: #ef4444;
             --radius: 16px;
+            --danger: #ef4444;
         }
 
         /* BLOQUEO DE SELECCIÓN DE TEXTO GLOBAL */
@@ -27,15 +32,15 @@
             -webkit-user-select: none; 
         }
 
-        /* EXCEPCIÓN: Permitir seleccionar/escribir en inputs y áreas de texto */
+        /* EXCEPCIÓN: Permitir escribir */
         input, textarea, select {
             user-select: text !important;
             -webkit-user-select: text !important;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* Fuente Premium */
+            background: linear-gradient(to bottom, #ffffff, #f3f4f6); /* Fondo con profundidad */
             color: var(--text-main);
             margin: 0; padding: 0;
             height: 100dvh; width: 100vw;
@@ -53,23 +58,27 @@
         }
 
         @media (min-width: 501px) {
-            .container { height: auto; max-height: 90dvh; border-radius: var(--radius); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); padding-bottom: 30px; }
+            .container { 
+                height: auto; max-height: 90dvh; border-radius: var(--radius); 
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); /* Sombra más suave */
+                padding-bottom: 30px; border: 1px solid rgba(0,0,0,0.02);
+            }
         }
 
         .screen-content {
             flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative;
         }
 
-        /* --- ICONO ENGRANAJE --- */
+        /* --- UI ELEMENTS --- */
         .btn-settings {
             position: absolute; top: 0; right: 0; 
             background: transparent; border: none; padding: 10px; cursor: pointer;
-            color: #e5e7eb; transition: color 0.3s; z-index: 50; width: auto; margin: 0;
+            color: #d1d5db; transition: color 0.3s; z-index: 50; width: auto; margin: 0;
         }
         .btn-settings:hover { color: var(--primary); }
 
-        h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.025em; }
-        h1 { font-size: 2rem; font-weight: 800; }
+        h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
+        h1 { font-size: 2.2rem; font-weight: 800; }
         p { color: var(--text-sec); line-height: 1.6; margin-bottom: 25px; text-align: center; font-size: 0.95rem; }
 
         label { 
@@ -77,32 +86,23 @@
             margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; 
         }
         
-        /* ESTILO GENERAL DE INPUTS (TEXTO) */
         input:not([type="checkbox"]), textarea, select {
             width: 100%; padding: 14px 16px; 
             border: 1px solid var(--border); border-radius: 12px;
             font-size: 1rem; background: #fff; color: var(--text-main); 
             font-family: inherit; appearance: none; outline: none;
-            transition: all 0.2s;
+            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
         
         input:focus, textarea:focus, select:focus { 
-            border-color: var(--primary); box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05); 
+            border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); 
         }
 
-        /* --- ARREGLO ESPECÍFICO PARA CHECKBOXES --- */
+        /* Checkbox Custom */
         input[type="checkbox"] {
-            appearance: auto !important;
-            -webkit-appearance: checkbox !important;
-            width: 20px !important;          
-            height: 20px !important;
-            accent-color: var(--primary);
-            margin: 0 8px 0 0 !important;
-            vertical-align: middle;
-            cursor: pointer;
-            border: 1px solid var(--border);
-            outline: none;
-            display: inline-block;
+            appearance: auto !important; -webkit-appearance: checkbox !important;
+            width: 20px !important; height: 20px !important; accent-color: var(--primary);
+            margin: 0 8px 0 0 !important; vertical-align: middle; cursor: pointer;
         }
 
         select {
@@ -110,25 +110,30 @@
             background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
         }
 
+        /* BOTONES PREMIUM */
         button {
             width: 100%; padding: 16px; border: none; border-radius: 12px; 
             font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 24px; 
-            transition: transform 0.1s, opacity 0.2s, background-color 0.2s; touch-action: manipulation;
+            transition: transform 0.1s, opacity 0.2s; touch-action: manipulation;
             display: flex; justify-content: center; align-items: center; gap: 8px;
         }
         button:active { transform: scale(0.98); }
 
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { background-color: var(--primary-hover); }
-        .btn-accent { background-color: var(--accent); color: white; }
-        .btn-accent:hover { opacity: 0.9; }
-        .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); }
-        .btn-secondary:hover { background-color: #f9fafb; border-color: var(--text-sec); }
-        .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
+        .btn-primary, .btn-accent { 
+            background: var(--primary); color: white; 
+            background: linear-gradient(135deg, #1f2937 0%, #000000 100%); /* Gradiente sutil */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
         
+        .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
+        
+        .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
         .btn-danger-text { 
             background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
-            border: 1px dashed var(--danger); padding: 10px; opacity: 0.7; 
+            border: 1px dashed var(--danger); padding: 10px; opacity: 0.8; 
             display: flex; justify-content: center; align-items: center; gap: 6px;
         }
 
@@ -136,41 +141,37 @@
         .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
+        /* Helpers */
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-        .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; background: var(--accent); color: white; height: 52px; } 
+        .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; height: 52px; background: linear-gradient(135deg, #374151 0%, #111827 100%); } 
         
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        
         .name-card-admin {
             background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
-            display: flex; justify-content: space-between; align-items: center;
-            font-weight: 500; font-size: 0.95rem;
+            display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
         }
         .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
-        
         .btn-icon-delete { background: none; border: none; padding: 4px; color: #9ca3af; margin-top: 0; width: auto; cursor: pointer; transition: color 0.2s; }
         .btn-icon-delete:hover { color: var(--danger); }
 
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
-        
         .name-card-user { 
             background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; 
             text-align: center; font-weight: 600; cursor: pointer; user-select: none;
             box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
         }
-        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
 
-        /* --- ESTILOS DEL PANEL MAESTRO --- */
-        #master-list-container { 
-            margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; 
-        }
+        /* PANEL MAESTRO */
+        #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
         .master-event-card {
             background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
         }
+        .master-event-card:hover { transform: translateX(2px); }
         .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-        .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); }
+        .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
         .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
         .master-actions { display: flex; gap: 10px; }
         .btn-icon-action { 
@@ -185,72 +186,77 @@
         .date-picker-row { display: flex; gap: 10px; }
         .date-picker-row select { flex: 1; }
 
-        /* --- FOOTER MINIMALISTA --- */
-        .app-footer {
-            margin-top: auto; 
-            padding: 25px 0;
-            text-align: center;
-            font-size: 0.75rem; 
-            color: #9ca3af; 
-            font-weight: 500;
-            letter-spacing: 2px; 
-            text-transform: uppercase;
-        }
+        .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
 
+        /* MODALES */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); /* Blur para efecto premium */
             display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
         }
         @media (min-width: 501px) { .modal-overlay { align-items: center; } }
-
         .modal-content {
             background: white; padding: 35px 30px; 
             border-top-left-radius: 24px; border-top-right-radius: 24px; 
             width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
         
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
         .hidden { display: none !important; }
-        
+
+        /* RESULT CARD */
         .info-card { 
             background: linear-gradient(135deg, #374151 0%, #111827 100%); 
             color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; margin: 0 5px; border: 1px solid #d1d5db; }
-        
-        /* link-box: user-select: all permite copiar el link */
+        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
         .link-box { background: #f9fafb; padding: 20px; border-radius: 12px; word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); user-select: all !important; -webkit-user-select: all !important; }
-        
-        .wishes-list { 
-            margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; 
-            text-align: left; display: inline-block; max-width: 100%; 
-        }
-        .wishes-list li { 
-            margin-bottom: 12px; padding-left: 5px; border-left: 2px solid rgba(255,255,255,0.3); 
-            overflow-wrap: break-word; word-wrap: break-word; word-break: break-word;
-        }
+        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: inline-block; max-width: 100%; }
+        .wishes-list li { margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); }
         .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
 
-        /* Estilo para el Switcher de Perfiles */
-        #profile-switcher {
-            background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; 
-            box-shadow: var(--card-shadow); border: 1px solid var(--primary);
-            animation: fadeIn 0.3s ease;
+        #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+
+        /* --- NUEVOS ELEMENTOS PREMIUM --- */
+        
+        /* TOAST (Notificaciones Flotantes) */
+        #toast-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 2000; display: flex; flex-direction: column; gap: 10px;
+            pointer-events: none; width: 90%; max-width: 400px;
         }
+        .toast {
+            background: rgba(17, 24, 39, 0.95); color: white; padding: 12px 20px;
+            border-radius: 50px; font-size: 0.9rem; font-weight: 500;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15); backdrop-filter: blur(4px);
+            opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* SPINNER DE CARGA */
+        .spinner {
+            width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
+            border-radius: 50%; border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
     </style>
 </head>
 <body>
 
+<div id="toast-container"></div>
+
 <div class="container">
     
     <div id="screen-home" class="hidden screen-content">
-        <button class="btn-settings" onclick="goToMasterPanel()">
+        <button class="btn-settings" onclick="promptForAdmin(() => goToMasterPanel())">
             <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
 
@@ -269,7 +275,7 @@
         <p>Historial de todos los eventos.</p>
         
         <div id="master-list-container">
-            <p style="text-align:center; opacity:0.5; margin-top:30px;">Cargando eventos...</p>
+            <div class="spinner"></div>
         </div>
 
         <button class="btn-secondary" onclick="exitMasterPanel()">← Volver al Inicio</button>
@@ -341,27 +347,29 @@
             <h2>¡Evento Creado!</h2>
             <p>Envía este enlace por WhatsApp:</p>
         </div>
-        <div class="link-box" id="share-link-text">Generando...</div>
+        <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
         <button class="btn-accent" onclick="copyLink()">
             <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copiar Enlace
         </button>
         <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
         
-        <button class="btn-danger-text" onclick="deleteEvent()" style="width:100%; margin-top:40px;">
+        <button class="btn-danger-text" onclick="promptForAdmin(() => deleteEvent())" style="width:100%; margin-top:40px;">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
             Eliminar este evento (Admin)
         </button>
     </div>
 
     <div id="screen-login" class="hidden screen-content">
-        <h2 id="event-title-display">Cargando...</h2>
+        <h2 id="event-title-display">...</h2>
         <div style="display:flex; justify-content:center; margin-bottom:30px; gap:10px;">
             <span class="pill" id="event-date-display"></span>
             <span class="pill" id="event-budget-display"></span>
         </div>
         <p style="font-weight:600; font-size:1rem; color:var(--primary);">¿Quién eres?</p>
-        <div id="names-list" class="name-grid"></div>
+        <div id="names-list" class="name-grid">
+            <div class="spinner"></div>
+        </div>
     </div>
 
     <div id="screen-dashboard" class="hidden">
@@ -383,7 +391,7 @@
                 <small style="font-weight:600; opacity:0.9;">Sus opciones:</small>
                 <br>
                 <ul id="target-wishes-list" class="wishes-list">
-                    <li>Cargando...</li>
+                    <li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white;"></div></li>
                 </ul>
                 <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
             </div>
@@ -452,16 +460,27 @@
         </div>
         
         <div id="admin-override-box" class="hidden">
-            <button class="btn-danger-text" onclick="adminOverride()">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-                    <line x1="12" y1="9" x2="12" y2="13"></line>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
-                </svg>
+            <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
                 Resetear cuenta (Admin)
             </button>
         </div>
         <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
+    </div>
+</div>
+
+<div id="admin-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px; text-align:center;">
+        <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 10px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <h3 style="margin-bottom:5px;">Acceso Admin</h3>
+        <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
+        
+        <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;">
+        
+        <div style="display:flex; gap:10px;">
+            <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
+            <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
+        </div>
     </div>
 </div>
 
@@ -482,19 +501,57 @@
     const db = getFirestore(app);
     const MASTER_KEY = "admin123"; 
     
-    // --- NUEVO: Array para convertir número de mes a texto ---
+    // --- Array para convertir número de mes a texto ---
     const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 
     let eventId = new URLSearchParams(window.location.search).get('id');
-    
-    // Lista ahora guardará objetos: {name: "Juan", isChild: false}
     let participantsList = [];
-    
     let selectedUserDoc = null;
-    let currentUserId = null; // ID del perfil que se está VIENDO actualmente
+    let currentUserId = null; 
     let currentTargetId = null;
     let currentGiftLabel = ""; 
-    let linkedProfiles = []; // Lista de perfiles (Yo + Hijos)
+    let linkedProfiles = [];
+
+    // --- TOAST SYSTEM (Reemplaza Alerts) ---
+    window.showToast = (message, duration = 3000) => {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast';
+        el.innerText = message;
+        container.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => {
+            el.classList.remove('show');
+            setTimeout(() => el.remove(), 300);
+        }, duration);
+    };
+
+    // --- ADMIN MODAL SYSTEM (Reemplaza Prompts) ---
+    let pendingAdminCallback = null;
+    
+    window.promptForAdmin = (callback) => {
+        pendingAdminCallback = callback;
+        const m = document.getElementById('admin-modal');
+        document.getElementById('admin-input-pass').value = '';
+        m.classList.remove('hidden');
+        setTimeout(() => document.getElementById('admin-input-pass').focus(), 100);
+    };
+
+    window.closeAdminModal = () => {
+        document.getElementById('admin-modal').classList.add('hidden');
+        pendingAdminCallback = null;
+    };
+
+    window.submitAdminAuth = () => {
+        const val = document.getElementById('admin-input-pass').value;
+        if(val === MASTER_KEY) {
+            closeAdminModal();
+            if(pendingAdminCallback) pendingAdminCallback();
+        } else {
+            showToast("Contraseña incorrecta");
+            document.getElementById('admin-input-pass').value = '';
+        }
+    };
 
     window.onload = () => {
         populateDays();
@@ -513,13 +570,10 @@
 
     // --- PANEL MAESTRO ---
     window.goToMasterPanel = () => {
-        if(prompt("Contraseña Maestra:") === MASTER_KEY) {
-            document.getElementById('screen-home').classList.add('hidden');
-            document.getElementById('screen-master').classList.remove('hidden');
-            loadAllEvents();
-        } else {
-            alert("Acceso denegado.");
-        }
+        // La autenticación ya se manejó en promptForAdmin
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-master').classList.remove('hidden');
+        loadAllEvents();
     };
 
     window.exitMasterPanel = () => {
@@ -529,19 +583,17 @@
 
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
-        listDiv.innerHTML = "<p style='text-align:center; opacity:0.5'>Cargando...</p>";
+        listDiv.innerHTML = '<div class="spinner"></div>'; // SPINNER
         
         try {
             const snap = await getDocs(collection(db, "events"));
             listDiv.innerHTML = "";
-            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#6b7280; margin-top:20px;'>No hay eventos.</p>"; return; }
+            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; return; }
 
             snap.forEach(docSnap => {
                 const data = docSnap.data();
                 const id = docSnap.id;
                 let parts = (data.date || "2025-01-01").split('-');
-                
-                // --- CAMBIO: Convertir mes numérico a Texto ---
                 let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
 
                 const div = document.createElement('div');
@@ -564,7 +616,7 @@
                         <button class="btn-icon-action" onclick="window.location.href='?id=${id}'" title="Ir al evento">
                             <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                         </button>
-                        <button class="btn-icon-action btn-icon-danger" onclick="deleteGlobalEvent('${id}')" title="Borrar">
+                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))" title="Borrar">
                             <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                         </button>
                     </div>
@@ -583,8 +635,9 @@
             partsSnap.forEach(d => batch.delete(d.ref));
             await batch.commit();
             await deleteDoc(doc(db, "events", id));
+            showToast("Evento eliminado");
             loadAllEvents();
-        } catch(e) { alert("Error al borrar"); }
+        } catch(e) { showToast("Error al borrar"); }
     }
 
     // --- ADMIN (CREACIÓN) ---
@@ -621,8 +674,6 @@
         participantsList.forEach((p, index) => {
             const div = document.createElement('div');
             div.className = 'name-card-admin';
-            
-            // Etiqueta visual si es niño
             const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
 
             div.innerHTML = `
@@ -644,12 +695,13 @@
         const giftType = document.getElementById('setup-gift-type').value; 
         const names = [...participantsList];
 
-        if(names.length < 2) return alert("Mínimo 2 personas");
-        if(!title || !day || !month) return alert("Completa los datos");
+        if(names.length < 2) return showToast("Mínimo 2 personas");
+        if(!title || !day || !month) return showToast("Completa los datos");
 
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
         const btn = document.getElementById('btn-create-event');
-        btn.disabled = true; btn.innerText = "Creando...";
+        const originalText = btn.innerText;
+        btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0;"></div>';
 
         try {
             const eventRef = await addDoc(collection(db, "events"), { 
@@ -666,7 +718,7 @@
             let refs = [];
             for(let p of shuffled) refs.push({ 
                 name: p.name, 
-                isChild: p.isChild, // Pasamos el flag
+                isChild: p.isChild,
                 ref: doc(collection(db, `events/${eventRef.id}/participants`)) 
             });
 
@@ -676,7 +728,7 @@
                 batch.set(curr.ref, {
                     name: curr.name, 
                     isChild: curr.isChild || false,
-                    managedBy: null, // Para vincularlo despues
+                    managedBy: null,
                     targetId: next.ref.id, 
                     targetName: next.name,
                     wish1: "", wish2: "", wish3: "", extra: "", 
@@ -690,15 +742,15 @@
             document.getElementById('screen-admin').classList.add('hidden');
             document.getElementById('screen-share').classList.remove('hidden');
             document.getElementById('share-link-text').innerText = link;
-        } catch(e) { console.error(e); btn.disabled = false; alert("Error"); }
+        } catch(e) { console.error(e); btn.disabled = false; btn.innerText = originalText; showToast("Error al crear"); }
     });
 
-    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>alert("Copiado")); };
+    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
     window.goToEvent = () => { window.location.href = "?id=" + eventId; };
 
     // --- DELETE SINGLE EVENT ---
     window.deleteEvent = async () => {
-        if(prompt("Contraseña Maestra:") !== MASTER_KEY) return alert("Incorrecto");
+        // Auth handled by promptForAdmin wrapper
         if(!confirm("¿Borrar este evento?")) return;
         try {
             const partsRef = collection(db, `events/${eventId}/participants`);
@@ -707,14 +759,15 @@
             snapshot.forEach(doc => batch.delete(doc.ref));
             await batch.commit();
             await deleteDoc(doc(db, "events", eventId));
-            alert("Eliminado"); window.location.href = window.location.pathname; 
-        } catch(e) { console.error(e); alert("Error"); }
+            showToast("Evento eliminado"); 
+            setTimeout(() => window.location.href = window.location.pathname, 1500);
+        } catch(e) { console.error(e); showToast("Error al eliminar"); }
     };
 
     // --- CARGAR EVENTO ---
     async function loadEventData(id) {
         const snap = await getDoc(doc(db, "events", id));
-        if(!snap.exists()) return alert("Evento no existe");
+        if(!snap.exists()) return showToast("Evento no encontrado");
         
         const data = snap.data();
         currentGiftLabel = data.giftType || ""; 
@@ -722,7 +775,6 @@
         const parts = data.date.split('-');
         document.getElementById('event-title-display').innerText = data.title;
         
-        // --- CAMBIO: Convertir mes numérico a Texto ---
         let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
 
         document.getElementById('event-date-display').innerHTML = `
@@ -744,13 +796,10 @@
 
             qs.forEach(d => {
                 const p = d.data();
-                
-                // --- CAMBIO: OCULTAR NIÑOS EN LISTA LOGIN ---
                 if (p.isChild) return; 
 
                 const div = document.createElement('div');
                 div.className = 'name-card-user'; 
-                // Ya no necesitamos icono de niño aquí porque no se muestran
                 div.innerText = p.name;
                 div.onclick = () => prepareAuth(d.id, p);
                 list.appendChild(div);
@@ -773,13 +822,10 @@
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
         if(!data.password) {
-            // REGISTRO
             document.getElementById('form-register').classList.remove('hidden');
-
-            // BUSCAR NIÑOS DISPONIBLES (Orphans)
             const listDiv = document.getElementById('children-list-check');
             const section = document.getElementById('claim-children-section');
-            listDiv.innerHTML = "Cargando...";
+            listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
 
             const q = await getDocs(collection(db, `events/${eventId}/participants`));
             listDiv.innerHTML = "";
@@ -787,7 +833,6 @@
 
             q.forEach(docSnap => {
                 const kid = docSnap.data();
-                // Mostrar si es niño, no soy yo, no tiene dueño y no tiene pass
                 if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
                     foundChild = true;
                     const div = document.createElement('div');
@@ -800,10 +845,9 @@
                 }
             });
 
-            if(foundChild && !data.isChild) section.classList.remove('hidden'); // Solo mostrar a adultos
+            if(foundChild && !data.isChild) section.classList.remove('hidden'); 
             
         } else {
-            // LOGIN
             document.getElementById('form-login').classList.remove('hidden');
             document.getElementById('admin-override-box').classList.remove('hidden');
         }
@@ -815,25 +859,16 @@
         const pass = document.getElementById('reg-pass').value;
         const secret = document.getElementById('reg-secret').value;
         
-        if(!pass || !secret) return alert("Por favor llena ambos campos.");
-
-        // --- VALIDACIÓN NUEVA PARA PIN ---
-        // Verificamos que sean solo números y exactamente 6 dígitos
-        if(secret.length !== 6 || isNaN(secret)) {
-            return alert("El PIN debe ser de exactamente 6 dígitos numéricos.");
-        }
+        if(!pass || !secret) return showToast("Por favor llena ambos campos.");
+        if(secret.length !== 6 || isNaN(secret)) return showToast("El PIN debe ser de 6 dígitos.");
         
-        // Obtener niños seleccionados
         const checkboxes = document.querySelectorAll('.child-claim-checkbox:checked');
         const childrenIds = Array.from(checkboxes).map(c => c.value);
 
         const batch = writeBatch(db);
-
-        // Update Yo
         const myRef = doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`);
         batch.update(myRef, { password: pass, secretKey: secret });
 
-        // Update Hijos (Asignar managedBy)
         childrenIds.forEach(kidId => {
             const kidRef = doc(db, `events/${eventId}/participants/${kidId}`);
             batch.update(kidRef, { managedBy: selectedUserDoc.id });
@@ -841,8 +876,6 @@
 
         await batch.commit();
         window.closeModal();
-        
-        // Entrar
         enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
     };
 
@@ -850,7 +883,7 @@
         if(document.getElementById('login-pass').value === selectedUserDoc.data.password) {
             window.closeModal();
             enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } else alert("Error");
+        } else showToast("Contraseña incorrecta");
     };
 
     window.showReset = () => {
@@ -869,22 +902,22 @@
         const s = document.getElementById('reset-secret').value;
         const n = document.getElementById('reset-new-pass').value;
         
-        // Comparamos el PIN ingresado con el guardado (validamos trim por seguridad)
         if(s.trim() === selectedUserDoc.data.secretKey.trim()) {
             await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: n });
-            alert("Contraseña restablecida."); 
+            showToast("Contraseña restablecida"); 
             selectedUserDoc.data.password = n; 
             window.showLoginFromReset();
         } else {
-            alert("El PIN es incorrecto.");
+            showToast("PIN incorrecto");
         }
     };
 
     window.adminOverride = async () => {
-        if(prompt("Pass Admin:") === MASTER_KEY) {
-            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null });
-            alert("Reseteado"); selectedUserDoc.data.password = null; prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
-        } else alert("No");
+        // Auth handled by promptForAdmin wrapper
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null });
+        showToast("Cuenta reseteada"); 
+        selectedUserDoc.data.password = null; 
+        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
     function makeLinksClickable(text) {
@@ -899,11 +932,9 @@
         document.getElementById('screen-login').classList.add('hidden');
         document.getElementById('screen-dashboard').classList.remove('hidden');
 
-        // Construir lista de perfiles disponibles (Yo + Hijos)
         linkedProfiles = [];
-        linkedProfiles.push({ id: uid, ...userData }); // Index 0 siempre soy yo
+        linkedProfiles.push({ id: uid, ...userData });
 
-        // Buscar si gestiono niños
         const q = await getDocs(collection(db, `events/${eventId}/participants`));
         q.forEach(docSnap => {
             const d = docSnap.data();
@@ -912,7 +943,6 @@
             }
         });
 
-        // Configurar Selector
         const switcher = document.getElementById('profile-switcher');
         const select = document.getElementById('select-active-profile');
         
@@ -929,21 +959,18 @@
             switcher.classList.add('hidden');
         }
 
-        // Cargar perfil principal
         loadProfileIndex(0);
     }
 
-    // Función global para cambiar vista
     window.switchProfileView = (idx) => {
         loadProfileIndex(parseInt(idx));
     }
 
     function loadProfileIndex(index) {
         const profile = linkedProfiles[index];
-        currentUserId = profile.id; // IMPORTANTE: Actualizar el ID global para guardar
+        currentUserId = profile.id;
         currentTargetId = profile.targetId;
 
-        // Mostrar label extra si aplica
         const extraContainer = document.getElementById('input-container-extra');
         if(currentGiftLabel && currentGiftLabel.trim() !== "") {
             extraContainer.classList.remove('hidden');
@@ -953,17 +980,14 @@
             extraContainer.classList.add('hidden');
         }
 
-        // Cargar MIS datos (inputs)
         document.getElementById('my-wish-1').value = profile.wish1 || "";
         document.getElementById('my-wish-2').value = profile.wish2 || "";
         document.getElementById('my-wish-3').value = profile.wish3 || "";
         if(document.getElementById('my-extra')) document.getElementById('my-extra').value = profile.extra || "";
 
-        // UI: Nombre de la VÍCTIMA
         document.getElementById('target-name').innerText = profile.targetName;
+        document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
 
-        // Cargar deseos de la VÍCTIMA
-        // Usamos getDoc simple para evitar conflictos de listeners al cambiar rápido
         getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
             if(d.exists()) {
                 const data = d.data();
@@ -996,15 +1020,15 @@
         }
 
         const btn = document.getElementById('btn-save-wishes');
-        btn.innerText = "Guardando..."; btn.disabled = true;
+        const originalText = btn.innerText;
+        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; 
+        btn.disabled = true;
 
         try {
-            // Guardamos en el perfil que esté ACTIVO (currentUserId)
             await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { 
                 wish1: w1, wish2: w2, wish3: w3, extra: extra 
             });
             
-            // Actualizar el array local para que si cambio de perfil y vuelvo, esté actualizado
             const activeProfileIndex = linkedProfiles.findIndex(p => p.id === currentUserId);
             if(activeProfileIndex !== -1) {
                 linkedProfiles[activeProfileIndex].wish1 = w1;
@@ -1014,8 +1038,9 @@
             }
 
             btn.innerText = "¡Guardado!";
+            showToast("Preferencias guardadas");
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
-        } catch(e) { console.error(e); btn.disabled = false; }
+        } catch(e) { console.error(e); btn.innerText = originalText; btn.disabled = false; showToast("Error al guardar"); }
     });
 </script>
 
