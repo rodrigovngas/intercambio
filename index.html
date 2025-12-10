@@ -215,10 +215,30 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
-        .link-box { background: #f9fafb; padding: 20px; border-radius: 12px; word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); user-select: all !important; -webkit-user-select: all !important; }
-        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: inline-block; max-width: 100%; }
-        .wishes-list li { margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); }
-        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
+        .link-box { 
+            background: #f9fafb; padding: 20px; border-radius: 12px; 
+            word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); 
+            font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); 
+            user-select: all !important; -webkit-user-select: all !important; 
+        }
+        
+        /* CORRECCION AQUI: Forzar display block y ruptura de palabras */
+        .wishes-list { 
+            margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; 
+            text-align: left; display: block; width: 100%;
+        }
+        .wishes-list li { 
+            margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); 
+            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
+        }
+        .wishes-list a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
+        
+        /* CORRECCION AQUI TAMBIEN */
+        .info-extra-link { 
+            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
+            display: block; width: 100%;
+        }
+        .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
 
         #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
 
@@ -393,7 +413,7 @@
                 <ul id="target-wishes-list" class="wishes-list">
                     <li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white;"></div></li>
                 </ul>
-                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
+                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em;"></div>
             </div>
         </div>
 
