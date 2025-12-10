@@ -285,7 +285,7 @@
         <h2>Configurar Evento</h2>
         
         <label>Título del Evento</label>
-        <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad">
+        <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad" autocapitalize="sentences">
         
         <label>Fecha</label>
         <div class="date-picker-row">
@@ -313,14 +313,14 @@
             </div>
             <div style="flex:1">
                 <label>¿Qué se regala?</label>
-                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas">
+                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas" autocapitalize="sentences">
             </div>
         </div>
         
         <label>Participantes</label>
         <div class="add-row">
             <div style="flex:1">
-                <input type="text" id="input-new-name" placeholder="Nombre...">
+                <input type="text" id="input-new-name" placeholder="Nombre..." autocapitalize="sentences">
                 <div style="margin-top:8px; display:flex; align-items:center;">
                     <input type="checkbox" id="check-is-child">
                     <label for="check-is-child" style="margin:0; font-size:0.8em; font-weight:500; cursor:pointer; text-transform:none;">Es menor (Sin celular)</label>
@@ -402,15 +402,15 @@
             <p style="font-size:0.9em; margin-bottom:25px; opacity:0.8;">Ayuda a tu amigo secreto:</p>
             
             <label>Opción 1</label>
-            <input type="text" id="my-wish-1" placeholder="Ej. Libro de terror">
+            <input type="text" id="my-wish-1" placeholder="Ej. Libro de terror" autocapitalize="sentences">
             <label>Opción 2</label>
-            <input type="text" id="my-wish-2" placeholder="Ej. Taza de Batman">
+            <input type="text" id="my-wish-2" placeholder="Ej. Taza de Batman" autocapitalize="sentences">
             <label>Opción 3</label>
-            <input type="text" id="my-wish-3" placeholder="Ej. Calcetas (Link)">
+            <input type="text" id="my-wish-3" placeholder="Ej. Calcetas (Link)" autocapitalize="sentences">
 
             <div id="input-container-extra" class="hidden">
                 <label id="label-extra">Info Extra</label>
-                <input type="text" id="my-extra" placeholder="Escribe aquí...">
+                <input type="text" id="my-extra" placeholder="Escribe aquí..." autocapitalize="sentences">
             </div>
             
             <button class="btn-accent" type="button" id="btn-save-wishes">Guardar Preferencias</button>
@@ -430,10 +430,10 @@
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Protege tu resultado</p>
 
         <div id="form-register" class="hidden">
-            <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña">
+            <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña" autocapitalize="on">
             
             <label>PIN de recuperación (6 dígitos)</label> 
-            <input type="tel" id="reg-secret" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
+            <input type="tel" id="reg-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
             
             <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
                 <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
@@ -445,16 +445,16 @@
         </div>
 
         <div id="form-login" class="hidden">
-            <label>Ingresa contraseña</label> <input type="password" id="login-pass" placeholder="Tu contraseña">
+            <label>Ingresa contraseña</label> <input type="password" id="login-pass" placeholder="Tu contraseña" autocapitalize="on">
             <button class="btn-accent" onclick="doLogin()">Entrar</button>
             <button class="btn-text" onclick="showReset()">Olvidé contraseña</button>
         </div>
 
         <div id="form-reset" class="hidden">
             <label>Ingresa tu PIN de 6 dígitos</label> 
-            <input type="tel" id="reset-secret" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
+            <input type="tel" id="reset-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
 
-            <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass">
+            <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass" autocapitalize="on">
             <button class="btn-accent" onclick="doReset()">Restablecer</button>
             <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
         </div>
