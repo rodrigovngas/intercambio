@@ -117,7 +117,13 @@
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-        .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; height: 52px; background: linear-gradient(135deg, #374151 0%, #111827 100%); } 
+        
+        /* AQUI ESTA EL CAMBIO SOLICITADO (color: white;) */
+        .btn-add-small { 
+            width: auto; margin-top: 0; padding: 0 16px; height: 52px; 
+            background: linear-gradient(135deg, #374151 0%, #111827 100%); 
+            color: white; 
+        } 
         
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .name-card-admin {
@@ -269,7 +275,6 @@
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             Crear Nuevo Sorteo
         </button>
-        <p style="font-size:0.85rem; margin-top:20px; opacity:0.6;">Si recibiste un link, ábrelo directamente.</p>
     </div>
 
     <div id="screen-master" class="hidden screen-content">
@@ -320,7 +325,7 @@
                 <input type="text" id="input-new-name" placeholder="Nombre..." autocapitalize="sentences">
                 <div style="margin-top:8px; display:flex; align-items:center;">
                     <input type="checkbox" id="check-is-child">
-                    <label for="check-is-child" style="margin:0; font-size:0.8em; font-weight:500; cursor:pointer; text-transform:none;">Es menor (Sin celular)</label>
+                    <label for="check-is-child" style="margin:0; font-size:0.8em; font-weight:500; cursor:pointer; text-transform:none;">Dependiente</label>
                 </div>
             </div>
             <button class="btn-add-small" id="btn-add-name">
