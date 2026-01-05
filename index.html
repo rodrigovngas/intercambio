@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>Intercambio</title>
+    <title>Intercambio - PIN Unificado</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -127,6 +127,7 @@
             background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
             display: flex; justify-content: space-between; align-items: center; font-weight: 500;
         }
+        .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
 
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
         .name-card-user { 
@@ -140,24 +141,10 @@
             background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
         }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
-        }
-        @media (min-width: 501px) { .modal-overlay { align-items: center; } }
-        .modal-content {
-            background: white; padding: 35px 30px; 
-            border-top-left-radius: 24px; border-top-right-radius: 24px; 
-            width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
-        }
-        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; } }
-
         .info-card { 
             background: linear-gradient(135deg, #374151 0%, #111827 100%); 
             color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center;
-            position: relative; overflow: hidden;
+            text-align: center; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
         }
         
         #reveal-overlay {
@@ -168,31 +155,31 @@
         }
         #reveal-overlay.faded { opacity: 0; pointer-events: none; }
         
-        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid #e5e7eb; }
-        
-        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; }
-        .wishes-list li { margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
+        }
+        @media (min-width: 501px) { .modal-overlay { align-items: center; } }
+        .modal-content {
+            background: white; padding: 35px 30px; border-top-left-radius: 24px; border-top-right-radius: 24px; 
+            width: 100%; max-width: 500px; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; } }
 
-        #toast-container {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 2000; display: flex; flex-direction: column; gap: 10px;
-            pointer-events: none; width: 90%; max-width: 400px;
-        }
-        .toast {
-            background: rgba(31, 41, 55, 0.95); color: white; padding: 12px 20px;
-            border-radius: 50px; font-size: 0.9rem; font-weight: 500;
-            opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .toast.show { opacity: 1; transform: translateY(0); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .hidden { display: none !important; }
 
         .spinner {
             width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
             border-radius: 50%; border-top-color: var(--primary);
-            animation: spin 0.8s linear infinite; margin: 20px auto;
+            animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .hidden { display: none !important; }
+        
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; width: 90%; max-width: 400px; pointer-events: none; }
+        .toast { background: rgba(31, 41, 55, 0.95); color: white; padding: 12px 20px; border-radius: 50px; opacity: 0; transition: all 0.3s; text-align: center; margin-bottom: 10px; }
+        .toast.show { opacity: 1; transform: translateY(10px); }
     </style>
 </head>
 <body>
@@ -211,84 +198,74 @@
 
     <div id="screen-admin" class="hidden screen-content">
         <h2>Configurar Evento</h2>
-        <input type="text" id="setup-title" placeholder="Título del Evento">
-        <div style="display:flex; gap:10px; margin-top:15px;">
-            <select id="setup-day"></select>
-            <select id="setup-month">
-                <option value="01">Ene</option><option value="12">Dic</option>
-            </select>
+        <label>Título del Evento</label>
+        <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad">
+        <label>Fecha</label>
+        <div style="display:flex; gap:10px;">
+            <select id="setup-day"><option value="" disabled selected>Día</option></select>
+            <select id="setup-month"><option value="" disabled selected>Mes</option><option value="12">Dic</option></select>
         </div>
-        <input type="text" id="input-new-name" placeholder="Nombre del participante" style="margin-top:15px;">
-        <div style="margin-top:8px; display:flex; align-items:center;">
-            <input type="checkbox" id="check-is-child"> <label for="check-is-child">Dependiente</label>
+        <label>Participantes</label>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <input type="text" id="input-new-name" placeholder="Nombre...">
+            <button class="btn-accent" id="btn-add-name" style="width:auto; margin-top:0;">+</button>
         </div>
-        <button class="btn-secondary" id="btn-add-name">Añadir Nombre</button>
         <div id="participants-container" class="participants-container"></div>
         <button class="btn-accent" id="btn-create-event">Generar Sorteo</button>
     </div>
 
     <div id="screen-login" class="hidden screen-content">
-        <h2 id="event-title-display">Cargando...</h2>
-        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
-            <span class="pill" id="event-date-display"></span>
-            <span class="pill" id="event-budget-display"></span>
-        </div>
-        <p>¿Quién eres?</p>
+        <h2 id="event-title-display">...</h2>
+        <p>¿Quién eres? Selecciona tu nombre:</p>
         <div id="names-list" class="name-grid"></div>
     </div>
 
-    <div id="screen-dashboard" class="hidden">
-        <h3 style="margin-top:20px;">Tu Resultado</h3>
+    <div id="screen-dashboard" class="hidden screen-content">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>Tu Resultado</h3>
+            <small onclick="location.reload()" style="cursor:pointer; color:var(--text-sec);">SALIR</small>
+        </div>
         <div class="info-card">
             <div id="reveal-overlay" onclick="revealName()">
                 <span style="color:white; font-weight:700;">TOCA PARA REVELAR</span>
             </div>
-            <small style="opacity:0.7">Te tocó regalar a</small>
-            <h1 id="target-name" style="color:white; margin:15px 0;">...</h1>
-            <ul id="target-wishes-list" class="wishes-list"></ul>
+            <small style="opacity:0.7;">Te tocó regalar a:</small>
+            <h1 id="target-name" style="color:white;">...</h1>
         </div>
-        <label>Tus deseos</label>
-        <input type="text" id="my-wish-1" placeholder="Opción 1">
-        <button class="btn-accent" id="btn-save-wishes">Guardar</button>
-        <button id="btn-activate-biometrics" class="btn-secondary" style="display:none; margin-top:15px; border-style:dashed;">
-            Activar Huella / FaceID
-        </button>
-        <button class="btn-text" onclick="location.reload()" style="width:100%">Cerrar Sesión</button>
+        <label>Tus deseos (opcional)</label>
+        <input type="text" id="my-wish-1" placeholder="Opción 1" style="margin-bottom:10px;">
+        <input type="text" id="my-wish-2" placeholder="Opción 2">
+        <button class="btn-accent" id="btn-save-wishes">Guardar Deseos</button>
     </div>
+
+    <footer style="margin-top:auto; padding:20px; text-align:center; font-size:0.7rem; color:#d1d5db;">Development by VNGAS</footer>
 </div>
 
 <div id="auth-modal" class="modal-overlay hidden">
     <div class="modal-content">
-        <h2 id="modal-title">Seguridad</h2>
-        <div id="form-register" class="hidden">
-            <input type="password" id="reg-pass" placeholder="Crea una contraseña">
-            <input type="tel" id="reg-secret" class="pin-input" placeholder="PIN de 6 dígitos" maxlength="6">
-            <button class="btn-accent" onclick="doRegister()">Registrar</button>
-        </div>
-        <div id="form-login" class="hidden">
-            <input type="password" id="login-pass" placeholder="Tu contraseña">
-            <button class="btn-accent" onclick="doLogin()">Entrar</button>
-            <div id="biometric-login-zone" class="hidden">
-                <p style="margin:10px 0; font-size:0.8rem;">O usa biometría</p>
-                <button class="btn-secondary" onclick="loginWithBiometrics()">Usar Huella / Rostro</button>
-            </div>
-        </div>
-        <button class="btn-text" onclick="closeModal()">Cancelar</button>
-    </div>
-</div>
+        <h2 id="modal-title">Hola</h2>
+        <p id="modal-desc">Ingresa tu PIN</p>
 
-<div id="admin-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px;">
-        <h3>Admin</h3>
-        <input type="password" id="admin-input-pass" placeholder="Password maestro">
-        <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
-        <button class="btn-text" onclick="closeAdminModal()">Cerrar</button>
+        <div id="form-register" class="hidden">
+            <label>Crea un PIN de 6 dígitos</label> 
+            <input type="tel" id="reg-secret" placeholder="123456" maxlength="6" style="text-align:center; letter-spacing:5px; font-weight:bold;">
+            <div id="claim-children-section" class="hidden"></div>
+            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+        </div>
+
+        <div id="form-login" class="hidden">
+            <label>Ingresa tu PIN</label> 
+            <input type="tel" id="login-pass" placeholder="******" maxlength="6" style="text-align:center; letter-spacing:5px; font-weight:bold;">
+            <button class="btn-accent" onclick="doLogin()">Entrar</button>
+        </div>
+        
+        <button class="btn-text" onclick="closeModal()">Cerrar</button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAsVkuWgNhpC5cIyRem9ArT8QBNpWtSCX0",
@@ -301,56 +278,12 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const MASTER_KEY = "admin123";
-
+    
     let eventId = new URLSearchParams(window.location.search).get('id');
     let participantsList = [];
     let selectedUserDoc = null;
-    let currentUserId = null;
 
-    // --- MEJORAS: BIOMETRÍA Y HÁPTICOS ---
-    const checkBioSupport = async () => {
-        return window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-    };
-
-    window.registerBiometrics = async () => {
-        try {
-            const challenge = crypto.getRandomValues(new Uint8Array(32));
-            const userId = Uint8Array.from(currentUserId, c => c.charCodeAt(0));
-            const publicKey = {
-                challenge,
-                rp: { name: "Intercambio" },
-                user: { id: userId, name: selectedUserDoc.data.name, displayName: selectedUserDoc.data.name },
-                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
-                authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
-            };
-            await navigator.credentials.create({ publicKey });
-            localStorage.setItem(`bio_${eventId}_${currentUserId}`, "active");
-            showToast("¡Huella vinculada!");
-            document.getElementById('btn-activate-biometrics').style.display = 'none';
-        } catch (e) { showToast("Error al vincular"); }
-    };
-
-    window.loginWithBiometrics = async () => {
-        try {
-            const publicKey = { challenge: crypto.getRandomValues(new Uint8Array(32)), userVerification: "required" };
-            await navigator.credentials.get({ publicKey });
-            if (navigator.vibrate) navigator.vibrate(20);
-            window.closeModal();
-            enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } catch (e) { showToast("Fallo biométrico"); }
-    };
-
-    // --- CORE LOGIC ---
-    window.showToast = (msg) => {
-        const container = document.getElementById('toast-container');
-        const el = document.createElement('div');
-        el.className = 'toast'; el.innerText = msg;
-        container.appendChild(el);
-        setTimeout(() => el.classList.add('show'), 10);
-        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3000);
-    };
-
+    // --- SEGURIDAD ---
     async function hashString(str) {
         const encoder = new TextEncoder();
         const data = encoder.encode(str);
@@ -358,38 +291,87 @@
         return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    window.revealName = () => {
-        if (navigator.vibrate) navigator.vibrate([40, 30, 80]); // Háptico premium
+    const isValidPIN = (pin) => /^\d{6}$/.test(pin);
+
+    window.showToast = (msg) => {
+        const c = document.getElementById('toast-container');
+        const t = document.createElement('div'); t.className = 'toast show'; t.innerText = msg;
+        c.appendChild(t); setTimeout(() => { t.classList.remove('show'); setTimeout(()=>t.remove(), 300); }, 3000);
+    };
+
+    // --- LÓGICA AUTH UNIFICADA ---
+    window.prepareAuth = async (id, data) => {
+        selectedUserDoc = { id, data };
+        document.getElementById('auth-modal').classList.remove('hidden');
+        document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
+        
+        document.getElementById('form-register').classList.add('hidden');
+        document.getElementById('form-login').classList.add('hidden');
+
+        if(!data.password) {
+            document.getElementById('modal-desc').innerText = "Define un PIN numérico para proteger tu resultado.";
+            document.getElementById('form-register').classList.remove('hidden');
+        } else {
+            document.getElementById('modal-desc').innerText = "Ingresa tu PIN de 6 dígitos.";
+            document.getElementById('form-login').classList.remove('hidden');
+        }
+    };
+
+    window.doRegister = async () => {
+        const pin = document.getElementById('reg-secret').value;
+        if(!isValidPIN(pin)) return showToast("El PIN debe ser de 6 números");
+        const h = await hashString(pin);
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: h, secretKey: h });
+        window.closeModal();
+        enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data, password: h });
+    };
+
+    window.doLogin = async () => {
+        const pin = document.getElementById('login-pass').value;
+        const h = await hashString(pin);
+        if(h === selectedUserDoc.data.password) {
+            window.closeModal();
+            enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+        } else showToast("PIN incorrecto");
+    };
+
+    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
+
+    // --- DASHBOARD ---
+    function enterDashboard(uid, userData) {
+        document.getElementById('screen-login').classList.add('hidden');
+        document.getElementById('screen-dashboard').classList.remove('hidden');
+        document.getElementById('target-name').innerText = userData.targetName;
+        if(userData.revealed) document.getElementById('reveal-overlay').classList.add('faded');
+    }
+
+    window.revealName = async () => {
         document.getElementById('reveal-overlay').classList.add('faded');
-        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { revealed: true });
     };
 
+    // --- INICIO ---
     window.onload = () => {
-        const dSel = document.getElementById('setup-day');
-        for(let i=1; i<=31; i++) dSel.innerHTML += `<option value="${i<10?'0'+i:i}">${i<10?'0'+i:i}</option>`;
-        if (eventId) loadEventData(eventId);
+        if(eventId) loadEvent(eventId);
         else document.getElementById('screen-home').classList.remove('hidden');
+        
+        // Poblar días
+        const s = document.getElementById('setup-day');
+        for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i}">${i}</option>`;
     };
 
-    async function loadEventData(id) {
+    async function loadEvent(id) {
         const snap = await getDoc(doc(db, "events", id));
         if(!snap.exists()) return;
-        const data = snap.data();
-        document.getElementById('event-title-display').innerText = data.title;
-        document.getElementById('event-date-display').innerText = data.date;
-        document.getElementById('event-budget-display').innerText = data.budget;
+        document.getElementById('event-title-display').innerText = snap.data().title;
+        document.getElementById('screen-login').classList.remove('hidden');
         
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
-            const list = document.getElementById('names-list');
-            if(!document.getElementById('screen-dashboard').classList.contains('hidden')) return;
-            list.innerHTML = "";
-            document.getElementById('screen-home').classList.add('hidden');
-            document.getElementById('screen-login').classList.remove('hidden');
+            const list = document.getElementById('names-list'); list.innerHTML = "";
             qs.forEach(d => {
-                const p = d.data(); if(p.isChild) return;
-                const div = document.createElement('div');
-                div.className = 'name-card-user';
+                const p = d.data();
+                const div = document.createElement('div'); div.className = 'name-card-user';
                 div.innerText = p.name;
                 if(p.seen) div.innerHTML += '<div class="seen-badge"></div>';
                 div.onclick = () => prepareAuth(d.id, p);
@@ -398,88 +380,36 @@
         });
     }
 
-    window.prepareAuth = async (id, data) => {
-        selectedUserDoc = { id, data };
-        document.getElementById('modal-title').innerText = "Hola, " + data.name;
-        document.getElementById('auth-modal').classList.remove('hidden');
-        document.getElementById('form-register').classList.add('hidden');
-        document.getElementById('form-login').classList.add('hidden');
-        
-        const bioZone = document.getElementById('biometric-login-zone');
-        if (await checkBioSupport() && localStorage.getItem(`bio_${eventId}_${id}`)) bioZone.classList.remove('hidden');
-        else bioZone.classList.add('hidden');
-
-        if(!data.password) document.getElementById('form-register').classList.remove('hidden');
-        else document.getElementById('form-login').classList.remove('hidden');
+    window.showAdminSetup = () => {
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-admin').classList.remove('hidden');
     };
 
-    window.doRegister = async () => {
-        const p = document.getElementById('reg-pass').value;
-        const s = document.getElementById('reg-secret').value;
-        if(p.length < 4 || s.length !== 6) return showToast("Datos inválidos");
-        const hp = await hashString(p); const hs = await hashString(s);
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hp, secretKey: hs });
-        selectedUserDoc.data.password = hp;
-        window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-    };
-
-    window.doLogin = async () => {
-        const hp = await hashString(document.getElementById('login-pass').value);
-        if(hp === selectedUserDoc.data.password) {
-            window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } else showToast("Password incorrecto");
-    };
-
-    window.enterDashboard = async (uid, userData) => {
-        currentUserId = uid;
-        document.getElementById('screen-login').classList.add('hidden');
-        document.getElementById('screen-dashboard').classList.remove('hidden');
-        if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
-        
-        const btnBio = document.getElementById('btn-activate-biometrics');
-        if (await checkBioSupport() && !localStorage.getItem(`bio_${eventId}_${uid}`)) {
-            btnBio.style.display = 'block'; btnBio.onclick = window.registerBiometrics;
-        }
-
-        document.getElementById('target-name').innerText = userData.targetName;
-        document.getElementById('my-wish-1').value = userData.wish1 || "";
-        if(userData.revealed) document.getElementById('reveal-overlay').classList.add('faded');
-        
-        const tDoc = await getDoc(doc(db, `events/${eventId}/participants/${userData.targetId}`));
-        const tData = tDoc.data();
-        document.getElementById('target-wishes-list').innerHTML = tData.wish1 ? `<li>${tData.wish1}</li>` : "<li>Sin deseos aún</li>";
-    };
-
-    document.getElementById('btn-save-wishes').onclick = async () => {
-        await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { wish1: document.getElementById('my-wish-1').value });
-        showToast("¡Guardado!");
-    };
-
-    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
-    window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
-    
     document.getElementById('btn-add-name').onclick = () => {
         const n = document.getElementById('input-new-name').value;
         if(!n) return;
-        participantsList.push({ name: n, isChild: document.getElementById('check-is-child').checked });
+        participantsList.push({name: n});
+        document.getElementById('participants-container').innerHTML += `<div class="name-card-admin">${n}</div>`;
         document.getElementById('input-new-name').value = "";
-        const cont = document.getElementById('participants-container');
-        cont.innerHTML += `<div class="name-card-admin">${n}</div>`;
     };
 
     document.getElementById('btn-create-event').onclick = async () => {
-        const t = document.getElementById('setup-title').value;
-        if(participantsList.length < 2) return showToast("Mínimo 2");
-        const ref = await addDoc(collection(db, "events"), { title: t, date: "2025", budget: "Libre" });
-        let shuff = [...participantsList].sort(() => Math.random() - 0.5);
+        const title = document.getElementById('setup-title').value;
+        if(participantsList.length < 2) return showToast("Mínimo 2 personas");
+        
+        const eventRef = await addDoc(collection(db, "events"), { title, createdAt: serverTimestamp() });
         const batch = writeBatch(db);
-        let refs = shuff.map(p => ({...p, ref: doc(collection(db, `events/${ref.id}/participants`))}));
-        refs.forEach((r, i) => {
-            const next = refs[(i+1)%refs.length];
-            batch.set(r.ref, { name: r.name, isChild: r.isChild, targetId: next.ref.id, targetName: next.name, seen: false, revealed: false });
-        });
+        
+        // Sorteo simple
+        let shuffled = [...participantsList].sort(() => Math.random() - 0.5);
+        for(let i=0; i<shuffled.length; i++) {
+            const curr = shuffled[i];
+            const next = shuffled[(i + 1) % shuffled.length];
+            const pRef = doc(collection(db, `events/${eventRef.id}/participants`));
+            batch.set(pRef, { name: curr.name, targetName: next.name, seen: false, revealed: false, password: null });
+        }
         await batch.commit();
-        window.location.href = "?id=" + ref.id;
+        window.location.href = `?id=${eventRef.id}`;
     };
 </script>
 </body>
