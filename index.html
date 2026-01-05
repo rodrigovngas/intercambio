@@ -110,10 +110,8 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border-top: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
         
         .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
         .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
         .btn-danger-text { 
             background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
@@ -126,144 +124,44 @@
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-        .btn-add-small { 
-            width: auto; margin-top: 0; padding: 0 16px; height: 52px; 
-            background: linear-gradient(135deg, #374151 0%, #111827 100%); 
-            color: white; 
-        } 
+        .btn-add-small { width: auto; margin-top: 0; padding: 0 16px; height: 52px; background: linear-gradient(135deg, #374151 0%, #111827 100%); color: white; } 
         
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .name-card-admin {
-            background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
-            display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
-        }
+        .name-card-admin { background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem; }
         .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
         .btn-icon-delete { background: none; border: none; padding: 4px; color: #9ca3af; margin-top: 0; width: auto; cursor: pointer; transition: color 0.2s; }
-        .btn-icon-delete:hover { color: var(--danger); }
 
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
-        .name-card-user { 
-            background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; 
-            text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
-            box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
-        }
-        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
-        
-        .seen-badge {
-            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; 
-            background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
-        }
+        .name-card-user { background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; text-align: center; font-weight: 600; cursor: pointer; position: relative; box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary); }
+        .seen-badge { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white; }
 
-        #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .master-event-card {
-            background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
-        }
-        .master-event-card:hover { transform: translateX(2px); }
-        .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-        .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
-        .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
-        .master-actions { display: flex; gap: 10px; }
-        .btn-icon-action { 
-            padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; 
-            background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
-        }
-        .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
-        .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
-        .btn-icon-danger:hover { background: #fef2f2; border-color: var(--danger); }
-
-        .date-picker-row { display: flex; gap: 10px; }
-        .date-picker-row select { flex: 1; }
-        .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
-        }
-        @media (min-width: 501px) { .modal-overlay { align-items: center; } }
-        .modal-content {
-            background: white; padding: 35px 30px; 
-            border-top-left-radius: 24px; border-top-right-radius: 24px; 
-            width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
-        
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .hidden { display: none !important; }
-
-        .info-card { 
-            background: linear-gradient(135deg, #374151 0%, #111827 100%); 
-            color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center;
-            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
-        }
-        
-        #reveal-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 10; cursor: pointer; transition: opacity 0.6s ease;
-        }
+        .info-card { background: linear-gradient(135deg, #374151 0%, #111827 100%); color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
+        #reveal-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1f2937 0%, #000000 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10; cursor: pointer; transition: opacity 0.6s ease; }
         #reveal-overlay.faded { opacity: 0; pointer-events: none; }
         
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
-        
-        .link-box { 
-            background: #f9fafb; padding: 20px; border-radius: 12px; 
-            word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); 
-            font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); 
-            user-select: all !important; -webkit-user-select: all !important; 
-        }
-        
+        .link-box { background: #f9fafb; padding: 20px; border-radius: 12px; word-break: break-all; font-family: 'SF Mono', monospace; color: var(--text-main); font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); }
         .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; }
-        .wishes-list li { 
-            margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); 
-            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
-        }
-        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
-        .info-extra-link { overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal; display: block; width: 100%; }
+        .wishes-list li { margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); }
 
-        #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: flex-end; z-index: 1000; }
+        @media (min-width: 501px) { .modal-overlay { align-items: center; } }
+        .modal-content { background: white; padding: 35px 30px; border-top-left-radius: 24px; border-top-right-radius: 24px; width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto; box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; } }
+        
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .hidden { display: none !important; }
 
-        #toast-container {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 2000; display: flex; flex-direction: column; gap: 10px;
-            pointer-events: none; width: 90%; max-width: 400px;
-        }
-        .toast {
-            background: rgba(31, 41, 55, 0.95); color: white; padding: 12px 20px;
-            border-radius: 50px; font-size: 0.9rem; font-weight: 500;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); backdrop-filter: blur(4px);
-            opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; align-items: center; justify-content: center; text-align: center;
-        }
-        .toast.show { opacity: 1; transform: translateY(0); }
-
-        .spinner {
-            width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
-            border-radius: 50%; border-top-color: var(--primary);
-            animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
-        }
+        .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .spinner { width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1); border-radius: 50%; border-top-color: var(--primary); animation: spin 0.8s linear infinite; margin: 20px auto; display: block; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
+        #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; width: 90%; max-width: 400px; pointer-events: none; }
+        .toast { background: rgba(31, 41, 55, 0.95); color: white; padding: 12px 20px; border-radius: 50px; opacity: 0; transition: all 0.3s; text-align: center; margin-bottom: 10px; }
+        .toast.show { opacity: 1; transform: translateY(20px); }
     </style>
 </head>
 <body>
 
-<script>
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.onkeydown = function(e) {
-        if(e.keyCode == 123) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-    }
-</script>
 <div id="toast-container"></div>
 
 <div class="container">
@@ -273,32 +171,19 @@
         </button>
         <h1>Intercambio</h1>
         <p>Organiza intercambios de forma sencilla.</p>
-        <button class="btn-accent" onclick="showAdminSetup()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-            Crear Nuevo Sorteo
-        </button>
-    </div>
-
-    <div id="screen-master" class="hidden screen-content">
-        <h2>Panel Maestro</h2>
-        <p>Historial de todos los eventos.</p>
-        <div id="master-list-container"><div class="spinner"></div></div>
-        <button class="btn-secondary" onclick="exitMasterPanel()">← Volver al Inicio</button>
+        <button class="btn-accent" onclick="showAdminSetup()">Crear Nuevo Sorteo</button>
     </div>
 
     <div id="screen-admin" class="hidden screen-content">
         <h2>Configurar Evento</h2>
         <label>Título del Evento</label>
-        <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad" autocapitalize="sentences">
+        <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad">
         <label>Fecha</label>
         <div class="date-picker-row">
             <select id="setup-day"><option value="" disabled selected>Día</option></select>
             <select id="setup-month">
                 <option value="" disabled selected>Mes</option>
-                <option value="01">Ene</option><option value="02">Feb</option><option value="03">Mar</option>
-                <option value="04">Abr</option><option value="05">May</option><option value="06">Jun</option>
-                <option value="07">Jul</option><option value="08">Ago</option><option value="09">Sep</option>
-                <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dic</option>
+                <option value="01">Ene</option><option value="02">Feb</option><option value="12">Dic</option>
             </select>
         </div>
         <div style="display:flex; gap:10px;">
@@ -306,56 +191,37 @@
                 <label>Presupuesto</label>
                 <select id="setup-budget">
                     <option value="Libre">Libre</option>
-                    <option value="$100">$100</option><option value="$150">$150</option>
-                    <option value="$200">$200</option><option value="$250">$250</option>
-                    <option value="$300">$300</option><option value="$350">$350</option>
-                    <option value="$400">$400</option><option value="$450">$450</option>
-                    <option value="$500">$500</option>
+                    <option value="$100">$100</option><option value="$500">$500</option>
                 </select>
             </div>
             <div style="flex:1">
                 <label>¿Qué se regala?</label>
-                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas" autocapitalize="sentences">
+                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas">
             </div>
         </div>
         <label>Participantes</label>
         <div class="add-row">
             <div style="flex:1">
-                <input type="text" id="input-new-name" placeholder="Nombre..." autocapitalize="sentences">
+                <input type="text" id="input-new-name" placeholder="Nombre...">
                 <div style="margin-top:8px; display:flex; align-items:center;">
                     <input type="checkbox" id="check-is-child">
-                    <label for="check-is-child" style="margin:0; font-size:0.8em; font-weight:500; cursor:pointer; text-transform:none;">Dependiente</label>
+                    <label for="check-is-child" style="margin:0; text-transform:none; font-weight:500;">Dependiente</label>
                 </div>
             </div>
-            <button class="btn-add-small" id="btn-add-name">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
+            <button class="btn-add-small" id="btn-add-name">+</button>
         </div>
-        <div id="participants-container" class="participants-container">
-            <small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>
-        </div>
-        <div style="margin-top: 30px; margin-bottom: 20px;">
-            <button class="btn-accent" id="btn-create-event">Generar Sorteo</button>
-            <button class="btn-text" onclick="location.reload()">Cancelar</button>
-        </div>
+        <div id="participants-container" class="participants-container"></div>
+        <button class="btn-accent" id="btn-create-event" style="margin-top:30px;">Generar Sorteo</button>
     </div>
 
     <div id="screen-share" class="hidden screen-content">
         <div style="text-align:center;">
-            <svg class="icon icon-lg" style="color:var(--primary); margin: 0 auto 10px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
             <h2>¡Evento Creado!</h2>
-            <p>Comparte este enlace a los invitados:</p>
         </div>
-        <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
-        <button class="btn-accent" onclick="copyLink()">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar Enlace
-        </button>
-        <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
-        <button class="btn-danger-text" onclick="promptForAdmin(() => deleteEvent())" style="width:100%; margin-top:40px;">
-            <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Eliminar este evento (Admin)
-        </button>
+        <div class="link-box" id="share-link-text">...</div>
+        <button class="btn-accent" onclick="copyLink()">Copiar Enlace</button>
+        <button class="btn-secondary" onclick="location.reload()">Ir al inicio</button>
     </div>
 
     <div id="screen-login" class="hidden screen-content">
@@ -364,123 +230,52 @@
             <span class="pill" id="event-date-display"></span>
             <span class="pill" id="event-budget-display"></span>
         </div>
-        <p style="font-weight:600; font-size:1rem; color:var(--primary);">¿Quién eres?</p>
-        <div id="names-list" class="name-grid"><div class="spinner"></div></div>
+        <p>¿Quién eres? Selecciona tu nombre:</p>
+        <div id="names-list" class="name-grid"></div>
     </div>
 
-    <div id="screen-dashboard" class="hidden">
-        <div id="profile-switcher" class="hidden">
-            <label style="margin:0 0 5px 0; font-size:0.7em;">Viendo perfil de:</label>
-            <select id="select-active-profile" onchange="switchProfileView(this.value)" style="border:none; background:#f3f4f6; font-weight:700; color:var(--primary); padding:10px;"></select>
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:10px;">
-            <h3 style="margin:0; text-align:left;">Tu Resultado</h3>
-            <small style="color:var(--text-sec); cursor:pointer; font-size:0.8rem; font-weight:600; letter-spacing:0.05em;" onclick="location.reload()">SALIR</small>
+    <div id="screen-dashboard" class="hidden screen-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0;">Tu Resultado</h3>
+            <small onclick="location.reload()" style="cursor:pointer; font-weight:700;">SALIR</small>
         </div>
         <div class="info-card">
             <div id="reveal-overlay" onclick="revealName()">
-                <svg class="icon icon-lg" style="color:white; margin-bottom:10px; opacity:0.8;" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                <span style="color:white; font-weight:700; letter-spacing:1px; font-size:0.9rem;">TOCA PARA REVELAR</span>
+                <span style="color:white; font-weight:700;">TOCA PARA REVELAR</span>
             </div>
-            <small style="opacity: 0.7; text-transform: uppercase; font-weight:700; font-size:0.75rem; letter-spacing:1px;">Te tocó regalar a</small>
-            <h1 id="target-name" style="color:white; margin: 15px 0; font-size: 2.5rem; letter-spacing:-0.03em;">...</h1>
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15);">
-                <small style="font-weight:600; opacity:0.9;">Sus opciones:</small>
-                <ul id="target-wishes-list" class="wishes-list">
-                    <li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white;"></div></li>
-                </ul>
-                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
-            </div>
+            <small style="opacity: 0.7;">Te tocó regalar a</small>
+            <h1 id="target-name" style="color:white; margin: 15px 0;">...</h1>
         </div>
-        <div style="margin-top: 40px; padding-bottom: 20px;">
-            <h3>Llena el Perfil</h3>
-            <p style="font-size:0.9em; margin-bottom:25px; opacity:0.8;">Ayuda a tu amigo secreto:</p>
-            <label>Opción 1</label> <input type="text" id="my-wish-1" placeholder="Ej. Libro de terror" autocapitalize="sentences">
-            <label>Opción 2</label> <input type="text" id="my-wish-2" placeholder="Ej. Taza de Batman" autocapitalize="sentences">
-            <label>Opción 3</label> <input type="text" id="my-wish-3" placeholder="Ej. Calcetas (Link)" autocapitalize="sentences">
-            <div id="input-container-extra" class="hidden">
-                <label id="label-extra">Info Extra</label> <input type="text" id="my-extra" placeholder="Escribe aquí..." autocapitalize="sentences">
-            </div>
-            <button class="btn-accent" type="button" id="btn-save-wishes">Guardar Preferencias</button>
-        </div>
+        <h3>Tus Opciones</h3>
+        <input type="text" id="my-wish-1" placeholder="Opción 1" style="margin-bottom:10px;">
+        <input type="text" id="my-wish-2" placeholder="Opción 2">
+        <button class="btn-accent" id="btn-save-wishes">Guardar</button>
     </div>
+
     <footer class="app-footer">Development by VNGAS</footer>
 </div>
 
 <div id="auth-modal" class="modal-overlay hidden">
     <div class="modal-content">
-        <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 15px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
-        <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Protege tu resultado</p>
+        <h2 id="modal-title">Hola</h2>
+        <p id="modal-desc">Seguridad de tu cuenta</p>
 
-        <div id="form-register" class="hidden">
-            <label>Crea un PIN de 6 dígitos</label> 
-            <input type="tel" id="reg-secret" class="pin-input" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
+        <div id="form-auth">
+            <label id="label-pin">Ingresa un PIN de 6 dígitos</label> 
+            <input type="tel" id="input-pin" class="pin-input" placeholder="123456" maxlength="6" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
             
             <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
-                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
-                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
+                <label style="margin-top:0; font-size:0.85em;">¿Gestionas a algún menor?</label>
+                <div id="children-list-check"></div>
             </div>
-            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+            
+            <button class="btn-accent" id="btn-auth-action" onclick="handleAuth()">Confirmar</button>
         </div>
 
-        <div id="form-login" class="hidden">
-            <label>Ingresa tu PIN</label> 
-            <div class="password-wrapper">
-                <input type="tel" id="login-pass" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-            </div>
-            <button class="btn-accent" onclick="doLogin()">Entrar</button>
-            <button class="btn-text" onclick="showReset()">Olvidé mi PIN</button>
-        </div>
-
-        <div id="form-reset" class="hidden">
-            <label>¿No recuerdas el PIN?</label> 
-            <p style="font-size: 0.8em;">Contacta al administrador para resetear tu acceso.</p>
-            <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
-        </div>
-        
         <div id="admin-override-box" class="hidden">
-            <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                Resetear acceso (Admin)
-            </button>
+            <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">Resetear acceso (Admin)</button>
         </div>
-        <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
-    </div>
-</div>
-
-<div id="admin-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px; text-align:center;">
-        <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 10px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <h3 style="margin-bottom:5px;">Acceso Admin</h3>
-        <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
-        <div class="password-wrapper">
-            <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;" onkeypress="if(event.key === 'Enter') submitAdminAuth()">
-            <button class="btn-toggle-pass" onclick="togglePasswordVisibility('admin-input-pass')" style="right: 5px; top: 25px;">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
-            <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
-        </div>
-    </div>
-</div>
-
-<div id="confirm-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px; text-align:center;">
-        <svg class="icon icon-lg" style="color:var(--danger); margin:0 auto 10px; display:block;" viewBox="0 0 24 24">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-        <h3 id="confirm-title" style="margin-bottom:5px;">¿Estás seguro?</h3>
-        <p id="confirm-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Esta acción es irreversible.</p>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
-            <button class="btn-accent" onclick="executeConfirm()" style="background:var(--danger); border-color:var(--danger);">Sí, eliminar</button>
-        </div>
+        <button class="btn-text" onclick="closeModal()">Cerrar</button>
     </div>
 </div>
 
@@ -499,185 +294,113 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const MASTER_KEY = "admin123"; 
-    const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+    const MASTER_KEY = "admin123";
 
     let eventId = new URLSearchParams(window.location.search).get('id');
     let participantsList = [];
     let selectedUserDoc = null;
-    let currentUserId = null; 
-    let currentTargetId = null;
-    let currentGiftLabel = ""; 
-    let linkedProfiles = [];
 
-    // --- SEGURIDAD (HASHING) ---
+    // --- SEGURIDAD ---
     async function hashString(str) {
-        if(!str) return null;
         const encoder = new TextEncoder();
         const data = encoder.encode(str);
         const hash = await crypto.subtle.digest('SHA-256', data);
         return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    function isValidPIN(pin) {
-        return /^\d{6}$/.test(pin);
-    }
-
-    // Lógica visual del PIN
-    document.querySelectorAll('.pin-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-            if(e.target.value.length === 6 && /^\d+$/.test(e.target.value)) {
-                e.target.classList.add('pin-valid');
-            } else {
-                e.target.classList.remove('pin-valid');
-            }
-        });
-    });
-
-    // TOAST SYSTEM
-    window.showToast = (message, duration = 3000) => {
+    // --- TOAST ---
+    window.showToast = (msg) => {
         const container = document.getElementById('toast-container');
-        const el = document.createElement('div');
-        el.className = 'toast'; el.innerText = message;
+        const el = document.createElement('div'); el.className = 'toast show'; el.innerText = msg;
         container.appendChild(el);
-        requestAnimationFrame(() => el.classList.add('show'));
-        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3000);
     };
 
-    // ADMIN MODAL
-    let pendingAdminCallback = null;
-    window.promptForAdmin = (callback) => {
-        pendingAdminCallback = callback;
-        const m = document.getElementById('admin-modal');
-        const input = document.getElementById('admin-input-pass');
-        input.value = '';
-        m.classList.remove('hidden');
-        setTimeout(() => input.focus(), 100);
-    };
-    window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
-    window.submitAdminAuth = () => {
-        const val = document.getElementById('admin-input-pass').value; 
-        if(val === MASTER_KEY) {
-            closeAdminModal();
-            if(pendingAdminCallback) pendingAdminCallback();
-        } else {
-            showToast("Contraseña incorrecta");
-        }
-    };
-
-    // CONFIRM MODAL
-    let pendingConfirmAction = null;
-    window.openConfirmModal = (title, message, callback) => {
-        document.getElementById('confirm-title').innerText = title;
-        document.getElementById('confirm-desc').innerText = message;
-        pendingConfirmAction = callback;
-        document.getElementById('confirm-modal').classList.remove('hidden');
-    };
-    window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); };
-    window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
-
-    // --- UNIFICACIÓN PIN ---
+    // --- AUTH LOGIC (UNIFICADA) ---
     window.prepareAuth = async (id, data) => {
         selectedUserDoc = { id, data };
-        const m = document.getElementById('auth-modal');
-        document.getElementById('form-register').classList.add('hidden'); 
-        document.getElementById('form-login').classList.add('hidden'); 
-        document.getElementById('form-reset').classList.add('hidden'); 
-        document.getElementById('admin-override-box').classList.add('hidden'); 
-        document.getElementById('claim-children-section').classList.add('hidden'); 
-        document.querySelectorAll('input').forEach(i => i.value='');
-        m.classList.remove('hidden'); 
+        document.getElementById('input-pin').value = "";
+        document.getElementById('auth-modal').classList.remove('hidden');
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
-
+        
         if(!data.password) {
             document.getElementById('modal-desc').innerText = "Crea un PIN de 6 dígitos para entrar.";
-            document.getElementById('form-register').classList.remove('hidden');
-            // Cargar dependientes (hijos)
-            const listDiv = document.getElementById('children-list-check'); 
+            document.getElementById('label-pin').innerText = "Crea tu PIN de acceso";
+            // Lógica de hijos (original)
+            const listDiv = document.getElementById('children-list-check');
             const section = document.getElementById('claim-children-section');
             listDiv.innerHTML = '<div class="spinner"></div>';
             const q = await getDocs(collection(db, `events/${eventId}/participants`));
-            listDiv.innerHTML = ""; let foundChild = false;
-            q.forEach(docSnap => {
-                const kid = docSnap.data();
-                if(kid.isChild && docSnap.id !== id && !kid.managedBy) {
-                    foundChild = true;
-                    const div = document.createElement('div');
-                    div.innerHTML = `<label style="display:flex; align-items:center; margin:0;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
-                    listDiv.appendChild(div);
+            listDiv.innerHTML = ""; let found = false;
+            q.forEach(ds => {
+                const k = ds.data();
+                if(k.isChild && ds.id !== id && !k.managedBy) {
+                    found = true;
+                    listDiv.innerHTML += `<label style="display:flex; align-items:center;"><input type="checkbox" class="child-claim" value="${ds.id}"> ${k.name}</label>`;
                 }
             });
-            if(foundChild && !data.isChild) section.classList.remove('hidden'); 
+            found ? section.classList.remove('hidden') : section.classList.add('hidden');
         } else {
-            document.getElementById('modal-desc').innerText = "Ingresa tu PIN.";
-            document.getElementById('form-login').classList.remove('hidden'); 
+            document.getElementById('modal-desc').innerText = "Ingresa tu PIN para ver tu resultado.";
+            document.getElementById('label-pin').innerText = "Tu PIN de 6 dígitos";
+            document.getElementById('claim-children-section').classList.add('hidden');
             document.getElementById('admin-override-box').classList.remove('hidden');
         }
     };
 
-    window.doRegister = async () => {
-        const pin = document.getElementById('reg-secret').value;
-        if(!isValidPIN(pin)) return showToast("El PIN debe ser de 6 números.");
-        try {
-            const h = await hashString(pin);
-            const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
-            const batch = writeBatch(db);
-            // Guardamos el PIN en ambos campos para unificar lógica
-            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: h, secretKey: h });
-            childrenIds.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
-            await batch.commit(); 
-            window.closeModal(); 
-            enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data, password: h });
-        } catch(e) { showToast("Error al registrar"); }
-    };
-
-    window.doLogin = async () => {
-        const pin = document.getElementById('login-pass').value;
+    window.handleAuth = async () => {
+        const pin = document.getElementById('input-pin').value;
+        if(pin.length !== 6) return showToast("El PIN debe tener 6 números");
         const h = await hashString(pin);
-        if(h === selectedUserDoc.data.password) {
-            window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } else showToast("PIN incorrecto");
+
+        if(!selectedUserDoc.data.password) {
+            // Registro
+            const kids = Array.from(document.querySelectorAll('.child-claim:checked')).map(c => c.value);
+            const batch = writeBatch(db);
+            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: h });
+            kids.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
+            await batch.commit();
+            enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data, password: h });
+        } else {
+            // Login
+            if(h === selectedUserDoc.data.password) enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+            else showToast("PIN incorrecto");
+        }
+        closeModal();
     };
 
     window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
-    window.showReset = () => { document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-reset').classList.remove('hidden'); };
-    window.showLoginFromReset = () => { document.getElementById('form-reset').classList.add('hidden'); document.getElementById('form-login').classList.remove('hidden'); };
-    
-    window.adminOverride = async () => {
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
-        showToast("Acceso reseteado"); 
-        prepareAuth(selectedUserDoc.id, { ...selectedUserDoc.data, password: null });
-    };
 
-    // --- DASHBOARD & RESULT ---
+    function enterDashboard(uid, userData) {
+        document.getElementById('screen-login').classList.add('hidden');
+        document.getElementById('screen-dashboard').classList.remove('hidden');
+        document.getElementById('target-name').innerText = userData.targetName;
+        if(userData.revealed) document.getElementById('reveal-overlay').classList.add('faded');
+    }
+
     window.revealName = () => {
         document.getElementById('reveal-overlay').classList.add('faded');
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-        updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { revealed: true });
     };
 
+    // --- CONFIG EVENTO (ORIGINAL RESTAURADA) ---
     window.onload = () => {
-        // Populate days
         const s = document.getElementById('setup-day');
-        for (let i = 1; i <= 31; i++) {
-            let v = i < 10 ? "0" + i : i;
-            let o = document.createElement('option'); o.value = v; o.innerText = v; s.appendChild(o);
-        }
-        if (eventId) loadEventData(eventId);
+        for(let i=1; i<=31; i++) s.innerHTML += `<option value="${i<10?'0'+i:i}">${i<10?'0'+i:i}</option>`;
+        if(eventId) loadEvent(eventId);
         else document.getElementById('screen-home').classList.remove('hidden');
     };
 
-    async function loadEventData(id) {
-        const snap = await getDoc(doc(db, "events", id));
-        if(!snap.exists()) return showToast("Evento no encontrado");
-        const data = snap.data(); currentGiftLabel = data.giftType || "";
-        document.getElementById('event-title-display').innerText = data.title;
+    async function loadEvent(id) {
+        const sn = await getDoc(doc(db, "events", id));
+        if(!sn.exists()) return;
+        document.getElementById('event-title-display').innerText = sn.data().title;
         document.getElementById('screen-login').classList.remove('hidden');
-
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             const list = document.getElementById('names-list'); list.innerHTML = "";
             qs.forEach(d => {
-                const p = d.data(); if (p.isChild) return; 
+                const p = d.data(); if(p.isChild) return;
                 const div = document.createElement('div'); div.className = 'name-card-user'; div.innerText = p.name;
                 if(p.seen) div.innerHTML += '<div class="seen-badge"></div>';
                 div.onclick = () => prepareAuth(d.id, p);
@@ -686,79 +409,46 @@
         });
     }
 
-    async function enterDashboard(uid, userData) {
-        document.getElementById('screen-login').classList.add('hidden');
-        document.getElementById('screen-dashboard').classList.remove('hidden');
-        if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
-
-        linkedProfiles = [{ id: uid, ...userData }];
-        const q = await getDocs(collection(db, `events/${eventId}/participants`));
-        q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
-
-        const switcher = document.getElementById('profile-switcher'); 
-        const select = document.getElementById('select-active-profile');
-        if(linkedProfiles.length > 1) {
-            switcher.classList.remove('hidden'); select.innerHTML = "";
-            linkedProfiles.forEach((p, idx) => { 
-                const opt = document.createElement('option'); opt.value = idx; opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)"); 
-                select.appendChild(opt); 
-            });
-        }
-        loadProfileIndex(0);
-    }
-
-    window.switchProfileView = (idx) => loadProfileIndex(parseInt(idx));
-
-    function loadProfileIndex(index) {
-        const profile = linkedProfiles[index]; currentUserId = profile.id; 
-        document.getElementById('target-name').innerText = profile.targetName;
-        profile.revealed ? document.getElementById('reveal-overlay').classList.add('faded') : document.getElementById('reveal-overlay').classList.remove('faded');
-        
-        // Cargar deseos del target
-        document.getElementById('target-wishes-list').innerHTML = '<li>Cargando...</li>';
-        getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
-            const dt = d.data(); const l = document.getElementById('target-wishes-list'); l.innerHTML = "";
-            if(dt.wish1) l.innerHTML += `<li>${dt.wish1}</li>`;
-            if(dt.wish2) l.innerHTML += `<li>${dt.wish2}</li>`;
-            if(dt.wish3) l.innerHTML += `<li>${dt.wish3}</li>`;
-            if(l.innerHTML === "") l.innerHTML = "<li>Sin deseos aún.</li>";
-        });
-    }
-
-    // --- SETUP EVENT ---
-    window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
-    document.getElementById('btn-add-name').onclick = () => {
-        const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
-        if(!input.value.trim()) return;
-        participantsList.push({ name: input.value.trim(), isChild: check.checked });
-        renderAdminList(); input.value = ""; check.checked = false;
+    window.showAdminSetup = () => {
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-admin').classList.remove('hidden');
     };
 
-    function renderAdminList() {
+    document.getElementById('btn-add-name').onclick = () => {
+        const name = document.getElementById('input-new-name').value;
+        const child = document.getElementById('check-is-child').checked;
+        if(!name) return;
+        participantsList.push({ name, isChild: child });
+        renderList();
+        document.getElementById('input-new-name').value = "";
+        document.getElementById('check-is-child').checked = false;
+    };
+
+    function renderList() {
         const c = document.getElementById('participants-container'); c.innerHTML = "";
         participantsList.forEach((p, i) => {
-            c.innerHTML += `<div class="name-card-admin"><span>${p.isChild?'[H] ':''}${p.name}</span><button onclick="participantsList.splice(${i},1);renderAdminList()">×</button></div>`;
+            c.innerHTML += `<div class="name-card-admin"><span>${p.isChild?'[D] ':''}${p.name}</span><button onclick="participantsList.splice(${i},1);renderList()">×</button></div>`;
         });
     }
 
     document.getElementById('btn-create-event').onclick = async () => {
-        const title = document.getElementById('setup-title').value;
         if(participantsList.length < 2) return showToast("Mínimo 2 personas");
-        const eventRef = await addDoc(collection(db, "events"), { title, budget: document.getElementById('setup-budget').value, date: "2024-12-25", createdAt: serverTimestamp() });
+        const evRef = await addDoc(collection(db, "events"), { title: document.getElementById('setup-title').value, createdAt: serverTimestamp() });
         const batch = writeBatch(db);
         let shuff = [...participantsList].sort(() => Math.random() - 0.5);
-        for (let i = 0; i < shuff.length; i++) {
-            const pRef = doc(collection(db, `events/${eventRef.id}/participants`));
+        for(let i=0; i<shuff.length; i++) {
             const next = shuff[(i + 1) % shuff.length];
-            batch.set(pRef, { name: shuff[i].name, isChild: shuff[i].isChild || false, targetName: next.name, targetId: "pending", password: null });
+            const pRef = doc(collection(db, `events/${evRef.id}/participants`));
+            batch.set(pRef, { name: shuff[i].name, isChild: shuff[i].isChild, targetName: next.name, seen: false, revealed: false, password: null });
         }
         await batch.commit();
-        window.location.href = "?id=" + eventRef.id;
+        eventId = evRef.id;
+        document.getElementById('screen-admin').classList.add('hidden');
+        document.getElementById('screen-share').classList.remove('hidden');
+        document.getElementById('share-link-text').innerText = window.location.origin + window.location.pathname + "?id=" + eventId;
     };
-    
-    window.copyLink = () => { navigator.clipboard.writeText(window.location.href).then(()=>showToast("Enlace copiado")); };
-    window.goToEvent = () => { location.reload(); };
 
+    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText); showToast("Copiado"); };
 </script>
 </body>
 </html>
