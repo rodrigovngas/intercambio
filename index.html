@@ -66,7 +66,6 @@
 
         label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
         
-        /* Contenedor para input de password con ojo */
         .password-wrapper { position: relative; width: 100%; }
         .btn-toggle-pass {
             position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -81,10 +80,9 @@
             font-family: inherit; appearance: none; outline: none;
             transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        input[type="password"] { padding-right: 45px; } /* Espacio para el ojo */
+        input[type="password"] { padding-right: 45px; } 
         
         input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
-
         input.pin-valid { border-color: var(--success) !important; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important; }
 
         input[type="checkbox"] {
@@ -111,10 +109,8 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border-top: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
         
         .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
         .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
         .btn-danger-text { 
             background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
@@ -126,57 +122,23 @@
         .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
-        .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-        .btn-add-small { 
-            width: auto; margin-top: 0; padding: 0 16px; height: 52px; 
-            background: linear-gradient(135deg, #374151 0%, #111827 100%); 
-            color: white; 
-        } 
-        
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .name-card-admin {
             background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
-            display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
+            display: flex; justify-content: space-between; align-items: center; font-weight: 500;
         }
-        .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
-        .btn-icon-delete { background: none; border: none; padding: 4px; color: #9ca3af; margin-top: 0; width: auto; cursor: pointer; transition: color 0.2s; }
-        .btn-icon-delete:hover { color: var(--danger); }
 
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
         .name-card-user { 
             background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; 
-            text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
+            text-align: center; font-weight: 600; cursor: pointer; position: relative;
             box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
         }
-        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
         
         .seen-badge {
             position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; 
             background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
         }
-
-        #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .master-event-card {
-            background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
-        }
-        .master-event-card:hover { transform: translateX(2px); }
-        .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-        .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
-        .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
-        .master-actions { display: flex; gap: 10px; }
-        .btn-icon-action { 
-            padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; 
-            background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
-        }
-        .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
-        .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
-        .btn-icon-danger:hover { background: #fef2f2; border-color: var(--danger); }
-
-        .date-picker-row { display: flex; gap: 10px; }
-        .date-picker-row select { flex: 1; }
-        .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -188,19 +150,14 @@
             background: white; padding: 35px 30px; 
             border-top-left-radius: 24px; border-top-right-radius: 24px; 
             width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
-        
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .hidden { display: none !important; }
+        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; } }
 
         .info-card { 
             background: linear-gradient(135deg, #374151 0%, #111827 100%); 
             color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center;
-            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
+            position: relative; overflow: hidden;
         }
         
         #reveal-overlay {
@@ -211,24 +168,10 @@
         }
         #reveal-overlay.faded { opacity: 0; pointer-events: none; }
         
-        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
+        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid #e5e7eb; }
         
-        .link-box { 
-            background: #f9fafb; padding: 20px; border-radius: 12px; 
-            word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); 
-            font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); 
-            user-select: all !important; -webkit-user-select: all !important; 
-        }
-        
-        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; }
-        .wishes-list li { 
-            margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); 
-            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
-        }
-        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
-        .info-extra-link { overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal; display: block; width: 100%; }
-
-        #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; }
+        .wishes-list li { margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); }
 
         #toast-container {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
@@ -238,33 +181,22 @@
         .toast {
             background: rgba(31, 41, 55, 0.95); color: white; padding: 12px 20px;
             border-radius: 50px; font-size: 0.9rem; font-weight: 500;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); backdrop-filter: blur(4px);
             opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; align-items: center; justify-content: center; text-align: center;
+            display: flex; align-items: center; justify-content: center;
         }
         .toast.show { opacity: 1; transform: translateY(0); }
 
         .spinner {
             width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
             border-radius: 50%; border-top-color: var(--primary);
-            animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
+            animation: spin 0.8s linear infinite; margin: 20px auto;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-<script>
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    document.onkeydown = function(e) {
-        if(e.keyCode == 123) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
-    }
-</script>
 <div id="toast-container"></div>
 
 <div class="container">
@@ -274,236 +206,89 @@
         </button>
         <h1>Intercambio</h1>
         <p>Organiza intercambios de forma sencilla.</p>
-        <button class="btn-accent" onclick="showAdminSetup()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-            Crear Nuevo Sorteo
-        </button>
-    </div>
-
-    <div id="screen-master" class="hidden screen-content">
-        <h2>Panel Maestro</h2>
-        <p>Historial de todos los eventos.</p>
-        <div id="master-list-container"><div class="spinner"></div></div>
-        <button class="btn-secondary" onclick="exitMasterPanel()">← Volver al Inicio</button>
+        <button class="btn-accent" onclick="showAdminSetup()">Crear Nuevo Sorteo</button>
     </div>
 
     <div id="screen-admin" class="hidden screen-content">
         <h2>Configurar Evento</h2>
-        <label>Título del Evento</label>
-        <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad" autocapitalize="sentences">
-        <label>Fecha</label>
-        <div class="date-picker-row">
-            <select id="setup-day"><option value="" disabled selected>Día</option></select>
+        <input type="text" id="setup-title" placeholder="Título del Evento">
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <select id="setup-day"></select>
             <select id="setup-month">
-                <option value="" disabled selected>Mes</option>
-                <option value="01">Ene</option><option value="02">Feb</option><option value="03">Mar</option>
-                <option value="04">Abr</option><option value="05">May</option><option value="06">Jun</option>
-                <option value="07">Jul</option><option value="08">Ago</option><option value="09">Sep</option>
-                <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dic</option>
+                <option value="01">Ene</option><option value="12">Dic</option>
             </select>
         </div>
-        <div style="display:flex; gap:10px;">
-            <div style="flex:1">
-                <label>Presupuesto</label>
-                <select id="setup-budget">
-                    <option value="Libre">Libre</option>
-                    <option value="$100">$100</option><option value="$150">$150</option>
-                    <option value="$200">$200</option><option value="$250">$250</option>
-                    <option value="$300">$300</option><option value="$350">$350</option>
-                    <option value="$400">$400</option><option value="$450">$450</option>
-                    <option value="$500">$500</option>
-                </select>
-            </div>
-            <div style="flex:1">
-                <label>¿Qué se regala?</label>
-                <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas" autocapitalize="sentences">
-            </div>
+        <input type="text" id="input-new-name" placeholder="Nombre del participante" style="margin-top:15px;">
+        <div style="margin-top:8px; display:flex; align-items:center;">
+            <input type="checkbox" id="check-is-child"> <label for="check-is-child">Dependiente</label>
         </div>
-        <label>Participantes</label>
-        <div class="add-row">
-            <div style="flex:1">
-                <input type="text" id="input-new-name" placeholder="Nombre..." autocapitalize="sentences">
-                <div style="margin-top:8px; display:flex; align-items:center;">
-                    <input type="checkbox" id="check-is-child">
-                    <label for="check-is-child" style="margin:0; font-size:0.8em; font-weight:500; cursor:pointer; text-transform:none;">Dependiente</label>
-                </div>
-            </div>
-            <button class="btn-add-small" id="btn-add-name">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-            </button>
-        </div>
-        <div id="participants-container" class="participants-container">
-            <small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>
-        </div>
-        <div style="margin-top: 30px; margin-bottom: 20px;">
-            <button class="btn-accent" id="btn-create-event">Generar Sorteo</button>
-            <button class="btn-text" onclick="location.reload()">Cancelar</button>
-        </div>
-    </div>
-
-    <div id="screen-share" class="hidden screen-content">
-        <div style="text-align:center;">
-            <svg class="icon icon-lg" style="color:var(--primary); margin: 0 auto 10px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-            <h2>¡Evento Creado!</h2>
-            <p>Comparte este enlace a los invitados:</p>
-        </div>
-        <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
-        <button class="btn-accent" onclick="copyLink()">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar Enlace
-        </button>
-        <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
-        <button class="btn-danger-text" onclick="promptForAdmin(() => deleteEvent())" style="width:100%; margin-top:40px;">
-            <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Eliminar este evento (Admin)
-        </button>
+        <button class="btn-secondary" id="btn-add-name">Añadir Nombre</button>
+        <div id="participants-container" class="participants-container"></div>
+        <button class="btn-accent" id="btn-create-event">Generar Sorteo</button>
     </div>
 
     <div id="screen-login" class="hidden screen-content">
-        <h2 id="event-title-display">...</h2>
-        <div style="display:flex; justify-content:center; margin-bottom:30px; gap:10px;">
+        <h2 id="event-title-display">Cargando...</h2>
+        <div style="display:flex; justify-content:center; gap:10px; margin-bottom:20px;">
             <span class="pill" id="event-date-display"></span>
             <span class="pill" id="event-budget-display"></span>
         </div>
-        <p style="font-weight:600; font-size:1rem; color:var(--primary);">¿Quién eres?</p>
-        <div id="names-list" class="name-grid"><div class="spinner"></div></div>
+        <p>¿Quién eres?</p>
+        <div id="names-list" class="name-grid"></div>
     </div>
 
     <div id="screen-dashboard" class="hidden">
-        <div id="profile-switcher" class="hidden">
-            <label style="margin:0 0 5px 0; font-size:0.7em;">Viendo perfil de:</label>
-            <select id="select-active-profile" onchange="switchProfileView(this.value)" style="border:none; background:#f3f4f6; font-weight:700; color:var(--primary); padding:10px;"></select>
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:10px;">
-            <h3 style="margin:0; text-align:left;">Tu Resultado</h3>
-            <small style="color:var(--text-sec); cursor:pointer; font-size:0.8rem; font-weight:600; letter-spacing:0.05em;" onclick="location.reload()">SALIR</small>
-        </div>
+        <h3 style="margin-top:20px;">Tu Resultado</h3>
         <div class="info-card">
             <div id="reveal-overlay" onclick="revealName()">
-                <svg class="icon icon-lg" style="color:white; margin-bottom:10px; opacity:0.8;" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
-                <span style="color:white; font-weight:700; letter-spacing:1px; font-size:0.9rem;">TOCA PARA REVELAR</span>
+                <span style="color:white; font-weight:700;">TOCA PARA REVELAR</span>
             </div>
-            <small style="opacity: 0.7; text-transform: uppercase; font-weight:700; font-size:0.75rem; letter-spacing:1px;">Te tocó regalar a</small>
-            <h1 id="target-name" style="color:white; margin: 15px 0; font-size: 2.5rem; letter-spacing:-0.03em;">...</h1>
-            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15);">
-                <small style="font-weight:600; opacity:0.9;">Sus opciones:</small>
-                <ul id="target-wishes-list" class="wishes-list">
-                    <li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white;"></div></li>
-                </ul>
-                <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
-            </div>
+            <small style="opacity:0.7">Te tocó regalar a</small>
+            <h1 id="target-name" style="color:white; margin:15px 0;">...</h1>
+            <ul id="target-wishes-list" class="wishes-list"></ul>
         </div>
-        <div style="margin-top: 40px; padding-bottom: 20px;">
-            <h3>Llena el Perfil</h3>
-            <p style="font-size:0.9em; margin-bottom:25px; opacity:0.8;">Ayuda a tu amigo secreto:</p>
-            <label>Opción 1</label> <input type="text" id="my-wish-1" placeholder="Ej. Libro de terror" autocapitalize="sentences">
-            <label>Opción 2</label> <input type="text" id="my-wish-2" placeholder="Ej. Taza de Batman" autocapitalize="sentences">
-            <label>Opción 3</label> <input type="text" id="my-wish-3" placeholder="Ej. Calcetas (Link)" autocapitalize="sentences">
-            <div id="input-container-extra" class="hidden">
-                <label id="label-extra">Info Extra</label> <input type="text" id="my-extra" placeholder="Escribe aquí..." autocapitalize="sentences">
-            </div>
-            <button class="btn-accent" type="button" id="btn-save-wishes">Guardar Preferencias</button>
-        </div>
+        <label>Tus deseos</label>
+        <input type="text" id="my-wish-1" placeholder="Opción 1">
+        <button class="btn-accent" id="btn-save-wishes">Guardar</button>
+        <button id="btn-activate-biometrics" class="btn-secondary" style="display:none; margin-top:15px; border-style:dashed;">
+            Activar Huella / FaceID
+        </button>
+        <button class="btn-text" onclick="location.reload()" style="width:100%">Cerrar Sesión</button>
     </div>
-    <footer class="app-footer">Development by VNGAS</footer>
 </div>
 
 <div id="auth-modal" class="modal-overlay hidden">
     <div class="modal-content">
-        <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 15px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
-        <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Protege tu resultado</p>
-
+        <h2 id="modal-title">Seguridad</h2>
         <div id="form-register" class="hidden">
-            <label>Crea una contraseña</label> 
-            <div class="password-wrapper">
-                <input type="password" id="reg-pass" placeholder="Nueva contraseña">
-                <button class="btn-toggle-pass" onclick="togglePasswordVisibility('reg-pass')">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
-            </div>
-
-            <label>PIN de recuperación (6 dígitos)</label> <input type="tel" id="reg-secret" class="pin-input" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-            <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
-                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
-                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+            <input type="password" id="reg-pass" placeholder="Crea una contraseña">
+            <input type="tel" id="reg-secret" class="pin-input" placeholder="PIN de 6 dígitos" maxlength="6">
+            <button class="btn-accent" onclick="doRegister()">Registrar</button>
         </div>
-
         <div id="form-login" class="hidden">
-            <label>Ingresa contraseña</label> 
-            <div class="password-wrapper">
-                <input type="password" id="login-pass" placeholder="Tu contraseña">
-                <button class="btn-toggle-pass" onclick="togglePasswordVisibility('login-pass')">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
-            </div>
+            <input type="password" id="login-pass" placeholder="Tu contraseña">
             <button class="btn-accent" onclick="doLogin()">Entrar</button>
-            <button class="btn-text" onclick="showReset()">Olvidé contraseña</button>
-        </div>
-
-        <div id="form-reset" class="hidden">
-            <label>Ingresa tu PIN de 6 dígitos</label> <input type="tel" id="reset-secret" class="pin-input" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-            <label>Nueva Contraseña</label> 
-            <div class="password-wrapper">
-                <input type="password" id="reset-new-pass">
-                <button class="btn-toggle-pass" onclick="togglePasswordVisibility('reset-new-pass')">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
+            <div id="biometric-login-zone" class="hidden">
+                <p style="margin:10px 0; font-size:0.8rem;">O usa biometría</p>
+                <button class="btn-secondary" onclick="loginWithBiometrics()">Usar Huella / Rostro</button>
             </div>
-            <button class="btn-accent" onclick="doReset()">Restablecer</button>
-            <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
         </div>
-        
-        <div id="admin-override-box" class="hidden">
-            <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                Resetear cuenta (Admin)
-            </button>
-        </div>
-        <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
+        <button class="btn-text" onclick="closeModal()">Cancelar</button>
     </div>
 </div>
 
 <div id="admin-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px; text-align:center;">
-        <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 10px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <h3 style="margin-bottom:5px;">Acceso Admin</h3>
-        <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
-        <div class="password-wrapper">
-            <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;" onkeypress="if(event.key === 'Enter') submitAdminAuth()">
-            <button class="btn-toggle-pass" onclick="togglePasswordVisibility('admin-input-pass')" style="right: 5px; top: 25px;">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
-        </div>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
-            <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
-        </div>
-    </div>
-</div>
-
-<div id="confirm-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px; text-align:center;">
-        <svg class="icon icon-lg" style="color:var(--danger); margin:0 auto 10px; display:block;" viewBox="0 0 24 24">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-        <h3 id="confirm-title" style="margin-bottom:5px;">¿Estás seguro?</h3>
-        <p id="confirm-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Esta acción es irreversible.</p>
-        <div style="display:flex; gap:10px;">
-            <button class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
-            <button class="btn-accent" onclick="executeConfirm()" style="background:var(--danger); border-color:var(--danger);">Sí, eliminar</button>
-        </div>
+    <div class="modal-content" style="max-width:320px;">
+        <h3>Admin</h3>
+        <input type="password" id="admin-input-pass" placeholder="Password maestro">
+        <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
+        <button class="btn-text" onclick="closeAdminModal()">Cerrar</button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAsVkuWgNhpC5cIyRem9ArT8QBNpWtSCX0",
@@ -516,447 +301,186 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const MASTER_KEY = "admin123"; 
-    const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+    const MASTER_KEY = "admin123";
 
     let eventId = new URLSearchParams(window.location.search).get('id');
     let participantsList = [];
     let selectedUserDoc = null;
-    let currentUserId = null; 
-    let currentTargetId = null;
-    let currentGiftLabel = ""; 
-    let linkedProfiles = [];
+    let currentUserId = null;
 
-    // --- FUNCIÓN MOSTRAR/OCULTAR CONTRASEÑA ---
-    window.togglePasswordVisibility = (inputId) => {
-        const input = document.getElementById(inputId);
-        const btn = input.nextElementSibling;
-        if (input.type === "password") {
-            input.type = "text";
-            btn.style.color = "var(--primary)";
-        } else {
-            input.type = "password";
-            btn.style.color = "var(--text-sec)";
-        }
+    // --- MEJORAS: BIOMETRÍA Y HÁPTICOS ---
+    const checkBioSupport = async () => {
+        return window.PublicKeyCredential && await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
     };
 
-    // --- SEGURIDAD (HASHING) ---
+    window.registerBiometrics = async () => {
+        try {
+            const challenge = crypto.getRandomValues(new Uint8Array(32));
+            const userId = Uint8Array.from(currentUserId, c => c.charCodeAt(0));
+            const publicKey = {
+                challenge,
+                rp: { name: "Intercambio" },
+                user: { id: userId, name: selectedUserDoc.data.name, displayName: selectedUserDoc.data.name },
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
+            };
+            await navigator.credentials.create({ publicKey });
+            localStorage.setItem(`bio_${eventId}_${currentUserId}`, "active");
+            showToast("¡Huella vinculada!");
+            document.getElementById('btn-activate-biometrics').style.display = 'none';
+        } catch (e) { showToast("Error al vincular"); }
+    };
+
+    window.loginWithBiometrics = async () => {
+        try {
+            const publicKey = { challenge: crypto.getRandomValues(new Uint8Array(32)), userVerification: "required" };
+            await navigator.credentials.get({ publicKey });
+            if (navigator.vibrate) navigator.vibrate(20);
+            window.closeModal();
+            enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+        } catch (e) { showToast("Fallo biométrico"); }
+    };
+
+    // --- CORE LOGIC ---
+    window.showToast = (msg) => {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast'; el.innerText = msg;
+        container.appendChild(el);
+        setTimeout(() => el.classList.add('show'), 10);
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, 3000);
+    };
+
     async function hashString(str) {
-        if(!str) return null;
         const encoder = new TextEncoder();
         const data = encoder.encode(str);
         const hash = await crypto.subtle.digest('SHA-256', data);
         return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
-    function isValidPIN(pin) {
-        return /^\d{6}$/.test(pin);
-    }
-
-    // --- LÓGICA DE VALIDACIÓN VISUAL DEL PIN ---
-    document.querySelectorAll('.pin-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-            if(e.target.value.length === 6 && /^\d+$/.test(e.target.value)) {
-                e.target.classList.add('pin-valid');
-            } else {
-                e.target.classList.remove('pin-valid');
-            }
-        });
-    });
-
-    // --- TOAST SYSTEM ---
-    window.showToast = (message, duration = 3000) => {
-        const container = document.getElementById('toast-container');
-        const el = document.createElement('div');
-        el.className = 'toast'; el.innerText = message;
-        container.appendChild(el);
-        requestAnimationFrame(() => el.classList.add('show'));
-        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
-    };
-
-    // --- ADMIN MODAL SYSTEM ---
-    let pendingAdminCallback = null;
-    window.promptForAdmin = (callback) => {
-        pendingAdminCallback = callback;
-        const m = document.getElementById('admin-modal');
-        const input = document.getElementById('admin-input-pass');
-        input.value = '';
-        input.type = 'password'; // Reset a password al abrir
-        m.classList.remove('hidden');
-        setTimeout(() => input.focus(), 100);
-    };
-    window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
-    window.submitAdminAuth = () => {
-        const val = document.getElementById('admin-input-pass').value; 
-        const callbackToRun = pendingAdminCallback; 
-        if(val === MASTER_KEY) {
-            closeAdminModal();
-            if(callbackToRun) callbackToRun();
-        } else {
-            showToast("Contraseña incorrecta");
-            document.getElementById('admin-input-pass').value = '';
-        }
-    };
-
-    // --- CONFIRMATION MODAL SYSTEM ---
-    let pendingConfirmAction = null;
-    window.openConfirmModal = (title, message, callback) => {
-        document.getElementById('confirm-title').innerText = title;
-        document.getElementById('confirm-desc').innerText = message;
-        pendingConfirmAction = callback;
-        document.getElementById('confirm-modal').classList.remove('hidden');
-    };
-    window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
-    window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
-
-    // --- RESULT REVEAL ---
     window.revealName = () => {
-        const overlay = document.getElementById('reveal-overlay');
-        overlay.classList.add('faded');
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-        if(currentUserId) {
-            updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
-            const p = linkedProfiles.find(x => x.id === currentUserId);
-            if(p) p.revealed = true;
-        }
+        if (navigator.vibrate) navigator.vibrate([40, 30, 80]); // Háptico premium
+        document.getElementById('reveal-overlay').classList.add('faded');
+        confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+        updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
     };
 
     window.onload = () => {
-        populateDays();
+        const dSel = document.getElementById('setup-day');
+        for(let i=1; i<=31; i++) dSel.innerHTML += `<option value="${i<10?'0'+i:i}">${i<10?'0'+i:i}</option>`;
         if (eventId) loadEventData(eventId);
         else document.getElementById('screen-home').classList.remove('hidden');
     };
 
-    function populateDays() {
-        const select = document.getElementById('setup-day');
-        for (let i = 1; i <= 31; i++) {
-            let val = i < 10 ? "0" + i : i;
-            let opt = document.createElement('option');
-            opt.value = val; opt.innerText = val; select.appendChild(opt);
-        }
-    }
-
-    window.goToMasterPanel = () => {
-        document.getElementById('screen-home').classList.add('hidden');
-        document.getElementById('screen-master').classList.remove('hidden');
-        loadAllEvents();
-    };
-    window.exitMasterPanel = () => {
-        document.getElementById('screen-master').classList.add('hidden');
-        document.getElementById('screen-home').classList.remove('hidden');
-    };
-
-    async function loadAllEvents() {
-        const listDiv = document.getElementById('master-list-container');
-        listDiv.innerHTML = '<div class="spinner"></div>'; 
-        try {
-            const snap = await getDocs(collection(db, "events"));
-            listDiv.innerHTML = "";
-            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; return; }
-            snap.forEach(docSnap => {
-                const data = docSnap.data();
-                const id = docSnap.id;
-                let parts = (data.date || "2025-01-01").split('-');
-                let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-                const div = document.createElement('div');
-                div.className = 'master-event-card';
-                div.innerHTML = `
-                    <div class="master-event-info"><h4>${data.title}</h4><div class="master-event-meta" style="margin-top:5px;"><span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}</span><span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}</span></div></div>
-                    <div class="master-actions"><button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button><button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
-                listDiv.appendChild(div);
-            });
-        } catch(e) { listDiv.innerHTML = "<p style='text-align:center; color:red'>Error al cargar</p>"; }
-    }
-
-    window.deleteGlobalEvent = (id) => {
-        openConfirmModal("¿Borrar evento?", "Se eliminarán todos los datos permanentemente.", async () => {
-            try {
-                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
-                const batch = writeBatch(db);
-                partsSnap.forEach(d => batch.delete(d.ref));
-                await batch.commit(); 
-                await deleteDoc(doc(db, "events", id));
-                showToast("Evento eliminado"); 
-                loadAllEvents();
-            } catch(e) { showToast("Error al borrar"); }
-        });
-    }
-
-    window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
-    document.getElementById('btn-add-name').addEventListener('click', addNameToList);
-    document.getElementById('input-new-name').addEventListener('keypress', (e) => { if(e.key === 'Enter') addNameToList(); });
-
-    function addNameToList() {
-        const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
-        const name = input.value.trim(); if(!name) return;
-        participantsList.push({ name: name, isChild: check.checked });
-        input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
-    }
-
-    function renderParticipantsList() {
-        const container = document.getElementById('participants-container'); container.innerHTML = "";
-        if(participantsList.length === 0) { container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return; }
-        participantsList.forEach((p, index) => {
-            const div = document.createElement('div'); div.className = 'name-card-admin';
-            const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
-            div.innerHTML = `<span>${childTag}${p.name}</span><button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
-            container.appendChild(div);
-        });
-        window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
-    }
-
-    document.getElementById('btn-create-event').addEventListener('click', async () => {
-        const title = document.getElementById('setup-title').value;
-        const day = document.getElementById('setup-day').value;
-        const month = document.getElementById('setup-month').value;
-        const budget = document.getElementById('setup-budget').value;
-        const giftType = document.getElementById('setup-gift-type').value; 
-        if(participantsList.length < 2) return showToast("Mínimo 2 personas");
-        if(!title || !day || !month) return showToast("Completa los datos");
-        const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
-        const btn = document.getElementById('btn-create-event');
-        btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0;"></div>';
-        try {
-            const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
-            let shuffled = [...participantsList];
-            for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
-            const batch = writeBatch(db); let refs = [];
-            for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
-            for (let i = 0; i < refs.length; i++) {
-                const curr = refs[i]; const next = refs[(i + 1) % refs.length];
-                batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false, revealed: false });
-            }
-            await batch.commit();
-            eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
-            document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
-            document.getElementById('share-link-text').innerText = link;
-        } catch(e) { btn.disabled = false; btn.innerText = "Generar Sorteo"; showToast("Error al crear"); }
-    });
-
-    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
-    window.goToEvent = () => { window.location.href = "?id=" + eventId; };
-
-    window.deleteEvent = () => {
-        openConfirmModal("¿Borrar este evento?", "Esta acción eliminará todo permanentemente.", async () => {
-            try {
-                const snapshot = await getDocs(collection(db, `events/${eventId}/participants`)); 
-                const batch = writeBatch(db);
-                snapshot.forEach(doc => batch.delete(doc.ref));
-                await batch.commit(); 
-                await deleteDoc(doc(db, "events", eventId));
-                showToast("Evento eliminado"); 
-                setTimeout(() => window.location.href = window.location.pathname, 1500);
-            } catch(e) { showToast("Error al eliminar"); }
-        });
-    };
-
     async function loadEventData(id) {
-        const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
-        const data = snap.data(); currentGiftLabel = data.giftType || ""; 
-        const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
+        const snap = await getDoc(doc(db, "events", id));
+        if(!snap.exists()) return;
+        const data = snap.data();
         document.getElementById('event-title-display').innerText = data.title;
-        document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
-        document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
-
+        document.getElementById('event-date-display').innerText = data.date;
+        document.getElementById('event-budget-display').innerText = data.budget;
+        
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
-            const list = document.getElementById('names-list'); list.innerHTML = "";
-            const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
-            if(isDashboardVisible) return;
-            if(!currentUserId) { 
-                document.getElementById('screen-home').classList.add('hidden'); 
-                document.getElementById('screen-login').classList.remove('hidden'); 
-            }
+            const list = document.getElementById('names-list');
+            if(!document.getElementById('screen-dashboard').classList.contains('hidden')) return;
+            list.innerHTML = "";
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-login').classList.remove('hidden');
             qs.forEach(d => {
-                const p = d.data(); if (p.isChild) return; 
-                const div = document.createElement('div'); div.className = 'name-card-user'; 
+                const p = d.data(); if(p.isChild) return;
+                const div = document.createElement('div');
+                div.className = 'name-card-user';
                 div.innerText = p.name;
-                if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
+                if(p.seen) div.innerHTML += '<div class="seen-badge"></div>';
                 div.onclick = () => prepareAuth(d.id, p);
                 list.appendChild(div);
             });
         });
     }
 
-    async function prepareAuth(id, data) {
+    window.prepareAuth = async (id, data) => {
         selectedUserDoc = { id, data };
-        const m = document.getElementById('auth-modal');
-        document.getElementById('form-register').classList.add('hidden'); 
-        document.getElementById('form-login').classList.add('hidden'); 
-        document.getElementById('form-reset').classList.add('hidden'); 
-        document.getElementById('admin-override-box').classList.add('hidden'); 
-        document.getElementById('claim-children-section').classList.add('hidden'); 
-        document.querySelectorAll('input').forEach(i => { 
-            i.value=''; 
-            i.classList.remove('pin-valid');
-            if(i.type === 'text' && (i.id.includes('pass') || i.id.includes('admin'))) i.type = 'password'; // Reset a password al cerrar/cambiar
-        });
-        m.classList.remove('hidden'); document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
+        document.getElementById('modal-title').innerText = "Hola, " + data.name;
+        document.getElementById('auth-modal').classList.remove('hidden');
+        document.getElementById('form-register').classList.add('hidden');
+        document.getElementById('form-login').classList.add('hidden');
+        
+        const bioZone = document.getElementById('biometric-login-zone');
+        if (await checkBioSupport() && localStorage.getItem(`bio_${eventId}_${id}`)) bioZone.classList.remove('hidden');
+        else bioZone.classList.add('hidden');
 
-        if(!data.password) {
-            document.getElementById('form-register').classList.remove('hidden');
-            const listDiv = document.getElementById('children-list-check'); 
-            const section = document.getElementById('claim-children-section');
-            listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
-            const q = await getDocs(collection(db, `events/${eventId}/participants`));
-            listDiv.innerHTML = ""; let foundChild = false;
-            q.forEach(docSnap => {
-                const kid = docSnap.data();
-                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
-                    foundChild = true;
-                    const div = document.createElement('div');
-                    div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
-                    listDiv.appendChild(div);
-                }
-            });
-            if(foundChild && !data.isChild) section.classList.remove('hidden'); 
-        } else {
-            document.getElementById('form-login').classList.remove('hidden'); 
-            document.getElementById('admin-override-box').classList.remove('hidden');
-        }
-    }
-
-    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
+        if(!data.password) document.getElementById('form-register').classList.remove('hidden');
+        else document.getElementById('form-login').classList.remove('hidden');
+    };
 
     window.doRegister = async () => {
-        const pass = document.getElementById('reg-pass').value; 
-        const secret = document.getElementById('reg-secret').value;
-        if(!pass || !secret) return showToast("Llena ambos campos.");
-        if(!isValidPIN(secret)) return showToast("El PIN debe ser de 6 números.");
-        
-        try {
-            const hPass = await hashString(pass);
-            const hSecret = await hashString(secret);
-            const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
-            const batch = writeBatch(db);
-            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hPass, secretKey: hSecret });
-            childrenIds.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
-            await batch.commit(); 
-            window.closeModal(); 
-            selectedUserDoc.data.password = hPass;
-            selectedUserDoc.data.secretKey = hSecret;
-            enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
-        } catch(e) { showToast("Error al registrar"); }
+        const p = document.getElementById('reg-pass').value;
+        const s = document.getElementById('reg-secret').value;
+        if(p.length < 4 || s.length !== 6) return showToast("Datos inválidos");
+        const hp = await hashString(p); const hs = await hashString(s);
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hp, secretKey: hs });
+        selectedUserDoc.data.password = hp;
+        window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
     };
 
     window.doLogin = async () => {
-        const hInput = await hashString(document.getElementById('login-pass').value);
-        if(hInput === selectedUserDoc.data.password) {
+        const hp = await hashString(document.getElementById('login-pass').value);
+        if(hp === selectedUserDoc.data.password) {
             window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } else showToast("Contraseña incorrecta");
+        } else showToast("Password incorrecto");
     };
 
-    window.showReset = () => { 
-        document.getElementById('form-login').classList.add('hidden'); 
-        document.getElementById('admin-override-box').classList.add('hidden'); 
-        document.getElementById('form-reset').classList.remove('hidden'); 
-    };
-    
-    window.showLoginFromReset = () => { 
-        document.getElementById('form-reset').classList.add('hidden'); 
-        document.getElementById('form-login').classList.remove('hidden'); 
-        document.getElementById('admin-override-box').classList.remove('hidden'); 
-    };
-
-    window.doReset = async () => {
-        const s = document.getElementById('reset-secret').value; 
-        const n = document.getElementById('reset-new-pass').value;
-        const hSecretInput = await hashString(s);
-        if(hSecretInput === selectedUserDoc.data.secretKey) {
-            const hNewPass = await hashString(n);
-            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hNewPass });
-            showToast("Contraseña restablecida"); 
-            selectedUserDoc.data.password = hNewPass; 
-            window.showLoginFromReset();
-        } else { showToast("PIN incorrecto"); }
-    };
-
-    window.adminOverride = async () => {
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
-        showToast("Cuenta reseteada"); 
-        selectedUserDoc.data.password = null; 
-        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
-    };
-
-    function makeLinksClickable(text) {
-        if (!text) return ""; const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
-    }
-
-    async function enterDashboard(uid, userData) {
+    window.enterDashboard = async (uid, userData) => {
+        currentUserId = uid;
         document.getElementById('screen-login').classList.add('hidden');
         document.getElementById('screen-dashboard').classList.remove('hidden');
         if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
+        
+        const btnBio = document.getElementById('btn-activate-biometrics');
+        if (await checkBioSupport() && !localStorage.getItem(`bio_${eventId}_${uid}`)) {
+            btnBio.style.display = 'block'; btnBio.onclick = window.registerBiometrics;
+        }
 
-        linkedProfiles = [{ id: uid, ...userData }];
-        const q = await getDocs(collection(db, `events/${eventId}/participants`));
-        q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
+        document.getElementById('target-name').innerText = userData.targetName;
+        document.getElementById('my-wish-1').value = userData.wish1 || "";
+        if(userData.revealed) document.getElementById('reveal-overlay').classList.add('faded');
+        
+        const tDoc = await getDoc(doc(db, `events/${eventId}/participants/${userData.targetId}`));
+        const tData = tDoc.data();
+        document.getElementById('target-wishes-list').innerHTML = tData.wish1 ? `<li>${tData.wish1}</li>` : "<li>Sin deseos aún</li>";
+    };
 
-        const switcher = document.getElementById('profile-switcher'); 
-        const select = document.getElementById('select-active-profile');
-        if(linkedProfiles.length > 1) {
-            switcher.classList.remove('hidden'); select.innerHTML = "";
-            linkedProfiles.forEach((p, idx) => { 
-                const opt = document.createElement('option'); 
-                opt.value = idx; 
-                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)"); 
-                select.appendChild(opt); 
-            });
-        } else switcher.classList.add('hidden');
-        loadProfileIndex(0);
-    }
+    document.getElementById('btn-save-wishes').onclick = async () => {
+        await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { wish1: document.getElementById('my-wish-1').value });
+        showToast("¡Guardado!");
+    };
 
-    window.switchProfileView = (idx) => loadProfileIndex(parseInt(idx));
+    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
+    window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
+    
+    document.getElementById('btn-add-name').onclick = () => {
+        const n = document.getElementById('input-new-name').value;
+        if(!n) return;
+        participantsList.push({ name: n, isChild: document.getElementById('check-is-child').checked });
+        document.getElementById('input-new-name').value = "";
+        const cont = document.getElementById('participants-container');
+        cont.innerHTML += `<div class="name-card-admin">${n}</div>`;
+    };
 
-    function loadProfileIndex(index) {
-        const profile = linkedProfiles[index]; currentUserId = profile.id; currentTargetId = profile.targetId;
-        const extraContainer = document.getElementById('input-container-extra');
-        if(currentGiftLabel && currentGiftLabel.trim() !== "") {
-            extraContainer.classList.remove('hidden'); 
-            document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; 
-            document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
-        } else extraContainer.classList.add('hidden');
-
-        document.getElementById('my-wish-1').value = profile.wish1 || "";
-        document.getElementById('my-wish-2').value = profile.wish2 || "";
-        document.getElementById('my-wish-3').value = profile.wish3 || "";
-        if(document.getElementById('my-extra')) document.getElementById('my-extra').value = profile.extra || "";
-
-        const revealOverlay = document.getElementById('reveal-overlay');
-        profile.revealed ? revealOverlay.classList.add('faded') : revealOverlay.classList.remove('faded');
-
-        document.getElementById('target-name').innerText = profile.targetName;
-        document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
-
-        getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
-            if(d.exists()) {
-                const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
-                if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
-                if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
-                if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
-                if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
-                const extraDiv = document.getElementById('target-extra-info');
-                extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
-            }
+    document.getElementById('btn-create-event').onclick = async () => {
+        const t = document.getElementById('setup-title').value;
+        if(participantsList.length < 2) return showToast("Mínimo 2");
+        const ref = await addDoc(collection(db, "events"), { title: t, date: "2025", budget: "Libre" });
+        let shuff = [...participantsList].sort(() => Math.random() - 0.5);
+        const batch = writeBatch(db);
+        let refs = shuff.map(p => ({...p, ref: doc(collection(db, `events/${ref.id}/participants`))}));
+        refs.forEach((r, i) => {
+            const next = refs[(i+1)%refs.length];
+            batch.set(r.ref, { name: r.name, isChild: r.isChild, targetId: next.ref.id, targetName: next.name, seen: false, revealed: false });
         });
-    }
-
-    document.getElementById('btn-save-wishes').addEventListener('click', async () => {
-        const w1 = document.getElementById('my-wish-1').value; 
-        const w2 = document.getElementById('my-wish-2').value; 
-        const w3 = document.getElementById('my-wish-3').value;
-        let extra = !document.getElementById('input-container-extra').classList.contains('hidden') ? document.getElementById('my-extra').value : "";
-        const btn = document.getElementById('btn-save-wishes');
-        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; 
-        btn.disabled = true;
-        try {
-            await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { wish1: w1, wish2: w2, wish3: w3, extra: extra });
-            const idx = linkedProfiles.findIndex(p => p.id === currentUserId);
-            if(idx !== -1) { linkedProfiles[idx].wish1 = w1; linkedProfiles[idx].wish2 = w2; linkedProfiles[idx].wish3 = w3; linkedProfiles[idx].extra = extra; }
-            btn.innerText = "¡Guardado!"; showToast("Preferencias guardadas");
-            setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
-        } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
-    });
+        await batch.commit();
+        window.location.href = "?id=" + ref.id;
+    };
 </script>
-
 </body>
 </html>
