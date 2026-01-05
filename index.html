@@ -14,6 +14,7 @@
     <style>
         :root {
             --bg-color: #f3f4f6;
+            /* VUELTA AL TEMA DARK LUXURY */
             --primary: #111827; 
             --primary-hover: #374151;
             --accent: #000000; 
@@ -23,10 +24,10 @@
             --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
             --radius: 16px;
             --danger: #ef4444;
-            --success: #10b981;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+        /* Permitir selección solo en inputs */
         input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
         body {
@@ -53,6 +54,7 @@
 
         .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
 
+        /* UI ELEMENTS */
         .btn-settings {
             position: absolute; top: 0; right: 0; 
             background: transparent; border: none; padding: 10px; cursor: pointer;
@@ -66,26 +68,13 @@
 
         label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
         
-        .password-wrapper { position: relative; width: 100%; }
-        .btn-toggle-pass {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; padding: 8px; cursor: pointer;
-            color: var(--text-sec); display: flex; align-items: center; justify-content: center;
-            width: auto; margin: 0; z-index: 5;
-        }
-
         input:not([type="checkbox"]), textarea, select {
             width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
             font-size: 1rem; background: #fff; color: var(--text-main); 
             font-family: inherit; appearance: none; outline: none;
             transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
-        
-        input[type="password"], .pin-input { padding-right: 45px !important; } 
-        
         input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
-
-        input.pin-valid { border-color: var(--success) !important; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important; }
 
         input[type="checkbox"] {
             appearance: auto !important; -webkit-appearance: checkbox !important;
@@ -106,6 +95,7 @@
         }
         button:active { transform: scale(0.98); }
 
+        /* TEMA OSCURO PREMIUM */
         .btn-primary, .btn-accent { 
             background: linear-gradient(135deg, #1f2937 0%, #000000 100%); color: white; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -127,6 +117,8 @@
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
+        
+        /* AQUI ESTA EL CAMBIO SOLICITADO (color: white;) */
         .btn-add-small { 
             width: auto; margin-top: 0; padding: 0 16px; height: 52px; 
             background: linear-gradient(135deg, #374151 0%, #111827 100%); 
@@ -196,6 +188,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .hidden { display: none !important; }
 
+        /* RESULT CARD & REVEAL */
         .info-card { 
             background: linear-gradient(135deg, #374151 0%, #111827 100%); 
             color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
@@ -203,6 +196,7 @@
             border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
         }
         
+        /* CAJA DE REVELAR: TEMA OSCURO PREMIUM */
         #reveal-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
@@ -258,22 +252,25 @@
 <script>
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
-        if(e.keyCode == 123) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
-        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        if(e.keyCode == 123) return false; // F12
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; // Ctrl+Shift+I
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; // Ctrl+Shift+C
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; // Ctrl+Shift+J
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ctrl+U
     }
 </script>
 <div id="toast-container"></div>
 
 <div class="container">
+    
     <div id="screen-home" class="hidden screen-content">
         <button class="btn-settings" onclick="promptForAdmin(() => goToMasterPanel())">
             <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         </button>
+
         <h1>Intercambio</h1>
         <p>Organiza intercambios de forma sencilla.</p>
+        
         <button class="btn-accent" onclick="showAdminSetup()">
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
             Crear Nuevo Sorteo
@@ -291,6 +288,7 @@
         <h2>Configurar Evento</h2>
         <label>Título del Evento</label>
         <input type="text" id="setup-title" placeholder="Ej. Cena de Navidad" autocapitalize="sentences">
+        
         <label>Fecha</label>
         <div class="date-picker-row">
             <select id="setup-day"><option value="" disabled selected>Día</option></select>
@@ -302,6 +300,7 @@
                 <option value="10">Oct</option><option value="11">Nov</option><option value="12">Dic</option>
             </select>
         </div>
+
         <div style="display:flex; gap:10px;">
             <div style="flex:1">
                 <label>Presupuesto</label>
@@ -319,6 +318,7 @@
                 <input type="text" id="setup-gift-type" placeholder="Ej. Pijamas" autocapitalize="sentences">
             </div>
         </div>
+        
         <label>Participantes</label>
         <div class="add-row">
             <div style="flex:1">
@@ -343,15 +343,17 @@
 
     <div id="screen-share" class="hidden screen-content">
         <div style="text-align:center;">
-            <svg class="icon icon-lg" style="color:var(--primary); margin: 0 auto 10px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            <svg class="icon icon-lg" style="color:var(--primary); margin: 0 auto 10px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
             <h2>¡Evento Creado!</h2>
             <p>Comparte este enlace a los invitados:</p>
         </div>
         <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
+        
         <button class="btn-accent" onclick="copyLink()">
             <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             Copiar Enlace
         </button>
+        
         <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
         <button class="btn-danger-text" onclick="promptForAdmin(() => deleteEvent())" style="width:100%; margin-top:40px;">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -374,25 +376,30 @@
             <label style="margin:0 0 5px 0; font-size:0.7em;">Viendo perfil de:</label>
             <select id="select-active-profile" onchange="switchProfileView(this.value)" style="border:none; background:#f3f4f6; font-weight:700; color:var(--primary); padding:10px;"></select>
         </div>
+
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; margin-top:10px;">
             <h3 style="margin:0; text-align:left;">Tu Resultado</h3>
             <small style="color:var(--text-sec); cursor:pointer; font-size:0.8rem; font-weight:600; letter-spacing:0.05em;" onclick="location.reload()">SALIR</small>
         </div>
+        
         <div class="info-card">
             <div id="reveal-overlay" onclick="revealName()">
                 <svg class="icon icon-lg" style="color:white; margin-bottom:10px; opacity:0.8;" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
                 <span style="color:white; font-weight:700; letter-spacing:1px; font-size:0.9rem;">TOCA PARA REVELAR</span>
             </div>
+
             <small style="opacity: 0.7; text-transform: uppercase; font-weight:700; font-size:0.75rem; letter-spacing:1px;">Te tocó regalar a</small>
             <h1 id="target-name" style="color:white; margin: 15px 0; font-size: 2.5rem; letter-spacing:-0.03em;">...</h1>
             <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.15);">
                 <small style="font-weight:600; opacity:0.9;">Sus opciones:</small>
+                <br>
                 <ul id="target-wishes-list" class="wishes-list">
                     <li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white;"></div></li>
                 </ul>
                 <div id="target-extra-info" class="info-extra-link" style="margin-top:20px; font-weight:600; color:#f3f4f6; text-align:center; font-size:0.9em; word-wrap:break-word; word-break:break-word;"></div>
             </div>
         </div>
+
         <div style="margin-top: 40px; padding-bottom: 20px;">
             <h3>Llena el Perfil</h3>
             <p style="font-size:0.9em; margin-bottom:25px; opacity:0.8;">Ayuda a tu amigo secreto:</p>
@@ -405,6 +412,7 @@
             <button class="btn-accent" type="button" id="btn-save-wishes">Guardar Preferencias</button>
         </div>
     </div>
+
     <footer class="app-footer">Development by VNGAS</footer>
 </div>
 
@@ -412,17 +420,11 @@
     <div class="modal-content">
         <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 15px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
-        <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
+        <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Protege tu resultado</p>
 
         <div id="form-register" class="hidden">
-            <label>Crea tu PIN (6 dígitos)</label> 
-            <div class="password-wrapper">
-                <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
-                <button class="btn-toggle-pass" onclick="togglePinVisibility('reg-pin')">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
-            </div>
-
+            <label>Crea una contraseña</label> <input type="password" id="reg-pass" placeholder="Nueva contraseña">
+            <label>PIN de recuperación (6 dígitos)</label> <input type="tel" id="reg-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
             <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
                 <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
                 <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
@@ -432,20 +434,22 @@
         </div>
 
         <div id="form-login" class="hidden">
-            <label>Ingresa tu PIN</label> 
-            <div class="password-wrapper">
-                <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
-                <button class="btn-toggle-pass" onclick="togglePinVisibility('login-pin')">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                </button>
-            </div>
+            <label>Ingresa contraseña</label> <input type="password" id="login-pass" placeholder="Tu contraseña">
             <button class="btn-accent" onclick="doLogin()">Entrar</button>
+            <button class="btn-text" onclick="showReset()">Olvidé contraseña</button>
+        </div>
+
+        <div id="form-reset" class="hidden">
+            <label>Ingresa tu PIN de 6 dígitos</label> <input type="tel" id="reset-secret" placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
+            <label>Nueva Contraseña</label> <input type="password" id="reset-new-pass">
+            <button class="btn-accent" onclick="doReset()">Restablecer</button>
+            <button class="btn-text" onclick="showLoginFromReset()">Cancelar</button>
         </div>
         
         <div id="admin-override-box" class="hidden">
             <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                Olvidé mi PIN (Admin Reset)
+                Resetear cuenta (Admin)
             </button>
         </div>
         <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
@@ -457,12 +461,7 @@
         <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 10px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <h3 style="margin-bottom:5px;">Acceso Admin</h3>
         <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
-        <div class="password-wrapper">
-            <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;" onkeypress="if(event.key === 'Enter') submitAdminAuth()">
-            <button class="btn-toggle-pass" onclick="togglePasswordVisibility('admin-input-pass')" style="right: 5px; top: 25px;">
-                <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-            </button>
-        </div>
+        <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;" onkeypress="if(event.key === 'Enter') submitAdminAuth()">
         <div style="display:flex; gap:10px;">
             <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
             <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
@@ -487,8 +486,8 @@
 </div>
 
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAsVkuWgNhpC5cIyRem9ArT8QBNpWtSCX0",
@@ -512,50 +511,7 @@
     let currentGiftLabel = ""; 
     let linkedProfiles = [];
 
-    // --- UTILS DE UI ---
-    window.togglePasswordVisibility = (inputId) => {
-        const input = document.getElementById(inputId);
-        const btn = input.nextElementSibling;
-        if (input.type === "password") {
-            input.type = "text";
-            btn.style.color = "var(--primary)";
-        } else {
-            input.type = "password";
-            btn.style.color = "var(--text-sec)";
-        }
-    };
-
-    window.togglePinVisibility = (inputId) => {
-        const input = document.getElementById(inputId);
-        const btn = input.nextElementSibling;
-        const currentSecurity = input.style.webkitTextSecurity;
-        if (currentSecurity === 'disc') {
-            input.style.webkitTextSecurity = 'none';
-            btn.style.color = "var(--primary)"; 
-        } else {
-            input.style.webkitTextSecurity = 'disc';
-            btn.style.color = "var(--text-sec)"; 
-        }
-    };
-
-    async function hashString(str) {
-        if(!str) return null;
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const hash = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
-
-    document.querySelectorAll('.pin-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            if(e.target.value.length === 6) e.target.classList.add('pin-valid');
-            else e.target.classList.remove('pin-valid');
-        });
-    });
-
+    // --- TOAST SYSTEM ---
     window.showToast = (message, duration = 3000) => {
         const container = document.getElementById('toast-container');
         const el = document.createElement('div');
@@ -565,45 +521,61 @@
         setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
     };
 
+    // --- ADMIN MODAL SYSTEM ---
     let pendingAdminCallback = null;
     window.promptForAdmin = (callback) => {
         pendingAdminCallback = callback;
         const m = document.getElementById('admin-modal');
-        const input = document.getElementById('admin-input-pass');
-        input.value = ''; input.type = 'password'; 
+        document.getElementById('admin-input-pass').value = '';
         m.classList.remove('hidden');
-        setTimeout(() => input.focus(), 100);
+        setTimeout(() => document.getElementById('admin-input-pass').focus(), 100);
     };
     window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
-    
     window.submitAdminAuth = () => {
         const val = document.getElementById('admin-input-pass').value; 
-        const callbackToRun = pendingAdminCallback; // Guardamos la referencia
+        const callbackToRun = pendingAdminCallback; 
         if(val === MASTER_KEY) {
-            closeAdminModal(); 
-            if(callbackToRun) callbackToRun(); // Ejecutamos la copia guardada
+            closeAdminModal();
+            if(callbackToRun) callbackToRun();
         } else {
             showToast("Contraseña incorrecta");
             document.getElementById('admin-input-pass').value = '';
         }
     };
 
+    // --- CONFIRMATION MODAL SYSTEM (NUEVO) ---
     let pendingConfirmAction = null;
+
     window.openConfirmModal = (title, message, callback) => {
         document.getElementById('confirm-title').innerText = title;
         document.getElementById('confirm-desc').innerText = message;
         pendingConfirmAction = callback;
         document.getElementById('confirm-modal').classList.remove('hidden');
     };
-    window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
-    window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
 
+    window.closeConfirmModal = () => {
+        document.getElementById('confirm-modal').classList.add('hidden');
+        pendingConfirmAction = null;
+    };
+
+    window.executeConfirm = () => {
+        if (pendingConfirmAction) pendingConfirmAction();
+        closeConfirmModal();
+    };
+
+    // --- LOGICA PARA REVELAR SOLO 1 VEZ Y GUARDAR EN DB ---
     window.revealName = () => {
         const overlay = document.getElementById('reveal-overlay');
-        overlay.classList.add('faded');
+        overlay.classList.add('faded'); // Ocultar visualmente
+        
+        // Disparar confeti
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+
+        // Guardar en DB que ya se reveló (para no mostrarlo la próxima vez)
         if(currentUserId) {
             updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
+            
+            // Actualizar localmente también
             const p = linkedProfiles.find(x => x.id === currentUserId);
             if(p) p.revealed = true;
         }
@@ -636,79 +608,44 @@
 
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
-        listDiv.innerHTML = '<div class="spinner"></div>';
-        
+        listDiv.innerHTML = '<div class="spinner"></div>'; 
         try {
-            console.log("Intentando cargar eventos...");
             const snap = await getDocs(collection(db, "events"));
             listDiv.innerHTML = "";
-            
-            if(snap.empty) { 
-                listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; 
-                return; 
-            }
-            
+            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; return; }
             snap.forEach(docSnap => {
                 const data = docSnap.data();
                 const id = docSnap.id;
-                
-                // --- VALIDACIONES DE SEGURIDAD AGREGADAS ---
-                const titleDisplay = data.title || "Evento sin título";
-                const budgetDisplay = data.budget ? data.budget.replace('$', '') : '---';
-                
-                let prettyDate = "S/F";
-                if (data.date) {
-                    const parts = data.date.split('-');
-                    if (parts.length === 3) {
-                        prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-                    }
-                }
-                // --- FIN VALIDACIONES ---
-
+                let parts = (data.date || "2025-01-01").split('-');
+                let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
                 const div = document.createElement('div');
                 div.className = 'master-event-card';
                 div.innerHTML = `
-                    <div class="master-event-info">
-                        <h4>${titleDisplay}</h4>
-                        <div class="master-event-meta" style="margin-top:5px;">
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                ${prettyDate}
-                            </span>
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                ${budgetDisplay}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="master-actions">
-                        <button class="btn-icon-action" onclick="window.location.href='?id=${id}'">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        </button>
-                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        </button>
-                    </div>`;
+                    <div class="master-event-info"><h4>${data.title}</h4><div class="master-event-meta" style="margin-top:5px;"><span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}</span><span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}</span></div></div>
+                    <div class="master-actions"><button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button><button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
                 listDiv.appendChild(div);
             });
-        } catch(e) { 
-            console.error("EL ERROR ES:", e);
-            listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}<br><br>Revisa Consola (F12) para más detalles.</p>`; 
-        }
+        } catch(e) { console.error(e); listDiv.innerHTML = "<p style='text-align:center; color:red'>Error al cargar</p>"; }
     }
 
+    // MODIFICADO: Usa el modal de confirmación en lugar de confirm()
     window.deleteGlobalEvent = (id) => {
-        openConfirmModal("¿Borrar evento?", "Se eliminarán todos los datos permanentemente.", async () => {
-            try {
-                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
-                const batch = writeBatch(db);
-                partsSnap.forEach(d => batch.delete(d.ref));
-                await batch.commit(); 
-                await deleteDoc(doc(db, "events", id));
-                showToast("Evento eliminado"); 
-                loadAllEvents();
-            } catch(e) { showToast("Error al borrar"); }
-        });
+        openConfirmModal(
+            "¿Borrar evento?", 
+            "Se eliminarán todos los datos y participantes permanentemente.", 
+            async () => {
+                try {
+                    const partsRef = collection(db, `events/${id}/participants`);
+                    const partsSnap = await getDocs(partsRef);
+                    const batch = writeBatch(db);
+                    partsSnap.forEach(d => batch.delete(d.ref));
+                    await batch.commit(); 
+                    await deleteDoc(doc(db, "events", id));
+                    showToast("Evento eliminado"); 
+                    loadAllEvents();
+                } catch(e) { showToast("Error al borrar"); }
+            }
+        );
     }
 
     window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
@@ -740,14 +677,15 @@
         const month = document.getElementById('setup-month').value;
         const budget = document.getElementById('setup-budget').value;
         const giftType = document.getElementById('setup-gift-type').value; 
-        if(participantsList.length < 2) return showToast("Mínimo 2 personas");
+        const names = [...participantsList];
+        if(names.length < 2) return showToast("Mínimo 2 personas");
         if(!title || !day || !month) return showToast("Completa los datos");
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
-        const btn = document.getElementById('btn-create-event');
+        const btn = document.getElementById('btn-create-event'); const originalText = btn.innerText;
         btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0;"></div>';
         try {
             const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
-            let shuffled = [...participantsList];
+            let shuffled = [...names];
             for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
             const batch = writeBatch(db); let refs = [];
             for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
@@ -759,24 +697,30 @@
             eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
             document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
             document.getElementById('share-link-text').innerText = link;
-        } catch(e) { btn.disabled = false; btn.innerText = "Generar Sorteo"; showToast("Error al crear: " + e.message); }
+        } catch(e) { console.error(e); btn.disabled = false; btn.innerText = originalText; showToast("Error al crear"); }
     });
 
     window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
     window.goToEvent = () => { window.location.href = "?id=" + eventId; };
 
+    // MODIFICADO: Usa el modal de confirmación en lugar de confirm()
     window.deleteEvent = () => {
-        openConfirmModal("¿Borrar este evento?", "Esta acción eliminará todo permanentemente.", async () => {
-            try {
-                const snapshot = await getDocs(collection(db, `events/${eventId}/participants`)); 
-                const batch = writeBatch(db);
-                snapshot.forEach(doc => batch.delete(doc.ref));
-                await batch.commit(); 
-                await deleteDoc(doc(db, "events", eventId));
-                showToast("Evento eliminado"); 
-                setTimeout(() => window.location.href = window.location.pathname, 1500);
-            } catch(e) { showToast("Error al eliminar"); }
-        });
+        openConfirmModal(
+            "¿Borrar este evento?",
+            "Esta acción eliminará el sorteo actual y a todos sus participantes para siempre.",
+            async () => {
+                try {
+                    const partsRef = collection(db, `events/${eventId}/participants`);
+                    const snapshot = await getDocs(partsRef); 
+                    const batch = writeBatch(db);
+                    snapshot.forEach(doc => batch.delete(doc.ref));
+                    await batch.commit(); 
+                    await deleteDoc(doc(db, "events", eventId));
+                    showToast("Evento eliminado"); 
+                    setTimeout(() => window.location.href = window.location.pathname, 1500);
+                } catch(e) { showToast("Error al eliminar"); }
+            }
+        );
     };
 
     async function loadEventData(id) {
@@ -789,12 +733,17 @@
 
         onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             const list = document.getElementById('names-list'); list.innerHTML = "";
+            // FIX: Si el dashboard ya está visible, NO mostrar la pantalla de login
             const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
             if(isDashboardVisible) return;
+
             if(!currentUserId) { 
                 document.getElementById('screen-home').classList.add('hidden'); 
                 document.getElementById('screen-login').classList.remove('hidden'); 
+            } else {
+                document.getElementById('screen-login').classList.add('hidden');
             }
+
             qs.forEach(d => {
                 const p = d.data(); if (p.isChild) return; 
                 const div = document.createElement('div'); div.className = 'name-card-user'; 
@@ -809,24 +758,13 @@
     async function prepareAuth(id, data) {
         selectedUserDoc = { id, data };
         const m = document.getElementById('auth-modal');
-        document.getElementById('form-register').classList.add('hidden'); 
-        document.getElementById('form-login').classList.add('hidden'); 
-        document.getElementById('admin-override-box').classList.add('hidden'); 
-        document.getElementById('claim-children-section').classList.add('hidden'); 
-        document.querySelectorAll('.pin-input').forEach(i => { 
-            i.value=''; i.classList.remove('pin-valid'); i.style.webkitTextSecurity = 'disc';
-            const btn = i.nextElementSibling; if(btn) btn.style.color = 'var(--text-sec)';
-        });
-
-        m.classList.remove('hidden'); 
-        document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
+        document.getElementById('form-register').classList.add('hidden'); document.getElementById('form-login').classList.add('hidden'); document.getElementById('form-reset').classList.add('hidden'); document.getElementById('admin-override-box').classList.add('hidden'); document.getElementById('claim-children-section').classList.add('hidden'); document.querySelectorAll('input').forEach(i => i.value='');
+        m.classList.remove('hidden'); document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
         if(!data.password) {
             document.getElementById('form-register').classList.remove('hidden');
-            const listDiv = document.getElementById('children-list-check'); 
-            const section = document.getElementById('claim-children-section');
+            const listDiv = document.getElementById('children-list-check'); const section = document.getElementById('claim-children-section');
             listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
-            
             const q = await getDocs(collection(db, `events/${eventId}/participants`));
             listDiv.innerHTML = ""; let foundChild = false;
             q.forEach(docSnap => {
@@ -839,97 +777,93 @@
                 }
             });
             if(foundChild && !data.isChild) section.classList.remove('hidden'); 
-
         } else {
-            document.getElementById('form-login').classList.remove('hidden'); 
-            document.getElementById('admin-override-box').classList.remove('hidden');
+            document.getElementById('form-login').classList.remove('hidden'); document.getElementById('admin-override-box').classList.remove('hidden');
         }
     }
 
     window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
 
     window.doRegister = async () => {
-        const pin = document.getElementById('reg-pin').value; 
-        if(!isValidPIN(pin)) return showToast("El PIN debe ser de 6 números.");
-        const btn = document.querySelector('#form-register .btn-accent');
-        btn.disabled = true; btn.innerText = "Guardando...";
-
-        try {
-            const hPin = await hashString(pin);
-            const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
-            const batch = writeBatch(db);
-            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hPin });
-            childrenIds.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
-            await batch.commit(); 
-            window.closeModal(); 
-            selectedUserDoc.data.password = hPin;
-            enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
-        } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
+        const pass = document.getElementById('reg-pass').value; const secret = document.getElementById('reg-secret').value;
+        if(!pass || !secret) return showToast("Por favor llena ambos campos.");
+        if(secret.length !== 6 || isNaN(secret)) return showToast("El PIN debe ser de 6 dígitos.");
+        
+        const checkboxes = document.querySelectorAll('.child-claim-checkbox:checked'); const childrenIds = Array.from(checkboxes).map(c => c.value);
+        const batch = writeBatch(db);
+        const myRef = doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`);
+        batch.update(myRef, { password: pass, secretKey: secret });
+        childrenIds.forEach(kidId => { const kidRef = doc(db, `events/${eventId}/participants/${kidId}`); batch.update(kidRef, { managedBy: selectedUserDoc.id }); });
+        await batch.commit(); window.closeModal(); enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
     };
 
-    window.doLogin = async () => {
-        const pinInput = document.getElementById('login-pin').value;
-        const hInput = await hashString(pinInput);
-        if(hInput === selectedUserDoc.data.password) {
+    window.doLogin = () => {
+        if(document.getElementById('login-pass').value === selectedUserDoc.data.password) {
             window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } else {
-            showToast("PIN incorrecto");
-            document.getElementById('login-pin').value = '';
-            document.getElementById('login-pin').classList.remove('pin-valid');
-        }
+        } else showToast("Contraseña incorrecta");
+    };
+
+    window.showReset = () => { document.getElementById('form-login').classList.add('hidden'); document.getElementById('admin-override-box').classList.add('hidden'); document.getElementById('form-reset').classList.remove('hidden'); };
+    window.showLoginFromReset = () => { document.getElementById('form-reset').classList.add('hidden'); document.getElementById('form-login').classList.remove('hidden'); document.getElementById('admin-override-box').classList.remove('hidden'); };
+
+    window.doReset = async () => {
+        const s = document.getElementById('reset-secret').value; const n = document.getElementById('reset-new-pass').value;
+        if(s.trim() === selectedUserDoc.data.secretKey.trim()) {
+            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: n });
+            showToast("Contraseña restablecida"); selectedUserDoc.data.password = n; window.showLoginFromReset();
+        } else { showToast("PIN incorrecto"); }
     };
 
     window.adminOverride = async () => {
         await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
-        showToast("Cuenta reseteada"); 
-        selectedUserDoc.data.password = null; 
-        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
+        showToast("Cuenta reseteada"); selectedUserDoc.data.password = null; prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
     function makeLinksClickable(text) {
         if (!text) return ""; const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
+        return text.replace(urlRegex, (url) => { return `<a href="${url}" target="_blank">${url}</a>`; });
     }
 
     async function enterDashboard(uid, userData) {
         document.getElementById('screen-login').classList.add('hidden');
         document.getElementById('screen-dashboard').classList.remove('hidden');
-        if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
 
-        linkedProfiles = [{ id: uid, ...userData }];
+        // MARCAR COMO VISTO AL ENTRAR
+        if(!userData.seen) { updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true }); }
+
+        linkedProfiles = []; linkedProfiles.push({ id: uid, ...userData });
         const q = await getDocs(collection(db, `events/${eventId}/participants`));
-        q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
+        q.forEach(docSnap => { const d = docSnap.data(); if(d.managedBy === uid) { linkedProfiles.push({ id: docSnap.id, ...d }); } });
 
-        const switcher = document.getElementById('profile-switcher'); 
-        const select = document.getElementById('select-active-profile');
+        const switcher = document.getElementById('profile-switcher'); const select = document.getElementById('select-active-profile');
         if(linkedProfiles.length > 1) {
             switcher.classList.remove('hidden'); select.innerHTML = "";
-            linkedProfiles.forEach((p, idx) => { 
-                const opt = document.createElement('option'); opt.value = idx; 
-                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)"); select.appendChild(opt); 
-            });
-        } else switcher.classList.add('hidden');
+            linkedProfiles.forEach((p, idx) => { const opt = document.createElement('option'); opt.value = idx; opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)"); select.appendChild(opt); });
+        } else { switcher.classList.add('hidden'); }
         loadProfileIndex(0);
     }
 
-    window.switchProfileView = (idx) => loadProfileIndex(parseInt(idx));
+    window.switchProfileView = (idx) => { loadProfileIndex(parseInt(idx)); }
 
     function loadProfileIndex(index) {
         const profile = linkedProfiles[index]; currentUserId = profile.id; currentTargetId = profile.targetId;
         const extraContainer = document.getElementById('input-container-extra');
         if(currentGiftLabel && currentGiftLabel.trim() !== "") {
-            extraContainer.classList.remove('hidden'); 
-            document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; 
-            document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
-        } else extraContainer.classList.add('hidden');
+            extraContainer.classList.remove('hidden'); document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
+        } else { extraContainer.classList.add('hidden'); }
 
         document.getElementById('my-wish-1').value = profile.wish1 || "";
         document.getElementById('my-wish-2').value = profile.wish2 || "";
         document.getElementById('my-wish-3').value = profile.wish3 || "";
         if(document.getElementById('my-extra')) document.getElementById('my-extra').value = profile.extra || "";
 
+        // VERIFICAR SI YA REVELÓ
         const revealOverlay = document.getElementById('reveal-overlay');
-        profile.revealed ? revealOverlay.classList.add('faded') : revealOverlay.classList.remove('faded');
+        if(profile.revealed) {
+            revealOverlay.classList.add('faded');
+        } else {
+            revealOverlay.classList.remove('faded');
+        }
 
         document.getElementById('target-name').innerText = profile.targetName;
         document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
@@ -942,26 +876,23 @@
                 if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
                 if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
                 const extraDiv = document.getElementById('target-extra-info');
-                extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
+                if(currentGiftLabel && data.extra) { extraDiv.innerHTML = `${currentGiftLabel}: ${makeLinksClickable(data.extra)}`; } else { extraDiv.innerText = ""; }
             }
         });
     }
 
     document.getElementById('btn-save-wishes').addEventListener('click', async () => {
-        const w1 = document.getElementById('my-wish-1').value; 
-        const w2 = document.getElementById('my-wish-2').value; 
-        const w3 = document.getElementById('my-wish-3').value;
-        let extra = !document.getElementById('input-container-extra').classList.contains('hidden') ? document.getElementById('my-extra').value : "";
-        const btn = document.getElementById('btn-save-wishes');
-        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; 
-        btn.disabled = true;
+        const w1 = document.getElementById('my-wish-1').value; const w2 = document.getElementById('my-wish-2').value; const w3 = document.getElementById('my-wish-3').value;
+        let extra = ""; if(!document.getElementById('input-container-extra').classList.contains('hidden')) { extra = document.getElementById('my-extra').value; }
+        const btn = document.getElementById('btn-save-wishes'); const originalText = btn.innerText;
+        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; btn.disabled = true;
         try {
             await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { wish1: w1, wish2: w2, wish3: w3, extra: extra });
-            const idx = linkedProfiles.findIndex(p => p.id === currentUserId);
-            if(idx !== -1) { linkedProfiles[idx].wish1 = w1; linkedProfiles[idx].wish2 = w2; linkedProfiles[idx].wish3 = w3; linkedProfiles[idx].extra = extra; }
+            const activeProfileIndex = linkedProfiles.findIndex(p => p.id === currentUserId);
+            if(activeProfileIndex !== -1) { linkedProfiles[activeProfileIndex].wish1 = w1; linkedProfiles[activeProfileIndex].wish2 = w2; linkedProfiles[activeProfileIndex].wish3 = w3; linkedProfiles[activeProfileIndex].extra = extra; }
             btn.innerText = "¡Guardado!"; showToast("Preferencias guardadas");
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
-        } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
+        } catch(e) { console.error(e); btn.innerText = originalText; btn.disabled = false; showToast("Error al guardar"); }
     });
 </script>
 
