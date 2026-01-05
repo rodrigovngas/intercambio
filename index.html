@@ -621,11 +621,8 @@
         const overlay = document.getElementById('reveal-overlay');
         overlay.classList.add('faded');
         
-        // VIBRACIÓN AL REVELAR (200ms)
-        if (navigator.vibrate) {
-            navigator.vibrate(200);
-        }
-
+        // SIN VIBRACIÓN
+        
         confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
         if(currentUserId) {
             updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
