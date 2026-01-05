@@ -419,7 +419,7 @@
         <div id="form-register" class="hidden">
             <label>Crea tu PIN (6 dígitos)</label> 
             <div class="password-wrapper">
-                <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
+                <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;" autocomplete="new-password">
                 <button class="btn-toggle-pass" onclick="togglePinVisibility('reg-pin')">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
@@ -436,12 +436,18 @@
         <div id="form-login" class="hidden">
             <label>Ingresa tu PIN</label> 
             <div class="password-wrapper">
-                <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
+                <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;" autocomplete="current-password">
                 <button class="btn-toggle-pass" onclick="togglePinVisibility('login-pin')">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
             </div>
-            <button class="btn-accent" onclick="doLogin()">Entrar</button>
+            
+            <div style="display:flex; gap:10px; margin-top:24px;">
+                <button class="btn-secondary" onclick="loginWithBiometrics()" style="margin-top:0; width:auto; padding:0 20px;" title="Usar Huella/FaceID">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M2 12C2 6.48 6.48 2 12 2s10 4.48 10 10-4.48 10-10 10S2 17.52 2 12zm10 7c3.53 0 6.45-2.61 6.92-6H5.08C5.55 16.39 8.47 19 12 19zm6.92-8C18.45 7.61 15.53 5 12 5S5.55 7.61 5.08 11h13.84z"></path><path d="M12 1v2m0 18v2M1 12h2m18 0h2" stroke-linecap="round"/></svg>
+                </button>
+                <button class="btn-accent" onclick="doLogin()" style="margin-top:0; flex:1;">Entrar</button>
+            </div>
         </div>
         
         <div id="admin-override-box" class="hidden">
@@ -527,7 +533,7 @@
         }
     };
 
-    // --- NUEVA FUNCIÓN PARA ALTERNAR VISIBILIDAD DEL PIN ---
+    // --- FUNCIÓN PARA ALTERNAR VISIBILIDAD DEL PIN ---
     window.togglePinVisibility = (inputId) => {
         const input = document.getElementById(inputId);
         const btn = input.nextElementSibling;
@@ -672,7 +678,10 @@
                     <div class="master-actions"><button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button><button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button></div>`;
                 listDiv.appendChild(div);
             });
-        } catch(e) { listDiv.innerHTML = "<p style='text-align:center; color:red'>Error al cargar</p>"; }
+        } catch(e) { 
+            console.error("EL ERROR ES:", e);
+            listDiv.innerHTML = "<p style='text-align:center; color:red'>Error al cargar</p>"; 
+        }
     }
 
     window.deleteGlobalEvent = (id) => {
@@ -855,6 +864,10 @@
             await batch.commit(); 
             window.closeModal(); 
             selectedUserDoc.data.password = hPin;
+            
+            // Guardar credencial en el navegador (FaceID/Huella)
+            saveCredentialsToBrowser(selectedUserDoc.data.name, pin);
+
             enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
         } catch(e) { 
             console.error(e);
@@ -869,12 +882,53 @@
         const hInput = await hashString(pinInput);
         
         if(hInput === selectedUserDoc.data.password) {
-            window.closeModal(); 
+            window.closeModal();
+            
+            // Actualizar credencial en el navegador (FaceID/Huella)
+            saveCredentialsToBrowser(selectedUserDoc.data.name, pinInput);
+
             enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
             showToast("PIN incorrecto");
             document.getElementById('login-pin').value = '';
             document.getElementById('login-pin').classList.remove('pin-valid');
+        }
+    };
+
+    // --- LÓGICA BIOMÉTRICA (Credential Management API) ---
+    async function saveCredentialsToBrowser(username, password) {
+        if (!window.PasswordCredential || !navigator.credentials) return;
+        try {
+            const cred = new PasswordCredential({
+                id: username, 
+                password: password,
+                name: username,
+                iconURL: window.location.origin + '/favicon.ico'
+            });
+            await navigator.credentials.store(cred);
+        } catch (e) {
+            console.log("El navegador no soportó guardar credenciales o el usuario canceló.");
+        }
+    }
+
+    window.loginWithBiometrics = async () => {
+        if (!window.PasswordCredential || !navigator.credentials) {
+            return showToast("Tu navegador no soporta esta función.");
+        }
+        try {
+            const cred = await navigator.credentials.get({
+                password: true,
+                mediation: 'optional' 
+            });
+
+            if (cred && cred.password) {
+                document.getElementById('login-pin').value = cred.password;
+                const input = document.getElementById('login-pin');
+                input.classList.add('pin-valid');
+                doLogin();
+            }
+        } catch (e) {
+            showToast("No se encontraron credenciales guardadas.");
         }
     };
 
