@@ -487,11 +487,9 @@
 </div>
 
 <script type="module">
-    // --- LÍNEAS CORREGIDAS PARA EVITAR CHOQUE DE VERSION ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    // --- TU CONFIGURACIÓN (Verificada con tus capturas) ---
     const firebaseConfig = {
         apiKey: "AIzaSyAsVkuWgNhpC5cIyRem9ArT8QBNpWtSCX0",
         authDomain: "sorteo-f421d.firebaseapp.com",
@@ -577,11 +575,14 @@
         setTimeout(() => input.focus(), 100);
     };
     window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
+    
+    // --- FUNCIÓN CORREGIDA PARA QUE NO SE BORRE EL CALLBACK ---
     window.submitAdminAuth = () => {
         const val = document.getElementById('admin-input-pass').value; 
+        const callbackToRun = pendingAdminCallback; // Guardamos la referencia
         if(val === MASTER_KEY) {
-            closeAdminModal();
-            if(pendingAdminCallback) pendingAdminCallback();
+            closeAdminModal(); 
+            if(callbackToRun) callbackToRun(); // Ejecutamos la copia guardada
         } else {
             showToast("Contraseña incorrecta");
             document.getElementById('admin-input-pass').value = '';
@@ -634,7 +635,6 @@
         document.getElementById('screen-home').classList.remove('hidden');
     };
 
-    // --- FUNCIÓN CORREGIDA PARA MOSTRAR ERROR REAL ---
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
         listDiv.innerHTML = '<div class="spinner"></div>'; 
@@ -657,7 +657,6 @@
             });
         } catch(e) { 
             console.error("EL ERROR ES:", e);
-            // AQUÍ MUESTRO EL ERROR REAL EN PANTALLA
             listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}<br><br>Revisa Consola (F12) para más detalles.</p>`; 
         }
     }
