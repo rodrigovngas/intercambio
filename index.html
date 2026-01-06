@@ -420,7 +420,7 @@
         <div id="form-register" class="hidden">
             <label>Crea tu PIN (6 dígitos)</label> 
             <div class="password-wrapper">
-                <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
+                <input type="password" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
                 <button class="btn-toggle-pass" onclick="toggleFieldVisibility('reg-pin')" type="button">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
@@ -437,7 +437,7 @@
         <div id="form-login" class="hidden">
             <label>Ingresa tu PIN</label> 
             <div class="password-wrapper">
-                <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
+                <input type="password" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
                 <button class="btn-toggle-pass" onclick="toggleFieldVisibility('login-pin')" type="button">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
@@ -520,26 +520,12 @@
         const input = document.getElementById(inputId);
         const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
 
-        if (input.classList.contains('pin-input')) {
-            const isHidden = input.dataset.hidden !== "false";
-
-            if (isHidden) {
-                input.style.setProperty('-webkit-text-security', 'none');
-                input.dataset.hidden = "false";
-                btn.style.color = "var(--primary)";
-            } else {
-                input.style.setProperty('-webkit-text-security', 'disc');
-                input.dataset.hidden = "true";
-                btn.style.color = "var(--text-sec)";
-            }
+        if (input.type === "password") {
+            input.type = "text";
+            btn.style.color = "var(--primary)";
         } else {
-            if (input.type === "password") {
-                input.type = "text";
-                btn.style.color = "var(--primary)";
-            } else {
-                input.type = "password";
-                btn.style.color = "var(--text-sec)";
-            }
+            input.type = "password";
+            btn.style.color = "var(--text-sec)";
         }
     };
 
@@ -803,8 +789,7 @@
         
         document.querySelectorAll('.pin-input').forEach(i => { 
             i.value=''; i.classList.remove('pin-valid'); 
-            i.dataset.hidden = "true";
-            i.style.setProperty('-webkit-text-security', 'disc');
+            i.type = "password";
             const btn = i.closest('.password-wrapper').querySelector('.btn-toggle-pass');
             if(btn) btn.style.color = 'var(--text-sec)';
         });
