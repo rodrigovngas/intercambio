@@ -106,12 +106,12 @@
         }
         button:active { transform: scale(0.98); }
 
-        .btn-accent { 
+        .btn-primary, .btn-accent { 
             background: linear-gradient(135deg, #1f2937 0%, #000000 100%); color: white; 
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             border-top: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
+        .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
         
         .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
@@ -255,6 +255,16 @@
 </head>
 <body>
 
+<script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) {
+        if(e.keyCode == 123) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+        if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+    }
+</script>
 <div id="toast-container"></div>
 
 <div class="container">
