@@ -343,7 +343,10 @@
 
     <div id="screen-share" class="hidden screen-content">
         <div style="text-align:center;">
-            <svg class="icon icon-lg" style="color:var(--primary); margin: 0 auto 10px;" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+            <svg class="icon icon-lg" style="color:var(--primary); margin: 0 auto 15px; display:block;" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8" fill="none"/>
+                <path d="M8 12.5l3 3 5-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
             <h2>¡Evento Creado!</h2>
             <p>Comparte este enlace a los invitados:</p>
         </div>
@@ -639,7 +642,6 @@
         listDiv.innerHTML = '<div class="spinner"></div>';
         
         try {
-            console.log("Intentando cargar eventos...");
             const snap = await getDocs(collection(db, "events"));
             listDiv.innerHTML = "";
             
@@ -652,7 +654,6 @@
                 const data = docSnap.data();
                 const id = docSnap.id;
                 
-                // --- VALIDACIONES DE SEGURIDAD AGREGADAS ---
                 const titleDisplay = data.title || "Evento sin título";
                 const budgetDisplay = data.budget ? data.budget.replace('$', '') : '---';
                 
@@ -663,7 +664,6 @@
                         prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
                     }
                 }
-                // --- FIN VALIDACIONES ---
 
                 const div = document.createElement('div');
                 div.className = 'master-event-card';
@@ -692,8 +692,7 @@
                 listDiv.appendChild(div);
             });
         } catch(e) { 
-            console.error("EL ERROR ES:", e);
-            listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}<br><br>Revisa Consola (F12) para más detalles.</p>`; 
+            listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; 
         }
     }
 
