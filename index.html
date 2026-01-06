@@ -66,12 +66,13 @@
 
         label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
         
-        .password-wrapper { position: relative; width: 100%; }
+        /* CORRECCIÓN DE WRAPPER Y BOTÓN */
+        .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
         .btn-toggle-pass {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; padding: 8px; cursor: pointer;
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; padding: 10px; cursor: pointer;
             color: var(--text-sec); display: flex; align-items: center; justify-content: center;
-            width: auto; margin: 0; z-index: 5;
+            width: auto; margin: 0; z-index: 10; transition: color 0.2s;
         }
 
         input:not([type="checkbox"]), textarea, select {
@@ -81,7 +82,7 @@
             transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
         
-        input[type="password"], .pin-input { padding-right: 45px !important; } 
+        input[type="password"], .pin-input { padding-right: 48px !important; } 
         
         input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
 
@@ -421,7 +422,7 @@
             <label>Crea tu PIN (6 dígitos)</label> 
             <div class="password-wrapper">
                 <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
-                <button class="btn-toggle-pass" onclick="togglePinVisibility('reg-pin')">
+                <button class="btn-toggle-pass" onclick="toggleFieldVisibility('reg-pin')" type="button">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
             </div>
@@ -438,7 +439,7 @@
             <label>Ingresa tu PIN</label> 
             <div class="password-wrapper">
                 <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
-                <button class="btn-toggle-pass" onclick="togglePinVisibility('login-pin')">
+                <button class="btn-toggle-pass" onclick="toggleFieldVisibility('login-pin')" type="button">
                     <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                 </button>
             </div>
@@ -462,7 +463,7 @@
         <p style="font-size:0.85em; margin-bottom:20px;">Ingresa la contraseña maestra</p>
         <div class="password-wrapper">
             <input type="password" id="admin-input-pass" placeholder="Contraseña..." style="text-align:center; margin-bottom:20px;" onkeypress="if(event.key === 'Enter') submitAdminAuth()">
-            <button class="btn-toggle-pass" onclick="togglePasswordVisibility('admin-input-pass')" style="right: 5px; top: 25px;">
+            <button class="btn-toggle-pass" onclick="toggleFieldVisibility('admin-input-pass')" type="button">
                 <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
             </button>
         </div>
@@ -515,29 +516,28 @@
     let currentGiftLabel = ""; 
     let linkedProfiles = [];
 
-    // --- UTILS DE UI ---
-    window.togglePasswordVisibility = (inputId) => {
+    // --- FUNCION UNIFICADA DE VISIBILIDAD ---
+    window.toggleFieldVisibility = (inputId) => {
         const input = document.getElementById(inputId);
-        const btn = input.nextElementSibling;
-        if (input.type === "password") {
-            input.type = "text";
-            btn.style.color = "var(--primary)";
-        } else {
-            input.type = "password";
-            btn.style.color = "var(--text-sec)";
-        }
-    };
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
 
-    window.togglePinVisibility = (inputId) => {
-        const input = document.getElementById(inputId);
-        const btn = input.nextElementSibling;
-        const currentSecurity = input.style.webkitTextSecurity;
-        if (currentSecurity === 'disc') {
-            input.style.webkitTextSecurity = 'none';
-            btn.style.color = "var(--primary)"; 
+        if (input.classList.contains('pin-input')) {
+            const currentStyle = window.getComputedStyle(input).webkitTextSecurity;
+            if (currentStyle === 'disc') {
+                input.style.webkitTextSecurity = 'none';
+                btn.style.color = "var(--primary)";
+            } else {
+                input.style.webkitTextSecurity = 'disc';
+                btn.style.color = "var(--text-sec)";
+            }
         } else {
-            input.style.webkitTextSecurity = 'disc';
-            btn.style.color = "var(--text-sec)"; 
+            if (input.type === "password") {
+                input.type = "text";
+                btn.style.color = "var(--primary)";
+            } else {
+                input.type = "password";
+                btn.style.color = "var(--text-sec)";
+            }
         }
     };
 
@@ -574,6 +574,8 @@
         const m = document.getElementById('admin-modal');
         const input = document.getElementById('admin-input-pass');
         input.value = ''; input.type = 'password'; 
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+        btn.style.color = 'var(--text-sec)';
         m.classList.remove('hidden');
         setTimeout(() => input.focus(), 100);
     };
@@ -581,10 +583,10 @@
     
     window.submitAdminAuth = () => {
         const val = document.getElementById('admin-input-pass').value; 
-        const callbackToRun = pendingAdminCallback; // Guardamos la referencia
+        const callbackToRun = pendingAdminCallback;
         if(val === MASTER_KEY) {
             closeAdminModal(); 
-            if(callbackToRun) callbackToRun(); // Ejecutamos la copia guardada
+            if(callbackToRun) callbackToRun();
         } else {
             showToast("Contraseña incorrecta");
             document.getElementById('admin-input-pass').value = '';
@@ -653,16 +655,12 @@
             snap.forEach(docSnap => {
                 const data = docSnap.data();
                 const id = docSnap.id;
-                
                 const titleDisplay = data.title || "Evento sin título";
                 const budgetDisplay = data.budget ? data.budget.replace('$', '') : '---';
-                
                 let prettyDate = "S/F";
                 if (data.date) {
                     const parts = data.date.split('-');
-                    if (parts.length === 3) {
-                        prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-                    }
+                    if (parts.length === 3) prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
                 }
 
                 const div = document.createElement('div');
@@ -671,29 +669,17 @@
                     <div class="master-event-info">
                         <h4>${titleDisplay}</h4>
                         <div class="master-event-meta" style="margin-top:5px;">
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                ${prettyDate}
-                            </span>
-                            <span style="display:flex; align-items:center; gap:4px;">
-                                <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                ${budgetDisplay}
-                            </span>
+                            <span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}</span>
+                            <span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${budgetDisplay}</span>
                         </div>
                     </div>
                     <div class="master-actions">
-                        <button class="btn-icon-action" onclick="window.location.href='?id=${id}'">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        </button>
-                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))">
-                            <svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        </button>
+                        <button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                     </div>`;
                 listDiv.appendChild(div);
             });
-        } catch(e) { 
-            listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; 
-        }
+        } catch(e) { listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; }
     }
 
     window.deleteGlobalEvent = (id) => {
@@ -812,9 +798,11 @@
         document.getElementById('form-login').classList.add('hidden'); 
         document.getElementById('admin-override-box').classList.add('hidden'); 
         document.getElementById('claim-children-section').classList.add('hidden'); 
+        
         document.querySelectorAll('.pin-input').forEach(i => { 
             i.value=''; i.classList.remove('pin-valid'); i.style.webkitTextSecurity = 'disc';
-            const btn = i.nextElementSibling; if(btn) btn.style.color = 'var(--text-sec)';
+            const btn = i.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+            if(btn) btn.style.color = 'var(--text-sec)';
         });
 
         m.classList.remove('hidden'); 
@@ -838,7 +826,6 @@
                 }
             });
             if(foundChild && !data.isChild) section.classList.remove('hidden'); 
-
         } else {
             document.getElementById('form-login').classList.remove('hidden'); 
             document.getElementById('admin-override-box').classList.remove('hidden');
@@ -905,7 +892,7 @@
             switcher.classList.remove('hidden'); select.innerHTML = "";
             linkedProfiles.forEach((p, idx) => { 
                 const opt = document.createElement('option'); opt.value = idx; 
-                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Hijo)"); select.appendChild(opt); 
+                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); select.appendChild(opt); 
             });
         } else switcher.classList.add('hidden');
         loadProfileIndex(0);
