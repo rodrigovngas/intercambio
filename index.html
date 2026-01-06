@@ -522,12 +522,12 @@
         const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
 
         if (input.classList.contains('pin-input')) {
-            const currentStyle = window.getComputedStyle(input).webkitTextSecurity;
+            const currentStyle = window.getComputedStyle(input).getPropertyValue('-webkit-text-security');
             if (currentStyle === 'disc') {
-                input.style.webkitTextSecurity = 'none';
+                input.style.setProperty('-webkit-text-security', 'none');
                 btn.style.color = "var(--primary)";
             } else {
-                input.style.webkitTextSecurity = 'disc';
+                input.style.setProperty('-webkit-text-security', 'disc');
                 btn.style.color = "var(--text-sec)";
             }
         } else {
@@ -800,7 +800,7 @@
         document.getElementById('claim-children-section').classList.add('hidden'); 
         
         document.querySelectorAll('.pin-input').forEach(i => { 
-            i.value=''; i.classList.remove('pin-valid'); i.style.webkitTextSecurity = 'disc';
+            i.value=''; i.classList.remove('pin-valid'); i.style.setProperty('-webkit-text-security', 'disc');
             const btn = i.closest('.password-wrapper').querySelector('.btn-toggle-pass');
             if(btn) btn.style.color = 'var(--text-sec)';
         });
