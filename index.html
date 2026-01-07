@@ -491,7 +491,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAsVkuWgNhpC5cIyRem9ArT8QBNpWtSCX0",
@@ -514,6 +514,8 @@
     let currentTargetId = null;
     let currentGiftLabel = ""; 
     let linkedProfiles = [];
+    let isEditingEvent = false; // Nueva bandera para modo edición
+    let editingEventId = null; // ID del evento en edición
 
     // Definir los paths para ojo abierto y cerrado
     const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
@@ -691,6 +693,7 @@
                     </div>
                     <div class="master-actions">
                         <button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+                        <button class="btn-icon-action" onclick="editEvent('${id}')"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
                         <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                     </div>`;
                 listDiv.appendChild(div);
@@ -712,14 +715,77 @@
         });
     }
 
-    window.showAdminSetup = () => { document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); };
+    window.editEvent = async (id) => {
+        editingEventId = id;
+        isEditingEvent = true;
+
+        // Cargar datos del evento
+        const eventSnap = await getDoc(doc(db, "events", id));
+        if (!eventSnap.exists()) {
+            showToast("Evento no encontrado");
+            return;
+        }
+        const eventData = eventSnap.data();
+
+        // Poblar campos
+        document.getElementById('setup-title').value = eventData.title || "";
+        const dateParts = eventData.date ? eventData.date.split('-') : [];
+        document.getElementById('setup-day').value = dateParts[2] || "";
+        document.getElementById('setup-month').value = dateParts[1] || "";
+        document.getElementById('setup-budget').value = eventData.budget || "Libre";
+        document.getElementById('setup-gift-type').value = eventData.giftType || "";
+
+        // Cargar participantes
+        participantsList = [];
+        const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+        partsSnap.forEach(docSnap => {
+            const p = docSnap.data();
+            participantsList.push({ id: docSnap.id, name: p.name, isChild: p.isChild });
+        });
+        renderParticipantsList();
+
+        // Cambiar UI para modo edición
+        document.getElementById('btn-create-event').innerText = "Guardar Cambios";
+        document.getElementById('screen-master').classList.add('hidden');
+        document.getElementById('screen-admin').classList.remove('hidden');
+
+        // Agregar botón de reshuffle si no existe
+        let reshuffleBtn = document.getElementById('btn-reshuffle-event');
+        if (!reshuffleBtn) {
+            reshuffleBtn = document.createElement('button');
+            reshuffleBtn.id = 'btn-reshuffle-event';
+            reshuffleBtn.className = 'btn-secondary';
+            reshuffleBtn.style.marginTop = '10px';
+            reshuffleBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Reasignar Sorteo';
+            reshuffleBtn.onclick = () => reshuffleParticipants(id);
+            document.getElementById('btn-create-event').parentNode.insertBefore(reshuffleBtn, document.getElementById('btn-create-event').nextSibling);
+        }
+    };
+
+    window.showAdminSetup = () => { 
+        isEditingEvent = false;
+        editingEventId = null;
+        participantsList = [];
+        renderParticipantsList();
+        document.getElementById('setup-title').value = "";
+        document.getElementById('setup-day').value = "";
+        document.getElementById('setup-month').value = "";
+        document.getElementById('setup-budget').value = "Libre";
+        document.getElementById('setup-gift-type').value = "";
+        document.getElementById('btn-create-event').innerText = "Generar Sorteo";
+        const reshuffleBtn = document.getElementById('btn-reshuffle-event');
+        if (reshuffleBtn) reshuffleBtn.remove();
+        document.getElementById('screen-home').classList.add('hidden'); 
+        document.getElementById('screen-admin').classList.remove('hidden'); 
+    };
+
     document.getElementById('btn-add-name').addEventListener('click', addNameToList);
     document.getElementById('input-new-name').addEventListener('keypress', (e) => { if(e.key === 'Enter') addNameToList(); });
 
     function addNameToList() {
         const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
         const name = input.value.trim(); if(!name) return;
-        participantsList.push({ name: name, isChild: check.checked });
+        participantsList.push({ name: name, isChild: check.checked, id: null }); // id null para nuevos
         input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
     }
 
@@ -729,10 +795,40 @@
         participantsList.forEach((p, index) => {
             const div = document.createElement('div'); div.className = 'name-card-admin';
             const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
-            div.innerHTML = `<span>${childTag}${p.name}</span><button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>`;
+            div.innerHTML = `
+                <span id="name-span-${index}">${childTag}${p.name}</span>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-icon-delete" onclick="editName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                    <button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                </div>`;
             container.appendChild(div);
         });
         window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
+        window.editName = (index) => {
+            const span = document.getElementById(`name-span-${index}`);
+            const originalName = participantsList[index].name;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = originalName;
+            input.autocapitalize = 'sentences';
+            input.style.width = 'auto';
+            input.style.marginRight = '5px';
+            span.innerHTML = '';
+            span.appendChild(input);
+            input.focus();
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const newName = input.value.trim();
+                    if (newName) participantsList[index].name = newName;
+                    renderParticipantsList();
+                }
+            });
+            input.addEventListener('blur', () => {
+                const newName = input.value.trim();
+                if (newName) participantsList[index].name = newName;
+                renderParticipantsList();
+            });
+        };
     }
 
     document.getElementById('btn-create-event').addEventListener('click', async () => {
@@ -745,23 +841,110 @@
         if(!title || !day || !month) return showToast("Completa los datos");
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
         const btn = document.getElementById('btn-create-event');
-        btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; margin:0;"></div>';
+        btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; margin:0;"></div>';
+
         try {
-            const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
-            let shuffled = [...participantsList];
-            for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
-            const batch = writeBatch(db); let refs = [];
-            for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
-            for (let i = 0; i < refs.length; i++) {
-                const curr = refs[i]; const next = refs[(i + 1) % refs.length];
-                batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", passwordHash: null, salt: null, secretKey: null, seen: false, revealed: false });
+            if (isEditingEvent) {
+                // Modo edición: Actualizar evento y participantes
+                await updateDoc(doc(db, "events", editingEventId), { title, date: fullDate, budget, giftType });
+
+                // Manejar participantes: agregar nuevos, actualizar existentes, eliminar removidos
+                const existingPartsSnap = await getDocs(collection(db, `events/${editingEventId}/participants`));
+                const existingIds = existingPartsSnap.docs.map(d => d.id);
+                const batch = writeBatch(db);
+
+                // Actualizar o agregar
+                for (let p of participantsList) {
+                    const participantData = {
+                        name: p.name,
+                        isChild: p.isChild || false,
+                        // Preservar otros campos si existen (wishes, etc.) pero como no los editamos aquí, asumimos que se mantienen
+                    };
+                    if (p.id) {
+                        // Actualizar existente
+                        batch.update(doc(db, `events/${editingEventId}/participants/${p.id}`), participantData);
+                        const index = existingIds.indexOf(p.id);
+                        if (index > -1) existingIds.splice(index, 1);
+                    } else {
+                        // Agregar nuevo
+                        const newRef = doc(collection(db, `events/${editingEventId}/participants`));
+                        batch.set(newRef, {
+                            ...participantData,
+                            managedBy: null,
+                            targetId: null, // Se asignará en reshuffle si se elige
+                            targetName: "",
+                            wish1: "",
+                            wish2: "",
+                            wish3: "",
+                            extra: "",
+                            password: null,
+                            secretKey: null,
+                            seen: false,
+                            revealed: false
+                        });
+                    }
+                }
+
+                // Eliminar removidos
+                for (let removedId of existingIds) {
+                    batch.delete(doc(db, `events/${editingEventId}/participants/${removedId}`));
+                }
+
+                await batch.commit();
+                showToast("Evento actualizado");
+                document.getElementById('screen-admin').classList.add('hidden');
+                document.getElementById('screen-master').classList.remove('hidden');
+                loadAllEvents();
+
+            } else {
+                // Modo creación (código original)
+                const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
+                let shuffled = [...participantsList];
+                for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+                const batch = writeBatch(db); let refs = [];
+                for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
+                for (let i = 0; i < refs.length; i++) {
+                    const curr = refs[i]; const next = refs[(i + 1) % refs.length];
+                    batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false, revealed: false });
+                }
+                await batch.commit();
+                eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
+                document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
+                document.getElementById('share-link-text').innerText = link;
             }
-            await batch.commit();
-            eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
-            document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
-            document.getElementById('share-link-text').innerText = link;
-        } catch(e) { btn.disabled = false; btn.innerText = "Generar Sorteo"; showToast("Error al crear: " + e.message); }
+        } catch(e) { btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; showToast("Error: " + e.message); }
     });
+
+    async function reshuffleParticipants(id) {
+        openConfirmModal("¿Reasignar sorteo?", "Esto reseteará las asignaciones de targets, seen y revealed, pero mantendrá wishes y otros datos.", async () => {
+            try {
+                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+                let parts = partsSnap.docs.map(d => ({ id: d.id, data: d.data() }));
+
+                // Shuffle
+                for (let i = parts.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [parts[i], parts[j]] = [parts[j], parts[i]];
+                }
+
+                const batch = writeBatch(db);
+                for (let i = 0; i < parts.length; i++) {
+                    const curr = parts[i];
+                    const next = parts[(i + 1) % parts.length];
+                    batch.update(doc(db, `events/${id}/participants/${curr.id}`), {
+                        targetId: next.id,
+                        targetName: next.data.name,
+                        seen: false,
+                        revealed: false
+                    });
+                }
+                await batch.commit();
+                showToast("Sorteo reasignado");
+            } catch (e) {
+                showToast("Error al reasignar: " + e.message);
+            }
+        });
+    }
 
     window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
     window.goToEvent = () => { window.location.href = "?id=" + eventId; };
@@ -826,7 +1009,7 @@
         m.classList.remove('hidden'); 
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
-        if(!data.passwordHash) {
+        if(!data.password) {
             document.getElementById('form-register').classList.remove('hidden');
             const listDiv = document.getElementById('children-list-check'); 
             const section = document.getElementById('claim-children-section');
@@ -836,7 +1019,7 @@
             listDiv.innerHTML = ""; let foundChild = false;
             q.forEach(docSnap => {
                 const kid = docSnap.data();
-                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.passwordHash) {
+                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
                     foundChild = true;
                     const div = document.createElement('div');
                     div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
@@ -859,27 +1042,22 @@
         btn.disabled = true; btn.innerText = "Guardando...";
 
         try {
-            const saltBytes = crypto.getRandomValues(new Uint8Array(16));
-            const salt = Array.from(saltBytes).map(b => b.toString(16).padStart(2, '0')).join('');
-            const saltedPin = pin + salt;
-            const hPin = await hashString(saltedPin);
+            const hPin = await hashString(pin);
             const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
             const batch = writeBatch(db);
-            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { passwordHash: hPin, salt: salt });
+            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hPin });
             childrenIds.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
             await batch.commit(); 
             window.closeModal(); 
-            selectedUserDoc.data.passwordHash = hPin;
-            selectedUserDoc.data.salt = salt;
+            selectedUserDoc.data.password = hPin;
             enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
         } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
     window.doLogin = async () => {
         const pinInput = document.getElementById('login-pin').value;
-        const saltedInput = pinInput + selectedUserDoc.data.salt;
-        const hInput = await hashString(saltedInput);
-        if(hInput === selectedUserDoc.data.passwordHash) {
+        const hInput = await hashString(pinInput);
+        if(hInput === selectedUserDoc.data.password) {
             window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
             showToast("PIN incorrecto");
@@ -889,10 +1067,9 @@
     };
 
     window.adminOverride = async () => {
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { passwordHash: null, salt: null, secretKey: null, managedBy: null, seen: false, revealed: false });
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
         showToast("Cuenta reseteada"); 
-        selectedUserDoc.data.passwordHash = null; 
-        selectedUserDoc.data.salt = null; 
+        selectedUserDoc.data.password = null; 
         prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
