@@ -754,7 +754,7 @@
             for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
             for (let i = 0; i < refs.length; i++) {
                 const curr = refs[i]; const next = refs[(i + 1) % refs.length];
-                batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false, revealed: false });
+                batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", passwordHash: null, salt: null, secretKey: null, seen: false, revealed: false });
             }
             await batch.commit();
             eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
@@ -826,7 +826,7 @@
         m.classList.remove('hidden'); 
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
-        if(!data.password) {
+        if(!data.passwordHash) {
             document.getElementById('form-register').classList.remove('hidden');
             const listDiv = document.getElementById('children-list-check'); 
             const section = document.getElementById('claim-children-section');
@@ -836,7 +836,7 @@
             listDiv.innerHTML = ""; let foundChild = false;
             q.forEach(docSnap => {
                 const kid = docSnap.data();
-                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
+                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.passwordHash) {
                     foundChild = true;
                     const div = document.createElement('div');
                     div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
@@ -859,22 +859,27 @@
         btn.disabled = true; btn.innerText = "Guardando...";
 
         try {
-            const hPin = await hashString(pin);
+            const saltBytes = crypto.getRandomValues(new Uint8Array(16));
+            const salt = Array.from(saltBytes).map(b => b.toString(16).padStart(2, '0')).join('');
+            const saltedPin = pin + salt;
+            const hPin = await hashString(saltedPin);
             const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
             const batch = writeBatch(db);
-            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hPin });
+            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { passwordHash: hPin, salt: salt });
             childrenIds.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
             await batch.commit(); 
             window.closeModal(); 
-            selectedUserDoc.data.password = hPin;
+            selectedUserDoc.data.passwordHash = hPin;
+            selectedUserDoc.data.salt = salt;
             enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
         } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
     window.doLogin = async () => {
         const pinInput = document.getElementById('login-pin').value;
-        const hInput = await hashString(pinInput);
-        if(hInput === selectedUserDoc.data.password) {
+        const saltedInput = pinInput + selectedUserDoc.data.salt;
+        const hInput = await hashString(saltedInput);
+        if(hInput === selectedUserDoc.data.passwordHash) {
             window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
             showToast("PIN incorrecto");
@@ -884,9 +889,10 @@
     };
 
     window.adminOverride = async () => {
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { passwordHash: null, salt: null, secretKey: null, managedBy: null, seen: false, revealed: false });
         showToast("Cuenta reseteada"); 
-        selectedUserDoc.data.password = null; 
+        selectedUserDoc.data.passwordHash = null; 
+        selectedUserDoc.data.salt = null; 
         prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
