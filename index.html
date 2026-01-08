@@ -417,26 +417,31 @@
         <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
 
-<div id="form-register" class="hidden">
-    <label>Crea tu PIN (6 dígitos)</label> 
-    <div class="password-wrapper">
-        <input type="password" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-        <button class="btn-toggle-pass" onclick="toggleFieldVisibility('reg-pin')" type="button">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </button>
-    </div>
-    <!-- Resto del form-register sin cambios -->
-</div>
+        <div id="form-register" class="hidden">
+            <label>Crea tu PIN (6 dígitos)</label> 
+            <div class="password-wrapper">
+                <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
+                <button class="btn-toggle-pass" onclick="toggleFieldVisibility('reg-pin')" type="button">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
 
-<div id="form-login" class="hidden">
-    <label>Ingresa tu PIN</label> 
-    <div class="password-wrapper">
-        <input type="password" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center;">
-        <button class="btn-toggle-pass" onclick="toggleFieldVisibility('login-pin')" type="button">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-        </button>
-    </div>
-    <!-- Resto del form-login sin cambios -->
+            <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
+                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
+                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+        </div>
+
+        <div id="form-login" class="hidden">
+            <label>Ingresa tu PIN</label> 
+            <div class="password-wrapper">
+                <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
+                <button class="btn-toggle-pass" onclick="toggleFieldVisibility('login-pin')" type="button">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+            </div>
             <button class="btn-accent" onclick="doLogin()">Entrar</button>
         </div>
         
@@ -518,25 +523,41 @@
 
     // Inicializar todos los iconos de ojo como cerrados (contraseña oculta por defecto)
     document.querySelectorAll('.btn-toggle-pass svg').forEach(svg => {
-    svg.innerHTML = closedEyePaths; // Inicia oculto (tachado)
-});
+        svg.innerHTML = closedEyePaths;
+    });
 
-// --- FUNCION UNIFICADA DE VISIBILIDAD ---
-window.toggleFieldVisibility = (inputId) => {
-    const input = document.getElementById(inputId);
-    const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
-    const svg = btn.querySelector('svg');
+    // --- FUNCION UNIFICADA DE VISIBILIDAD ---
+    window.toggleFieldVisibility = (inputId) => {
+        const input = document.getElementById(inputId);
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+        const svg = btn.querySelector('svg');
 
-    if (input.type === "password") {
-        input.type = "text";
-        btn.style.color = "var(--primary)";
-        svg.innerHTML = openEyePaths; // Mostrando: ojo abierto
-    } else {
-        input.type = "password";
-        btn.style.color = "var(--text-sec)";
-        svg.innerHTML = closedEyePaths; // Ocultando: ojo cerrado (tachado)
-    }
-};
+        if (input.classList.contains('pin-input')) {
+            const isHidden = input.dataset.hidden !== "false";
+
+            if (isHidden) {
+                input.style.setProperty('-webkit-text-security', 'none');
+                input.dataset.hidden = "false";
+                btn.style.color = "var(--primary)";
+                svg.innerHTML = openEyePaths; // Mostrando: ojo abierto
+            } else {
+                input.style.setProperty('-webkit-text-security', 'disc');
+                input.dataset.hidden = "true";
+                btn.style.color = "var(--text-sec)";
+                svg.innerHTML = closedEyePaths; // Ocultando: ojo cerrado
+            }
+        } else {
+            if (input.type === "password") {
+                input.type = "text";
+                btn.style.color = "var(--primary)";
+                svg.innerHTML = openEyePaths; // Mostrando: ojo abierto
+            } else {
+                input.type = "password";
+                btn.style.color = "var(--text-sec)";
+                svg.innerHTML = closedEyePaths; // Ocultando: ojo cerrado
+            }
+        }
+    };
 
     async function hashString(str) {
         if(!str) return null;
