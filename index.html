@@ -272,7 +272,37 @@
         .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
         .pin-btn-back { background: transparent; border: none; box-shadow: none; }
         .pin-btn-back:active { background: transparent; opacity: 0.5; }
+/* ===== FIX MODAL SIN SCROLL CON TECLADO (iOS + ANDROID) ===== */
 
+.modal-overlay {
+    align-items: stretch;
+}
+
+.modal-content {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Contenedor interno que reparte el espacio */
+.auth-layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Evita rebotes raros al aparecer teclado */
+body {
+    overscroll-behavior: none;
+}
+
+/* Seguridad extra: que el teclado no empuje */
+.pin-keyboard {
+    margin-bottom: 10px;
+}
     </style>
 </head>
 <body>
@@ -435,80 +465,107 @@
 
 <div id="auth-modal" class="modal-overlay hidden">
     <div class="modal-content">
-        <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 15px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
-        <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
+        <div class="auth-layout">
 
-        <div id="form-register" class="hidden">
-            <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
-            <input type="hidden" id="reg-pin" value="">
-            <div class="pin-display-wrapper">
-                <div class="pin-dots" id="dots-reg">
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
+            <!-- ICONO -->
+            <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 15px; display:block;" viewBox="0 0 24 24">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+
+            <!-- TITULO -->
+            <div>
+                <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
+                <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
             </div>
-            <div class="pin-keyboard">
-                <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
-                <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
-                <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
-                <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
-                <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
-                <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
-                <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
-                <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
-                <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
-                <div class="pin-btn pin-btn-empty"></div>
-                <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
-                <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+
+            <!-- REGISTRO -->
+            <div id="form-register" class="hidden">
+
+                <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
+                <input type="hidden" id="reg-pin" value="">
+
+                <div class="pin-display-wrapper">
+                    <div class="pin-dots" id="dots-reg">
+                        <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                        <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                    </div>
+                </div>
+
+                <div class="pin-keyboard">
+                    <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
+                    <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
+                    <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
+                    <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
+                    <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
+                    <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
+                    <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
+                    <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
+                    <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
+                    <div class="pin-btn pin-btn-empty"></div>
+                    <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
+                    <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                            <line x1="18" y1="9" x2="12" y2="15"></line>
+                            <line x1="12" y1="9" x2="18" y2="15"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+            </div>
+
+            <!-- LOGIN -->
+            <div id="form-login" class="hidden">
+
+                <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
+                <input type="hidden" id="login-pin" value="">
+
+                <div class="pin-display-wrapper">
+                    <div class="pin-dots" id="dots-login">
+                        <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                        <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                    </div>
+                </div>
+
+                <div class="pin-keyboard">
+                    <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
+                    <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
+                    <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
+                    <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
+                    <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
+                    <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
+                    <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
+                    <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
+                    <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
+                    <div class="pin-btn pin-btn-empty"></div>
+                    <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
+                    <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
+                            <line x1="18" y1="9" x2="12" y2="15"></line>
+                            <line x1="12" y1="9" x2="18" y2="15"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <button class="btn-accent" onclick="doLogin()">Entrar</button>
+            </div>
+
+            <!-- ADMIN RESET -->
+            <div id="admin-override-box" class="hidden">
+                <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
+                    Olvidé mi PIN (Admin Reset)
                 </button>
             </div>
 
-            <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
-                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
-                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
-        </div>
-
-        <div id="form-login" class="hidden">
-            <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
-            <input type="hidden" id="login-pin" value="">
-            <div class="pin-display-wrapper">
-                <div class="pin-dots" id="dots-login">
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
-            </div>
-            <div class="pin-keyboard">
-                <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
-                <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
-                <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
-                <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
-                <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
-                <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
-                <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
-                <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
-                <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
-                <div class="pin-btn pin-btn-empty"></div>
-                <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
-                <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
-                </button>
-            </div>
-
-            <button class="btn-accent" onclick="doLogin()">Entrar</button>
-        </div>
-        
-        <div id="admin-override-box" class="hidden">
-            <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
-                <svg class="icon" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                Olvidé mi PIN (Admin Reset)
+            <!-- CERRAR -->
+            <button class="btn-text" onclick="closeModal()" style="margin-top:0;">
+                Cerrar
             </button>
+
         </div>
-        <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
     </div>
 </div>
 
