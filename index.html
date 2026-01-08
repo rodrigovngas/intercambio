@@ -885,6 +885,13 @@
         if(participantsList.length < 2) return showToast("Mínimo 2 personas");
         if(!title || !day || !month) return showToast("Completa los datos");
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
+        const eventDate = new Date(fullDate);
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+        eventDate.setHours(0, 0, 0, 0);
+        if (eventDate <= now) {
+            return showToast("La fecha debe ser futura");
+        }
         const btn = document.getElementById('btn-create-event');
         btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; margin:0;"></div>';
 
