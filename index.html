@@ -81,11 +81,9 @@
             transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
         
-        input[type="password"], .pin-input { padding-right: 48px !important; } 
+        input[type="password"] { padding-right: 48px !important; } 
         
         input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
-
-        input.pin-valid { border-color: var(--success) !important; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1) !important; }
 
         input[type="checkbox"] {
             appearance: auto !important; -webkit-appearance: checkbox !important;
@@ -187,7 +185,7 @@
         .modal-content {
             background: white; padding: 35px 30px; 
             border-top-left-radius: 24px; border-top-right-radius: 24px; 
-            width: 100%; max-width: 500px; max-height: 85dvh; overflow-y: auto;
+            width: 100%; max-width: 500px; max-height: 95dvh; overflow-y: auto;
             box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
@@ -250,6 +248,30 @@
             animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- STYLES FOR CUSTOM PIN UI --- */
+        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
+        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
+        .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
+        .pin-dot.success { background: var(--success); border-color: var(--success); }
+        
+        .pin-keyboard {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; margin: 0 auto; max-width: 280px; padding-bottom: 10px;
+        }
+        .pin-btn {
+            background: #f9fafb; border: 1px solid var(--border); border-radius: 50%;
+            width: 65px; height: 65px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 600; color: var(--primary);
+            cursor: pointer; transition: background 0.15s, transform 0.1s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); -webkit-tap-highlight-color: transparent;
+        }
+        .pin-btn:active { background: #e5e7eb; transform: scale(0.95); }
+        .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
+        .pin-btn-back { background: transparent; border: none; box-shadow: none; }
+        .pin-btn-back:active { background: transparent; opacity: 0.5; }
 
     </style>
 </head>
@@ -418,11 +440,28 @@
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
 
         <div id="form-register" class="hidden">
-            <label>Crea tu PIN (6 dígitos)</label> 
-            <div class="password-wrapper">
-                <input type="tel" id="reg-pin" class="pin-input" placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
-                <button class="btn-toggle-pass" onclick="toggleFieldVisibility('reg-pin')" type="button">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
+            <input type="hidden" id="reg-pin" value="">
+            <div class="pin-display-wrapper">
+                <div class="pin-dots" id="dots-reg">
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                </div>
+            </div>
+            <div class="pin-keyboard">
+                <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
+                <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
+                <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
+                <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
+                <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
+                <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
+                <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
+                <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
+                <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
+                <div class="pin-btn pin-btn-empty"></div>
+                <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
+                <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
                 </button>
             </div>
 
@@ -435,13 +474,31 @@
         </div>
 
         <div id="form-login" class="hidden">
-            <label>Ingresa tu PIN</label> 
-            <div class="password-wrapper">
-                <input type="tel" id="login-pin" class="pin-input" placeholder="******" maxlength="6" pattern="[0-9]*" inputmode="numeric" style="letter-spacing: 5px; font-weight: bold; text-align: center; -webkit-text-security: disc;">
-                <button class="btn-toggle-pass" onclick="toggleFieldVisibility('login-pin')" type="button">
-                    <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
+            <input type="hidden" id="login-pin" value="">
+            <div class="pin-display-wrapper">
+                <div class="pin-dots" id="dots-login">
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                </div>
+            </div>
+            <div class="pin-keyboard">
+                <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
+                <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
+                <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
+                <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
+                <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
+                <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
+                <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
+                <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
+                <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
+                <div class="pin-btn pin-btn-empty"></div>
+                <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
+                <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
                 </button>
             </div>
+
             <button class="btn-accent" onclick="doLogin()">Entrar</button>
         </div>
         
@@ -489,19 +546,6 @@
     </div>
 </div>
 
-<div id="error-modal" class="modal-overlay hidden">
-    <div class="modal-content" style="max-width:320px; text-align:center;">
-        <svg class="icon icon-lg" style="color:var(--danger); margin:0 auto 10px; display:block;" viewBox="0 0 24 24">
-            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-            <line x1="12" y1="9" x2="12" y2="13"></line>
-            <line x1="12" y1="17" x2="12.01" y2="17"></line>
-        </svg>
-        <h3 style="margin-bottom:5px;">¡Ups! Algo salió mal</h3>
-        <p id="error-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Por favor, intenta de nuevo o verifica tu conexión.</p>
-        <button class="btn-accent" onclick="closeErrorModal()" style="background:var(--primary);">Cerrar</button>
-    </div>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -527,48 +571,61 @@
     let currentTargetId = null;
     let currentGiftLabel = ""; 
     let linkedProfiles = [];
-    let isEditingEvent = false; // Nueva bandera para modo edición
-    let editingEventId = null; // ID del evento en edición
+    let isEditingEvent = false;
+    let editingEventId = null;
 
-    // Definir los paths para ojo abierto y cerrado
+    // --- PIN LOGIC WITH CUSTOM KEYPAD ---
+    window.addPinDigit = (digit, type) => {
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const input = document.getElementById(inputId);
+        let val = input.value;
+        if(val.length >= 6) return;
+        
+        val += digit;
+        input.value = val;
+        updatePinDots(val.length, dotsId);
+    };
+
+    window.backspacePin = (type) => {
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const input = document.getElementById(inputId);
+        let val = input.value;
+        if(val.length > 0) {
+            val = val.slice(0, -1);
+            input.value = val;
+            updatePinDots(val.length, dotsId);
+        }
+    };
+
+    function updatePinDots(count, containerId) {
+        const container = document.getElementById(containerId);
+        const dots = container.querySelectorAll('.pin-dot');
+        dots.forEach((dot, idx) => {
+            if(idx < count) dot.classList.add('filled');
+            else dot.classList.remove('filled');
+        });
+    }
+    
+    // --- GENERIC VISIBILITY TOGGLE (FOR ADMIN PASS) ---
     const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
     const closedEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
+    
+    document.querySelectorAll('.btn-toggle-pass svg').forEach(svg => { svg.innerHTML = closedEyePaths; });
 
-    // Inicializar todos los iconos de ojo como cerrados (contraseña oculta por defecto)
-    document.querySelectorAll('.btn-toggle-pass svg').forEach(svg => {
-        svg.innerHTML = closedEyePaths;
-    });
-
-    // --- FUNCION UNIFICADA DE VISIBILIDAD ---
     window.toggleFieldVisibility = (inputId) => {
         const input = document.getElementById(inputId);
         const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
         const svg = btn.querySelector('svg');
-
-        if (input.classList.contains('pin-input')) {
-            const isHidden = input.dataset.hidden !== "false";
-
-            if (isHidden) {
-                input.style.setProperty('-webkit-text-security', 'none');
-                input.dataset.hidden = "false";
-                btn.style.color = "var(--primary)";
-                svg.innerHTML = openEyePaths; // Mostrando: ojo abierto
-            } else {
-                input.style.setProperty('-webkit-text-security', 'disc');
-                input.dataset.hidden = "true";
-                btn.style.color = "var(--text-sec)";
-                svg.innerHTML = closedEyePaths; // Ocultando: ojo cerrado
-            }
+        if (input.type === "password") {
+            input.type = "text";
+            btn.style.color = "var(--primary)";
+            svg.innerHTML = openEyePaths;
         } else {
-            if (input.type === "password") {
-                input.type = "text";
-                btn.style.color = "var(--primary)";
-                svg.innerHTML = openEyePaths; // Mostrando: ojo abierto
-            } else {
-                input.type = "password";
-                btn.style.color = "var(--text-sec)";
-                svg.innerHTML = closedEyePaths; // Ocultando: ojo cerrado
-            }
+            input.type = "password";
+            btn.style.color = "var(--text-sec)";
+            svg.innerHTML = closedEyePaths;
         }
     };
 
@@ -581,14 +638,6 @@
     }
 
     function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
-
-    document.querySelectorAll('.pin-input').forEach(input => {
-        input.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            if(e.target.value.length === 6) e.target.classList.add('pin-valid');
-            else e.target.classList.remove('pin-valid');
-        });
-    });
 
     window.showToast = (message, duration = 3000) => {
         const container = document.getElementById('toast-container');
@@ -634,31 +683,6 @@
     window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
     window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
 
-    window.showErrorModal = (message) => {
-        document.getElementById('error-desc').innerText = message;
-        document.getElementById('error-modal').classList.remove('hidden');
-    };
-    window.closeErrorModal = () => { document.getElementById('error-modal').classList.add('hidden'); };
-
-    function getFriendlyErrorMessage(error) {
-        if (error.code) {
-            switch (error.code) {
-                case 'permission-denied':
-                    return 'No tienes permiso para realizar esta acción. Contacta al administrador.';
-                case 'unavailable':
-                case 'network-request-failed':
-                    return 'Problema de conexión a internet. Verifica tu red e intenta de nuevo.';
-                case 'not-found':
-                    return 'El recurso solicitado no se encontró. Puede que haya sido eliminado.';
-                case 'invalid-argument':
-                    return 'Los datos proporcionados son inválidos. Revisa los campos.';
-                default:
-                    return 'Ocurrió un error inesperado: ' + error.message + '. Intenta de nuevo.';
-            }
-        }
-        return 'Ocurrió un error: ' + error.message + '. Por favor, intenta más tarde.';
-    }
-
     window.revealName = () => {
         const overlay = document.getElementById('reveal-overlay');
         overlay.classList.add('faded');
@@ -698,29 +722,17 @@
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
         listDiv.innerHTML = '<div class="spinner"></div>';
-        
         try {
             const snap = await getDocs(collection(db, "events"));
             listDiv.innerHTML = "";
-            
-            if(snap.empty) { 
-                listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; 
-                return; 
-            }
-            
+            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; return; }
             snap.forEach(docSnap => {
-                const data = docSnap.data();
-                const id = docSnap.id;
+                const data = docSnap.data(); const id = docSnap.id;
                 const titleDisplay = data.title || "Evento sin título";
                 const budgetDisplay = data.budget ? data.budget.replace('$', '') : '---';
                 let prettyDate = "S/F";
-                if (data.date) {
-                    const parts = data.date.split('-');
-                    if (parts.length === 3) prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-                }
-
-                const div = document.createElement('div');
-                div.className = 'master-event-card';
+                if (data.date) { const parts = data.date.split('-'); if (parts.length === 3) prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`; }
+                const div = document.createElement('div'); div.className = 'master-event-card';
                 div.innerHTML = `
                     <div class="master-event-info">
                         <h4>${titleDisplay}</h4>
@@ -736,92 +748,53 @@
                     </div>`;
                 listDiv.appendChild(div);
             });
-        } catch(e) { 
-            listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error al cargar eventos.</p>`;
-            showErrorModal(getFriendlyErrorMessage(e)); 
-        }
+        } catch(e) { listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; }
     }
 
     window.deleteGlobalEvent = (id) => {
         openConfirmModal("¿Borrar evento?", "Se eliminarán todos los datos permanentemente.", async () => {
             try {
                 const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
-                const batch = writeBatch(db);
-                partsSnap.forEach(d => batch.delete(d.ref));
-                await batch.commit(); 
-                await deleteDoc(doc(db, "events", id));
-                showToast("Evento eliminado"); 
-                loadAllEvents();
-            } catch(e) { showErrorModal(getFriendlyErrorMessage(e)); }
+                const batch = writeBatch(db); partsSnap.forEach(d => batch.delete(d.ref)); await batch.commit(); 
+                await deleteDoc(doc(db, "events", id)); showToast("Evento eliminado"); loadAllEvents();
+            } catch(e) { showToast("Error al borrar"); }
         });
     }
 
     window.editEvent = async (id) => {
-        editingEventId = id;
-        isEditingEvent = true;
-
-        try {
-            // Cargar datos del evento
-            const eventSnap = await getDoc(doc(db, "events", id));
-            if (!eventSnap.exists()) {
-                showErrorModal("Evento no encontrado");
-                return;
-            }
-            const eventData = eventSnap.data();
-
-            // Poblar campos
-            document.getElementById('setup-title').value = eventData.title || "";
-            const dateParts = eventData.date ? eventData.date.split('-') : [];
-            document.getElementById('setup-day').value = dateParts[2] || "";
-            document.getElementById('setup-month').value = dateParts[1] || "";
-            document.getElementById('setup-budget').value = eventData.budget || "Libre";
-            document.getElementById('setup-gift-type').value = eventData.giftType || "";
-
-            // Cargar participantes
-            participantsList = [];
-            const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
-            partsSnap.forEach(docSnap => {
-                const p = docSnap.data();
-                participantsList.push({ id: docSnap.id, name: p.name, isChild: p.isChild });
-            });
-            renderParticipantsList();
-
-            // Cambiar UI para modo edición
-            document.getElementById('btn-create-event').innerText = "Guardar Cambios";
-            document.getElementById('screen-master').classList.add('hidden');
-            document.getElementById('screen-admin').classList.remove('hidden');
-
-            // Agregar botón de reshuffle si no existe
-            let reshuffleBtn = document.getElementById('btn-reshuffle-event');
-            if (!reshuffleBtn) {
-                reshuffleBtn = document.createElement('button');
-                reshuffleBtn.id = 'btn-reshuffle-event';
-                reshuffleBtn.className = 'btn-secondary';
-                reshuffleBtn.style.marginTop = '10px';
-                reshuffleBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Reasignar Sorteo';
-                reshuffleBtn.onclick = () => reshuffleParticipants(id);
-                document.getElementById('btn-create-event').parentNode.insertBefore(reshuffleBtn, document.getElementById('btn-create-event').nextSibling);
-            }
-        } catch (e) {
-            showErrorModal(getFriendlyErrorMessage(e));
+        editingEventId = id; isEditingEvent = true;
+        const eventSnap = await getDoc(doc(db, "events", id));
+        if (!eventSnap.exists()) { showToast("Evento no encontrado"); return; }
+        const eventData = eventSnap.data();
+        document.getElementById('setup-title').value = eventData.title || "";
+        const dateParts = eventData.date ? eventData.date.split('-') : [];
+        document.getElementById('setup-day').value = dateParts[2] || "";
+        document.getElementById('setup-month').value = dateParts[1] || "";
+        document.getElementById('setup-budget').value = eventData.budget || "Libre";
+        document.getElementById('setup-gift-type').value = eventData.giftType || "";
+        participantsList = [];
+        const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+        partsSnap.forEach(docSnap => { const p = docSnap.data(); participantsList.push({ id: docSnap.id, name: p.name, isChild: p.isChild }); });
+        renderParticipantsList();
+        document.getElementById('btn-create-event').innerText = "Guardar Cambios";
+        document.getElementById('screen-master').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden');
+        let reshuffleBtn = document.getElementById('btn-reshuffle-event');
+        if (!reshuffleBtn) {
+            reshuffleBtn = document.createElement('button'); reshuffleBtn.id = 'btn-reshuffle-event';
+            reshuffleBtn.className = 'btn-secondary'; reshuffleBtn.style.marginTop = '10px';
+            reshuffleBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Reasignar Sorteo';
+            reshuffleBtn.onclick = () => reshuffleParticipants(id);
+            document.getElementById('btn-create-event').parentNode.insertBefore(reshuffleBtn, document.getElementById('btn-create-event').nextSibling);
         }
     };
 
     window.showAdminSetup = () => { 
-        isEditingEvent = false;
-        editingEventId = null;
-        participantsList = [];
-        renderParticipantsList();
-        document.getElementById('setup-title').value = "";
-        document.getElementById('setup-day').value = "";
-        document.getElementById('setup-month').value = "";
-        document.getElementById('setup-budget').value = "Libre";
-        document.getElementById('setup-gift-type').value = "";
-        document.getElementById('btn-create-event').innerText = "Generar Sorteo";
-        const reshuffleBtn = document.getElementById('btn-reshuffle-event');
-        if (reshuffleBtn) reshuffleBtn.remove();
-        document.getElementById('screen-home').classList.add('hidden'); 
-        document.getElementById('screen-admin').classList.remove('hidden'); 
+        isEditingEvent = false; editingEventId = null; participantsList = []; renderParticipantsList();
+        document.getElementById('setup-title').value = ""; document.getElementById('setup-day').value = "";
+        document.getElementById('setup-month').value = ""; document.getElementById('setup-budget').value = "Libre";
+        document.getElementById('setup-gift-type').value = ""; document.getElementById('btn-create-event').innerText = "Generar Sorteo";
+        const reshuffleBtn = document.getElementById('btn-reshuffle-event'); if (reshuffleBtn) reshuffleBtn.remove();
+        document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); 
     };
 
     document.getElementById('btn-add-name').addEventListener('click', addNameToList);
@@ -830,7 +803,7 @@
     function addNameToList() {
         const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
         const name = input.value.trim(); if(!name) return;
-        participantsList.push({ name: name, isChild: check.checked, id: null }); // id null para nuevos
+        participantsList.push({ name: name, isChild: check.checked, id: null });
         input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
     }
 
@@ -850,106 +823,44 @@
         });
         window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
         window.editName = (index) => {
-            const span = document.getElementById(`name-span-${index}`);
-            const originalName = participantsList[index].name;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.value = originalName;
-            input.autocapitalize = 'sentences';
-            input.style.width = 'auto';
-            input.style.marginRight = '5px';
-            span.innerHTML = '';
-            span.appendChild(input);
-            input.focus();
-            input.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    const newName = input.value.trim();
-                    if (newName) participantsList[index].name = newName;
-                    renderParticipantsList();
-                }
-            });
-            input.addEventListener('blur', () => {
-                const newName = input.value.trim();
-                if (newName) participantsList[index].name = newName;
-                renderParticipantsList();
-            });
+            const span = document.getElementById(`name-span-${index}`); const originalName = participantsList[index].name;
+            const input = document.createElement('input'); input.type = 'text'; input.value = originalName;
+            input.autocapitalize = 'sentences'; input.style.width = 'auto'; input.style.marginRight = '5px';
+            span.innerHTML = ''; span.appendChild(input); input.focus();
+            const save = () => { const newName = input.value.trim(); if (newName) participantsList[index].name = newName; renderParticipantsList(); };
+            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') save(); }); input.addEventListener('blur', save);
         };
     }
 
     document.getElementById('btn-create-event').addEventListener('click', async () => {
-        const title = document.getElementById('setup-title').value;
-        const day = document.getElementById('setup-day').value;
-        const month = document.getElementById('setup-month').value;
-        const budget = document.getElementById('setup-budget').value;
+        const title = document.getElementById('setup-title').value; const day = document.getElementById('setup-day').value;
+        const month = document.getElementById('setup-month').value; const budget = document.getElementById('setup-budget').value;
         const giftType = document.getElementById('setup-gift-type').value; 
         if(participantsList.length < 2) return showToast("Mínimo 2 personas");
         if(!title || !day || !month) return showToast("Completa los datos");
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
-        const eventDate = new Date(fullDate);
-        const now = new Date();
-        now.setHours(0, 0, 0, 0);
-        eventDate.setHours(0, 0, 0, 0);
-        if (eventDate <= now) {
-            return showToast("La fecha debe ser futura");
-        }
-        const btn = document.getElementById('btn-create-event');
-        btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; margin:0;"></div>';
+        const btn = document.getElementById('btn-create-event'); btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; margin:0;"></div>';
 
         try {
             if (isEditingEvent) {
-                // Modo edición: Actualizar evento y participantes
                 await updateDoc(doc(db, "events", editingEventId), { title, date: fullDate, budget, giftType });
-
-                // Manejar participantes: agregar nuevos, actualizar existentes, eliminar removidos
                 const existingPartsSnap = await getDocs(collection(db, `events/${editingEventId}/participants`));
                 const existingIds = existingPartsSnap.docs.map(d => d.id);
                 const batch = writeBatch(db);
-
-                // Actualizar o agregar
                 for (let p of participantsList) {
-                    const participantData = {
-                        name: p.name,
-                        isChild: p.isChild || false,
-                        // Preservar otros campos si existen (wishes, etc.) pero como no los editamos aquí, asumimos que se mantienen
-                    };
+                    const participantData = { name: p.name, isChild: p.isChild || false };
                     if (p.id) {
-                        // Actualizar existente
                         batch.update(doc(db, `events/${editingEventId}/participants/${p.id}`), participantData);
-                        const index = existingIds.indexOf(p.id);
-                        if (index > -1) existingIds.splice(index, 1);
+                        const index = existingIds.indexOf(p.id); if (index > -1) existingIds.splice(index, 1);
                     } else {
-                        // Agregar nuevo
                         const newRef = doc(collection(db, `events/${editingEventId}/participants`));
-                        batch.set(newRef, {
-                            ...participantData,
-                            managedBy: null,
-                            targetId: null, // Se asignará en reshuffle si se elige
-                            targetName: "",
-                            wish1: "",
-                            wish2: "",
-                            wish3: "",
-                            extra: "",
-                            password: null,
-                            secretKey: null,
-                            seen: false,
-                            revealed: false
-                        });
+                        batch.set(newRef, { ...participantData, managedBy: null, targetId: null, targetName: "", wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false, revealed: false });
                     }
                 }
-
-                // Eliminar removidos
-                for (let removedId of existingIds) {
-                    batch.delete(doc(db, `events/${editingEventId}/participants/${removedId}`));
-                }
-
-                await batch.commit();
-                showToast("Evento actualizado");
-                document.getElementById('screen-admin').classList.add('hidden');
-                document.getElementById('screen-master').classList.remove('hidden');
-                loadAllEvents();
-
+                for (let removedId of existingIds) batch.delete(doc(db, `events/${editingEventId}/participants/${removedId}`));
+                await batch.commit(); showToast("Evento actualizado");
+                document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-master').classList.remove('hidden'); loadAllEvents();
             } else {
-                // Modo creación (código original)
                 const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
                 let shuffled = [...participantsList];
                 for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
@@ -964,40 +875,22 @@
                 document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
                 document.getElementById('share-link-text').innerText = link;
             }
-        } catch(e) { 
-            btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; 
-            showErrorModal(getFriendlyErrorMessage(e)); 
-        }
+        } catch(e) { btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; showToast("Error: " + e.message); }
     });
 
     async function reshuffleParticipants(id) {
-        openConfirmModal("¿Reasignar sorteo?", "Esto reseteará las asignaciones de targets, seen y revealed, pero mantendrá wishes y otros datos.", async () => {
+        openConfirmModal("¿Reasignar sorteo?", "Esto reseteará targets, visto y revelado.", async () => {
             try {
                 const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
                 let parts = partsSnap.docs.map(d => ({ id: d.id, data: d.data() }));
-
-                // Shuffle
-                for (let i = parts.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [parts[i], parts[j]] = [parts[j], parts[i]];
-                }
-
+                for (let i = parts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [parts[i], parts[j]] = [parts[j], parts[i]]; }
                 const batch = writeBatch(db);
                 for (let i = 0; i < parts.length; i++) {
-                    const curr = parts[i];
-                    const next = parts[(i + 1) % parts.length];
-                    batch.update(doc(db, `events/${id}/participants/${curr.id}`), {
-                        targetId: next.id,
-                        targetName: next.data.name,
-                        seen: false,
-                        revealed: false
-                    });
+                    const curr = parts[i]; const next = parts[(i + 1) % parts.length];
+                    batch.update(doc(db, `events/${id}/participants/${curr.id}`), { targetId: next.id, targetName: next.data.name, seen: false, revealed: false });
                 }
-                await batch.commit();
-                showToast("Sorteo reasignado");
-            } catch (e) {
-                showErrorModal(getFriendlyErrorMessage(e));
-            }
+                await batch.commit(); showToast("Sorteo reasignado");
+            } catch (e) { showToast("Error al reasignar: " + e.message); }
         });
     }
 
@@ -1008,45 +901,38 @@
         openConfirmModal("¿Borrar este evento?", "Esta acción eliminará todo permanentemente.", async () => {
             try {
                 const snapshot = await getDocs(collection(db, `events/${eventId}/participants`)); 
-                const batch = writeBatch(db);
-                snapshot.forEach(doc => batch.delete(doc.ref));
-                await batch.commit(); 
-                await deleteDoc(doc(db, "events", eventId));
-                showToast("Evento eliminado"); 
+                const batch = writeBatch(db); snapshot.forEach(doc => batch.delete(doc.ref)); await batch.commit(); 
+                await deleteDoc(doc(db, "events", eventId)); showToast("Evento eliminado"); 
                 setTimeout(() => window.location.href = window.location.pathname, 1500);
-            } catch(e) { showErrorModal(getFriendlyErrorMessage(e)); }
+            } catch(e) { showToast("Error al eliminar"); }
         });
     };
 
     async function loadEventData(id) {
-        try {
-            const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
-            const data = snap.data(); currentGiftLabel = data.giftType || ""; 
-            const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-            document.getElementById('event-title-display').innerText = data.title;
-            document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
-            document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
+        const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
+        const data = snap.data(); currentGiftLabel = data.giftType || ""; 
+        const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
+        document.getElementById('event-title-display').innerText = data.title;
+        document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
+        document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
 
-            onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
-                const list = document.getElementById('names-list'); list.innerHTML = "";
-                const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
-                if(isDashboardVisible) return;
-                if(!currentUserId) { 
-                    document.getElementById('screen-home').classList.add('hidden'); 
-                    document.getElementById('screen-login').classList.remove('hidden'); 
-                }
-                qs.forEach(d => {
-                    const p = d.data(); if (p.isChild) return; 
-                    const div = document.createElement('div'); div.className = 'name-card-user'; 
-                    div.innerText = p.name;
-                    if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
-                    div.onclick = () => prepareAuth(d.id, p);
-                    list.appendChild(div);
-                });
+        onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
+            const list = document.getElementById('names-list'); list.innerHTML = "";
+            const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
+            if(isDashboardVisible) return;
+            if(!currentUserId) { 
+                document.getElementById('screen-home').classList.add('hidden'); 
+                document.getElementById('screen-login').classList.remove('hidden'); 
+            }
+            qs.forEach(d => {
+                const p = d.data(); if (p.isChild) return; 
+                const div = document.createElement('div'); div.className = 'name-card-user'; 
+                div.innerText = p.name;
+                if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
+                div.onclick = () => prepareAuth(d.id, p);
+                list.appendChild(div);
             });
-        } catch (e) {
-            showErrorModal(getFriendlyErrorMessage(e));
-        }
+        });
     }
 
     async function prepareAuth(id, data) {
@@ -1057,43 +943,34 @@
         document.getElementById('admin-override-box').classList.add('hidden'); 
         document.getElementById('claim-children-section').classList.add('hidden'); 
         
-        document.querySelectorAll('.pin-input').forEach(i => { 
-            i.value=''; i.classList.remove('pin-valid'); 
-            i.dataset.hidden = "true";
-            i.style.setProperty('-webkit-text-security', 'disc');
-            const btn = i.closest('.password-wrapper').querySelector('.btn-toggle-pass');
-            if(btn) btn.style.color = 'var(--text-sec)';
-        });
+        // Reset Inputs and Displays
+        ['reg-pin', 'login-pin'].forEach(pid => document.getElementById(pid).value = '');
+        document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('filled'));
 
         m.classList.remove('hidden'); 
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
-        try {
-            if(!data.password) {
-                document.getElementById('form-register').classList.remove('hidden');
-                const listDiv = document.getElementById('children-list-check'); 
-                const section = document.getElementById('claim-children-section');
-                listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
-                
-                const q = await getDocs(collection(db, `events/${eventId}/participants`));
-                listDiv.innerHTML = ""; let foundChild = false;
-                q.forEach(docSnap => {
-                    const kid = docSnap.data();
-                    if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
-                        foundChild = true;
-                        const div = document.createElement('div');
-                        div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
-                        listDiv.appendChild(div);
-                    }
-                });
-                if(foundChild && !data.isChild) section.classList.remove('hidden'); 
-            } else {
-                document.getElementById('form-login').classList.remove('hidden'); 
-                document.getElementById('admin-override-box').classList.remove('hidden');
-            }
-        } catch (e) {
-            closeModal();
-            showErrorModal(getFriendlyErrorMessage(e));
+        if(!data.password) {
+            document.getElementById('form-register').classList.remove('hidden');
+            const listDiv = document.getElementById('children-list-check'); 
+            const section = document.getElementById('claim-children-section');
+            listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
+            
+            const q = await getDocs(collection(db, `events/${eventId}/participants`));
+            listDiv.innerHTML = ""; let foundChild = false;
+            q.forEach(docSnap => {
+                const kid = docSnap.data();
+                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
+                    foundChild = true;
+                    const div = document.createElement('div');
+                    div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
+                    listDiv.appendChild(div);
+                }
+            });
+            if(foundChild && !data.isChild) section.classList.remove('hidden'); 
+        } else {
+            document.getElementById('form-login').classList.remove('hidden'); 
+            document.getElementById('admin-override-box').classList.remove('hidden');
         }
     }
 
@@ -1115,36 +992,26 @@
             window.closeModal(); 
             selectedUserDoc.data.password = hPin;
             enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
-        } catch(e) { 
-            showErrorModal(getFriendlyErrorMessage(e)); 
-        } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
+        } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
     window.doLogin = async () => {
         const pinInput = document.getElementById('login-pin').value;
-        try {
-            const hInput = await hashString(pinInput);
-            if(hInput === selectedUserDoc.data.password) {
-                window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-            } else {
-                showToast("PIN incorrecto");
-                document.getElementById('login-pin').value = '';
-                document.getElementById('login-pin').classList.remove('pin-valid');
-            }
-        } catch (e) {
-            showErrorModal(getFriendlyErrorMessage(e));
+        const hInput = await hashString(pinInput);
+        if(hInput === selectedUserDoc.data.password) {
+            window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+        } else {
+            showToast("PIN incorrecto");
+            document.getElementById('login-pin').value = '';
+            updatePinDots(0, 'dots-login');
         }
     };
 
     window.adminOverride = async () => {
-        try {
-            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
-            showToast("Cuenta reseteada"); 
-            selectedUserDoc.data.password = null; 
-            prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
-        } catch (e) {
-            showErrorModal(getFriendlyErrorMessage(e));
-        }
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
+        showToast("Cuenta reseteada"); 
+        selectedUserDoc.data.password = null; 
+        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
     function makeLinksClickable(text) {
@@ -1153,28 +1020,24 @@
     }
 
     async function enterDashboard(uid, userData) {
-        try {
-            document.getElementById('screen-login').classList.add('hidden');
-            document.getElementById('screen-dashboard').classList.remove('hidden');
-            if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
+        document.getElementById('screen-login').classList.add('hidden');
+        document.getElementById('screen-dashboard').classList.remove('hidden');
+        if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
 
-            linkedProfiles = [{ id: uid, ...userData }];
-            const q = await getDocs(collection(db, `events/${eventId}/participants`));
-            q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
+        linkedProfiles = [{ id: uid, ...userData }];
+        const q = await getDocs(collection(db, `events/${eventId}/participants`));
+        q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
 
-            const switcher = document.getElementById('profile-switcher'); 
-            const select = document.getElementById('select-active-profile');
-            if(linkedProfiles.length > 1) {
-                switcher.classList.remove('hidden'); select.innerHTML = "";
-                linkedProfiles.forEach((p, idx) => { 
-                    const opt = document.createElement('option'); opt.value = idx; 
-                    opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); select.appendChild(opt); 
-                });
-            } else switcher.classList.add('hidden');
-            loadProfileIndex(0);
-        } catch (e) {
-            showErrorModal(getFriendlyErrorMessage(e));
-        }
+        const switcher = document.getElementById('profile-switcher'); 
+        const select = document.getElementById('select-active-profile');
+        if(linkedProfiles.length > 1) {
+            switcher.classList.remove('hidden'); select.innerHTML = "";
+            linkedProfiles.forEach((p, idx) => { 
+                const opt = document.createElement('option'); opt.value = idx; 
+                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); select.appendChild(opt); 
+            });
+        } else switcher.classList.add('hidden');
+        loadProfileIndex(0);
     }
 
     window.switchProfileView = (idx) => loadProfileIndex(parseInt(idx));
@@ -1199,21 +1062,17 @@
         document.getElementById('target-name').innerText = profile.targetName;
         document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
 
-        try {
-            getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
-                if(d.exists()) {
-                    const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
-                    if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
-                    if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
-                    if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
-                    if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
-                    const extraDiv = document.getElementById('target-extra-info');
-                    extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
-                }
-            });
-        } catch (e) {
-            showErrorModal(getFriendlyErrorMessage(e));
-        }
+        getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
+            if(d.exists()) {
+                const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
+                if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
+                if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
+                if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
+                if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
+                const extraDiv = document.getElementById('target-extra-info');
+                extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
+            }
+        });
     }
 
     document.getElementById('btn-save-wishes').addEventListener('click', async () => {
@@ -1230,10 +1089,7 @@
             if(idx !== -1) { linkedProfiles[idx].wish1 = w1; linkedProfiles[idx].wish2 = w2; linkedProfiles[idx].wish3 = w3; linkedProfiles[idx].extra = extra; }
             btn.innerText = "¡Guardado!"; showToast("Preferencias guardadas");
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
-        } catch(e) { 
-            btn.innerText = "Guardar Preferencias"; btn.disabled = false; 
-            showErrorModal(getFriendlyErrorMessage(e)); 
-        }
+        } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
     });
 </script>
 
