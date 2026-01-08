@@ -489,6 +489,19 @@
     </div>
 </div>
 
+<div id="error-modal" class="modal-overlay hidden">
+    <div class="modal-content" style="max-width:320px; text-align:center;">
+        <svg class="icon icon-lg" style="color:var(--danger); margin:0 auto 10px; display:block;" viewBox="0 0 24 24">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <h3 style="margin-bottom:5px;">¡Ups! Algo salió mal</h3>
+        <p id="error-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Por favor, intenta de nuevo o verifica tu conexión.</p>
+        <button class="btn-accent" onclick="closeErrorModal()" style="background:var(--primary);">Cerrar</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -621,6 +634,31 @@
     window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
     window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
 
+    window.showErrorModal = (message) => {
+        document.getElementById('error-desc').innerText = message;
+        document.getElementById('error-modal').classList.remove('hidden');
+    };
+    window.closeErrorModal = () => { document.getElementById('error-modal').classList.add('hidden'); };
+
+    function getFriendlyErrorMessage(error) {
+        if (error.code) {
+            switch (error.code) {
+                case 'permission-denied':
+                    return 'No tienes permiso para realizar esta acción. Contacta al administrador.';
+                case 'unavailable':
+                case 'network-request-failed':
+                    return 'Problema de conexión a internet. Verifica tu red e intenta de nuevo.';
+                case 'not-found':
+                    return 'El recurso solicitado no se encontró. Puede que haya sido eliminado.';
+                case 'invalid-argument':
+                    return 'Los datos proporcionados son inválidos. Revisa los campos.';
+                default:
+                    return 'Ocurrió un error inesperado: ' + error.message + '. Intenta de nuevo.';
+            }
+        }
+        return 'Ocurrió un error: ' + error.message + '. Por favor, intenta más tarde.';
+    }
+
     window.revealName = () => {
         const overlay = document.getElementById('reveal-overlay');
         overlay.classList.add('faded');
@@ -698,7 +736,10 @@
                     </div>`;
                 listDiv.appendChild(div);
             });
-        } catch(e) { listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; }
+        } catch(e) { 
+            listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error al cargar eventos.</p>`;
+            showErrorModal(getFriendlyErrorMessage(e)); 
+        }
     }
 
     window.deleteGlobalEvent = (id) => {
@@ -711,7 +752,7 @@
                 await deleteDoc(doc(db, "events", id));
                 showToast("Evento eliminado"); 
                 loadAllEvents();
-            } catch(e) { showToast("Error al borrar"); }
+            } catch(e) { showErrorModal(getFriendlyErrorMessage(e)); }
         });
     }
 
@@ -719,46 +760,50 @@
         editingEventId = id;
         isEditingEvent = true;
 
-        // Cargar datos del evento
-        const eventSnap = await getDoc(doc(db, "events", id));
-        if (!eventSnap.exists()) {
-            showToast("Evento no encontrado");
-            return;
-        }
-        const eventData = eventSnap.data();
+        try {
+            // Cargar datos del evento
+            const eventSnap = await getDoc(doc(db, "events", id));
+            if (!eventSnap.exists()) {
+                showErrorModal("Evento no encontrado");
+                return;
+            }
+            const eventData = eventSnap.data();
 
-        // Poblar campos
-        document.getElementById('setup-title').value = eventData.title || "";
-        const dateParts = eventData.date ? eventData.date.split('-') : [];
-        document.getElementById('setup-day').value = dateParts[2] || "";
-        document.getElementById('setup-month').value = dateParts[1] || "";
-        document.getElementById('setup-budget').value = eventData.budget || "Libre";
-        document.getElementById('setup-gift-type').value = eventData.giftType || "";
+            // Poblar campos
+            document.getElementById('setup-title').value = eventData.title || "";
+            const dateParts = eventData.date ? eventData.date.split('-') : [];
+            document.getElementById('setup-day').value = dateParts[2] || "";
+            document.getElementById('setup-month').value = dateParts[1] || "";
+            document.getElementById('setup-budget').value = eventData.budget || "Libre";
+            document.getElementById('setup-gift-type').value = eventData.giftType || "";
 
-        // Cargar participantes
-        participantsList = [];
-        const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
-        partsSnap.forEach(docSnap => {
-            const p = docSnap.data();
-            participantsList.push({ id: docSnap.id, name: p.name, isChild: p.isChild });
-        });
-        renderParticipantsList();
+            // Cargar participantes
+            participantsList = [];
+            const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+            partsSnap.forEach(docSnap => {
+                const p = docSnap.data();
+                participantsList.push({ id: docSnap.id, name: p.name, isChild: p.isChild });
+            });
+            renderParticipantsList();
 
-        // Cambiar UI para modo edición
-        document.getElementById('btn-create-event').innerText = "Guardar Cambios";
-        document.getElementById('screen-master').classList.add('hidden');
-        document.getElementById('screen-admin').classList.remove('hidden');
+            // Cambiar UI para modo edición
+            document.getElementById('btn-create-event').innerText = "Guardar Cambios";
+            document.getElementById('screen-master').classList.add('hidden');
+            document.getElementById('screen-admin').classList.remove('hidden');
 
-        // Agregar botón de reshuffle si no existe
-        let reshuffleBtn = document.getElementById('btn-reshuffle-event');
-        if (!reshuffleBtn) {
-            reshuffleBtn = document.createElement('button');
-            reshuffleBtn.id = 'btn-reshuffle-event';
-            reshuffleBtn.className = 'btn-secondary';
-            reshuffleBtn.style.marginTop = '10px';
-            reshuffleBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Reasignar Sorteo';
-            reshuffleBtn.onclick = () => reshuffleParticipants(id);
-            document.getElementById('btn-create-event').parentNode.insertBefore(reshuffleBtn, document.getElementById('btn-create-event').nextSibling);
+            // Agregar botón de reshuffle si no existe
+            let reshuffleBtn = document.getElementById('btn-reshuffle-event');
+            if (!reshuffleBtn) {
+                reshuffleBtn = document.createElement('button');
+                reshuffleBtn.id = 'btn-reshuffle-event';
+                reshuffleBtn.className = 'btn-secondary';
+                reshuffleBtn.style.marginTop = '10px';
+                reshuffleBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Reasignar Sorteo';
+                reshuffleBtn.onclick = () => reshuffleParticipants(id);
+                document.getElementById('btn-create-event').parentNode.insertBefore(reshuffleBtn, document.getElementById('btn-create-event').nextSibling);
+            }
+        } catch (e) {
+            showErrorModal(getFriendlyErrorMessage(e));
         }
     };
 
@@ -912,7 +957,10 @@
                 document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
                 document.getElementById('share-link-text').innerText = link;
             }
-        } catch(e) { btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; showToast("Error: " + e.message); }
+        } catch(e) { 
+            btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; 
+            showErrorModal(getFriendlyErrorMessage(e)); 
+        }
     });
 
     async function reshuffleParticipants(id) {
@@ -941,7 +989,7 @@
                 await batch.commit();
                 showToast("Sorteo reasignado");
             } catch (e) {
-                showToast("Error al reasignar: " + e.message);
+                showErrorModal(getFriendlyErrorMessage(e));
             }
         });
     }
@@ -959,35 +1007,39 @@
                 await deleteDoc(doc(db, "events", eventId));
                 showToast("Evento eliminado"); 
                 setTimeout(() => window.location.href = window.location.pathname, 1500);
-            } catch(e) { showToast("Error al eliminar"); }
+            } catch(e) { showErrorModal(getFriendlyErrorMessage(e)); }
         });
     };
 
     async function loadEventData(id) {
-        const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
-        const data = snap.data(); currentGiftLabel = data.giftType || ""; 
-        const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
-        document.getElementById('event-title-display').innerText = data.title;
-        document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
-        document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
+        try {
+            const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
+            const data = snap.data(); currentGiftLabel = data.giftType || ""; 
+            const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
+            document.getElementById('event-title-display').innerText = data.title;
+            document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
+            document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
 
-        onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
-            const list = document.getElementById('names-list'); list.innerHTML = "";
-            const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
-            if(isDashboardVisible) return;
-            if(!currentUserId) { 
-                document.getElementById('screen-home').classList.add('hidden'); 
-                document.getElementById('screen-login').classList.remove('hidden'); 
-            }
-            qs.forEach(d => {
-                const p = d.data(); if (p.isChild) return; 
-                const div = document.createElement('div'); div.className = 'name-card-user'; 
-                div.innerText = p.name;
-                if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
-                div.onclick = () => prepareAuth(d.id, p);
-                list.appendChild(div);
+            onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
+                const list = document.getElementById('names-list'); list.innerHTML = "";
+                const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
+                if(isDashboardVisible) return;
+                if(!currentUserId) { 
+                    document.getElementById('screen-home').classList.add('hidden'); 
+                    document.getElementById('screen-login').classList.remove('hidden'); 
+                }
+                qs.forEach(d => {
+                    const p = d.data(); if (p.isChild) return; 
+                    const div = document.createElement('div'); div.className = 'name-card-user'; 
+                    div.innerText = p.name;
+                    if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
+                    div.onclick = () => prepareAuth(d.id, p);
+                    list.appendChild(div);
+                });
             });
-        });
+        } catch (e) {
+            showErrorModal(getFriendlyErrorMessage(e));
+        }
     }
 
     async function prepareAuth(id, data) {
@@ -1009,27 +1061,32 @@
         m.classList.remove('hidden'); 
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
-        if(!data.password) {
-            document.getElementById('form-register').classList.remove('hidden');
-            const listDiv = document.getElementById('children-list-check'); 
-            const section = document.getElementById('claim-children-section');
-            listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
-            
-            const q = await getDocs(collection(db, `events/${eventId}/participants`));
-            listDiv.innerHTML = ""; let foundChild = false;
-            q.forEach(docSnap => {
-                const kid = docSnap.data();
-                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
-                    foundChild = true;
-                    const div = document.createElement('div');
-                    div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
-                    listDiv.appendChild(div);
-                }
-            });
-            if(foundChild && !data.isChild) section.classList.remove('hidden'); 
-        } else {
-            document.getElementById('form-login').classList.remove('hidden'); 
-            document.getElementById('admin-override-box').classList.remove('hidden');
+        try {
+            if(!data.password) {
+                document.getElementById('form-register').classList.remove('hidden');
+                const listDiv = document.getElementById('children-list-check'); 
+                const section = document.getElementById('claim-children-section');
+                listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
+                
+                const q = await getDocs(collection(db, `events/${eventId}/participants`));
+                listDiv.innerHTML = ""; let foundChild = false;
+                q.forEach(docSnap => {
+                    const kid = docSnap.data();
+                    if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
+                        foundChild = true;
+                        const div = document.createElement('div');
+                        div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
+                        listDiv.appendChild(div);
+                    }
+                });
+                if(foundChild && !data.isChild) section.classList.remove('hidden'); 
+            } else {
+                document.getElementById('form-login').classList.remove('hidden'); 
+                document.getElementById('admin-override-box').classList.remove('hidden');
+            }
+        } catch (e) {
+            closeModal();
+            showErrorModal(getFriendlyErrorMessage(e));
         }
     }
 
@@ -1051,26 +1108,36 @@
             window.closeModal(); 
             selectedUserDoc.data.password = hPin;
             enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
-        } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
+        } catch(e) { 
+            showErrorModal(getFriendlyErrorMessage(e)); 
+        } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
     window.doLogin = async () => {
         const pinInput = document.getElementById('login-pin').value;
-        const hInput = await hashString(pinInput);
-        if(hInput === selectedUserDoc.data.password) {
-            window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
-        } else {
-            showToast("PIN incorrecto");
-            document.getElementById('login-pin').value = '';
-            document.getElementById('login-pin').classList.remove('pin-valid');
+        try {
+            const hInput = await hashString(pinInput);
+            if(hInput === selectedUserDoc.data.password) {
+                window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+            } else {
+                showToast("PIN incorrecto");
+                document.getElementById('login-pin').value = '';
+                document.getElementById('login-pin').classList.remove('pin-valid');
+            }
+        } catch (e) {
+            showErrorModal(getFriendlyErrorMessage(e));
         }
     };
 
     window.adminOverride = async () => {
-        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
-        showToast("Cuenta reseteada"); 
-        selectedUserDoc.data.password = null; 
-        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
+        try {
+            await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
+            showToast("Cuenta reseteada"); 
+            selectedUserDoc.data.password = null; 
+            prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
+        } catch (e) {
+            showErrorModal(getFriendlyErrorMessage(e));
+        }
     };
 
     function makeLinksClickable(text) {
@@ -1079,24 +1146,28 @@
     }
 
     async function enterDashboard(uid, userData) {
-        document.getElementById('screen-login').classList.add('hidden');
-        document.getElementById('screen-dashboard').classList.remove('hidden');
-        if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
+        try {
+            document.getElementById('screen-login').classList.add('hidden');
+            document.getElementById('screen-dashboard').classList.remove('hidden');
+            if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
 
-        linkedProfiles = [{ id: uid, ...userData }];
-        const q = await getDocs(collection(db, `events/${eventId}/participants`));
-        q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
+            linkedProfiles = [{ id: uid, ...userData }];
+            const q = await getDocs(collection(db, `events/${eventId}/participants`));
+            q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
 
-        const switcher = document.getElementById('profile-switcher'); 
-        const select = document.getElementById('select-active-profile');
-        if(linkedProfiles.length > 1) {
-            switcher.classList.remove('hidden'); select.innerHTML = "";
-            linkedProfiles.forEach((p, idx) => { 
-                const opt = document.createElement('option'); opt.value = idx; 
-                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); select.appendChild(opt); 
-            });
-        } else switcher.classList.add('hidden');
-        loadProfileIndex(0);
+            const switcher = document.getElementById('profile-switcher'); 
+            const select = document.getElementById('select-active-profile');
+            if(linkedProfiles.length > 1) {
+                switcher.classList.remove('hidden'); select.innerHTML = "";
+                linkedProfiles.forEach((p, idx) => { 
+                    const opt = document.createElement('option'); opt.value = idx; 
+                    opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); select.appendChild(opt); 
+                });
+            } else switcher.classList.add('hidden');
+            loadProfileIndex(0);
+        } catch (e) {
+            showErrorModal(getFriendlyErrorMessage(e));
+        }
     }
 
     window.switchProfileView = (idx) => loadProfileIndex(parseInt(idx));
@@ -1121,17 +1192,21 @@
         document.getElementById('target-name').innerText = profile.targetName;
         document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
 
-        getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
-            if(d.exists()) {
-                const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
-                if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
-                if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
-                if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
-                if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
-                const extraDiv = document.getElementById('target-extra-info');
-                extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
-            }
-        });
+        try {
+            getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
+                if(d.exists()) {
+                    const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
+                    if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
+                    if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
+                    if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
+                    if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
+                    const extraDiv = document.getElementById('target-extra-info');
+                    extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
+                }
+            });
+        } catch (e) {
+            showErrorModal(getFriendlyErrorMessage(e));
+        }
     }
 
     document.getElementById('btn-save-wishes').addEventListener('click', async () => {
@@ -1148,7 +1223,10 @@
             if(idx !== -1) { linkedProfiles[idx].wish1 = w1; linkedProfiles[idx].wish2 = w2; linkedProfiles[idx].wish3 = w3; linkedProfiles[idx].extra = extra; }
             btn.innerText = "¡Guardado!"; showToast("Preferencias guardadas");
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
-        } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
+        } catch(e) { 
+            btn.innerText = "Guardar Preferencias"; btn.disabled = false; 
+            showErrorModal(getFriendlyErrorMessage(e)); 
+        }
     });
 </script>
 
