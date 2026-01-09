@@ -312,6 +312,34 @@
         height: auto;
     }
 }
+/* Animaciones de cierre para modal */
+@keyframes slideDown {
+    from { transform: translateY(0); }
+    to { transform: translateY(100%); }
+}
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); }
+}
+
+/* Aplicar animación al cerrar */
+.modal-overlay.hidden .modal-content {
+    animation: none; /* Reset para evitar conflictos */
+}
+
+/* Para móviles: slide down al cerrar */
+@media (max-width: 500px) {
+    .modal-content.closing {
+        animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+}
+
+/* Para desktops: fade out al cerrar */
+@media (min-width: 501px) {
+    .modal-content.closing {
+        animation: fadeOut 0.2s ease-out forwards;
+    }
+}
     </style>
 </head>
 <body>
@@ -1013,7 +1041,15 @@
         }
     }
 
-    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
+    window.closeModal = () => {
+    const modal = document.getElementById('auth-modal');
+    const content = modal.querySelector('.modal-content');
+    content.classList.add('closing'); // Activa animación de cierre
+    setTimeout(() => {
+        content.classList.remove('closing'); // Limpia clase después de animación
+        modal.classList.add('hidden'); // Oculta finalmente
+    }, 300); // Duración matching a la animación (0.3s)
+};
 
     window.doRegister = async () => {
         const pin = document.getElementById('reg-pin').value; 
