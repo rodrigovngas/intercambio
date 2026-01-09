@@ -1045,6 +1045,16 @@
     const modal = document.getElementById('auth-modal');
     const content = modal.querySelector('.modal-content');
     content.classList.add('closing'); // Activa animación de cierre
+
+    const handler = () => {
+        content.classList.remove('closing'); // Limpia clase
+        modal.classList.add('hidden'); // Oculta finalmente
+        content.removeEventListener('animationend', handler); // Limpia listener
+    };
+    content.addEventListener('animationend', handler);
+};
+    const content = modal.querySelector('.modal-content');
+    content.classList.add('closing'); // Activa animación de cierre
     setTimeout(() => {
         content.classList.remove('closing'); // Limpia clase después de animación
         modal.classList.add('hidden'); // Oculta finalmente
