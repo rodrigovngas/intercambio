@@ -272,7 +272,46 @@
         .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
         .pin-btn-back { background: transparent; border: none; box-shadow: none; }
         .pin-btn-back:active { background: transparent; opacity: 0.5; }
+/* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
+@media (max-width: 500px) {
+    .modal-overlay {
+        align-items: stretch; /* Cambia de flex-end a stretch para que el contenido ocupe toda la altura */
+    }
+    .modal-content {
+        max-height: none; /* Elimina límite de altura para ocupar todo */
+        height: 100%; /* Ocupa toda la altura disponible */
+        border-radius: 0; /* Quita bordes redondeados en full-screen para mejor ajuste */
+        overflow-y: hidden; /* Evita scroll interno */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Distribuye el espacio para que el teclado quede abajo */
+        padding: 20px 20px 10px; /* Reduce padding ligeramente para ganar espacio vertical sin cambiar diseño */
+    }
+    .pin-keyboard {
+        margin-top: auto; /* Empuja el teclado hacia abajo */
+        padding-bottom: 20px; /* Añade algo de espacio abajo para comodidad */
+    }
+    /* Reduce gaps y tamaños mínimamente para fitting en pantallas muy pequeñas */
+    .pin-dots {
+        gap: 8px; /* Reduce gap ligeramente */
+    }
+    .pin-keyboard {
+        gap: 10px; /* Reduce gap para ahorrar altura */
+    }
+    .pin-btn {
+        width: 55px; /* Reduce tamaño de botones ligeramente para fitting */
+        height: 55px;
+        font-size: 1.3rem; /* Ajusta fuente para mantener proporción */
+    }
+}
 
+/* Para pantallas más grandes, mantiene el diseño original */
+@media (min-width: 501px) {
+    .modal-content {
+        max-height: 95dvh; /* Restaura original */
+        height: auto;
+    }
+}
     </style>
 </head>
 <body>
