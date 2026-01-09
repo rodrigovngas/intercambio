@@ -272,74 +272,7 @@
         .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
         .pin-btn-back { background: transparent; border: none; box-shadow: none; }
         .pin-btn-back:active { background: transparent; opacity: 0.5; }
-/* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
-@media (max-width: 500px) {
-    .modal-overlay {
-        align-items: stretch; /* Cambia de flex-end a stretch para que el contenido ocupe toda la altura */
-    }
-    .modal-content {
-        max-height: none; /* Elimina límite de altura para ocupar todo */
-        height: 100%; /* Ocupa toda la altura disponible */
-        border-radius: 0; /* Quita bordes redondeados en full-screen para mejor ajuste */
-        overflow-y: hidden; /* Evita scroll interno */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Distribuye el espacio para que el teclado quede abajo */
-        padding: 20px 20px 10px; /* Reduce padding ligeramente para ganar espacio vertical sin cambiar diseño */
-    }
-    .pin-keyboard {
-        margin-top: auto; /* Empuja el teclado hacia abajo */
-        padding-bottom: 20px; /* Añade algo de espacio abajo para comodidad */
-    }
-    /* Reduce gaps y tamaños mínimamente para fitting en pantallas muy pequeñas */
-    .pin-dots {
-        gap: 8px; /* Reduce gap ligeramente */
-    }
-    .pin-keyboard {
-        gap: 10px; /* Reduce gap para ahorrar altura */
-    }
-    .pin-btn {
-        width: 55px; /* Reduce tamaño de botones ligeramente para fitting */
-        height: 55px;
-        font-size: 1.3rem; /* Ajusta fuente para mantener proporción */
-    }
-}
 
-/* Para pantallas más grandes, mantiene el diseño original */
-@media (min-width: 501px) {
-    .modal-content {
-        max-height: 95dvh; /* Restaura original */
-        height: auto;
-    }
-}
-/* Animaciones de cierre para modal */
-@keyframes slideDown {
-    from { transform: translateY(0); }
-    to { transform: translateY(100%); }
-}
-@keyframes fadeOut {
-    from { opacity: 1; transform: scale(1); }
-    to { opacity: 0; transform: scale(0.95); }
-}
-
-/* Aplicar animación al cerrar */
-.modal-overlay.hidden .modal-content {
-    animation: none; /* Reset para evitar conflictos */
-}
-
-/* Para móviles: slide down al cerrar */
-@media (max-width: 500px) {
-    .modal-content.closing {
-        animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-}
-
-/* Para desktops: fade out al cerrar */
-@media (min-width: 501px) {
-    .modal-content.closing {
-        animation: fadeOut 0.2s ease-out forwards;
-    }
-}
     </style>
 </head>
 <body>
@@ -509,11 +442,14 @@
         <div id="form-register" class="hidden">
             <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
             <input type="hidden" id="reg-pin" value="">
-            <div class="pin-display-wrapper">
+            <div class="pin-display-wrapper" style="position: relative;">
                 <div class="pin-dots" id="dots-reg">
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                 </div>
+                <button class="btn-toggle-pass" onclick="togglePinVisibility('reg')" type="button" style="right: -10px; top: 50%; transform: translateY(-50%);">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"></svg>
+                </button>
             </div>
             <div class="pin-keyboard">
                 <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
@@ -543,11 +479,14 @@
         <div id="form-login" class="hidden">
             <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
             <input type="hidden" id="login-pin" value="">
-            <div class="pin-display-wrapper">
+            <div class="pin-display-wrapper" style="position: relative;">
                 <div class="pin-dots" id="dots-login">
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                 </div>
+                <button class="btn-toggle-pass" onclick="togglePinVisibility('login')" type="button" style="right: -10px; top: 50%; transform: translateY(-50%);">
+                    <svg class="icon icon-sm" viewBox="0 0 24 24"></svg>
+                </button>
             </div>
             <div class="pin-keyboard">
                 <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
@@ -631,6 +570,9 @@
     const MASTER_KEY = "admin123"; 
     const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 
+    let isPinVisibleReg = false;  // Estado para registro
+    let isPinVisibleLogin = false;  // Estado para login
+
     let eventId = new URLSearchParams(window.location.search).get('id');
     let participantsList = [];
     let selectedUserDoc = null;
@@ -669,9 +611,36 @@
     function updatePinDots(count, containerId) {
         const container = document.getElementById(containerId);
         const dots = container.querySelectorAll('.pin-dot');
+        const type = containerId === 'dots-reg' ? 'reg' : 'login';
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const val = document.getElementById(inputId).value;
+        const isVisible = type === 'reg' ? isPinVisibleReg : isPinVisibleLogin;
+
         dots.forEach((dot, idx) => {
-            if(idx < count) dot.classList.add('filled');
-            else dot.classList.remove('filled');
+            dot.classList.remove('filled');
+            dot.innerHTML = '';  // Limpiamos contenido
+            dot.style.borderRadius = '50%';  // Reset a círculo por defecto
+            dot.style.background = '#e5e7eb';  // Reset color
+            dot.style.border = '1px solid #d1d5db';
+
+            if (idx < count) {
+                if (isVisible) {
+                    // Mostrar dígito real
+                    dot.innerHTML = val[idx];
+                    dot.style.fontSize = '1rem';
+                    dot.style.display = 'flex';
+                    dot.style.alignItems = 'center';
+                    dot.style.justifyContent = 'center';
+                    dot.style.background = 'transparent';
+                    dot.style.border = '1px solid var(--primary)';
+                    dot.style.borderRadius = '4px';  // Ligeramente cuadrado para texto, minimalista
+                    dot.style.width = '20px';  // Ajuste mínimo para dígito
+                    dot.style.height = '20px';
+                } else {
+                    // Mostrar dot filled
+                    dot.classList.add('filled');
+                }
+            }
         });
     }
     
@@ -694,6 +663,30 @@
             btn.style.color = "var(--text-sec)";
             svg.innerHTML = closedEyePaths;
         }
+    };
+
+    window.togglePinVisibility = (type) => {
+        const isVisible = type === 'reg' ? isPinVisibleReg : isPinVisibleLogin;
+        const newVisible = !isVisible;
+        if (type === 'reg') isPinVisibleReg = newVisible;
+        else isPinVisibleLogin = newVisible;
+
+        const wrapper = document.querySelector(`#form-${type} .pin-display-wrapper`);
+        const btn = wrapper.querySelector('.btn-toggle-pass');
+        const svg = btn.querySelector('svg');
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const input = document.getElementById(`${type}-pin`);
+
+        if (newVisible) {
+            btn.style.color = "var(--primary)";
+            svg.innerHTML = openEyePaths;
+        } else {
+            btn.style.color = "var(--text-sec)";
+            svg.innerHTML = closedEyePaths;
+        }
+
+        // Actualizamos los dots con el nuevo estado
+        updatePinDots(input.value.length, dotsId);
     };
 
     async function hashString(str) {
@@ -765,6 +758,9 @@
         populateDays();
         if (eventId) loadEventData(eventId);
         else document.getElementById('screen-home').classList.remove('hidden');
+        document.querySelectorAll('#auth-modal .btn-toggle-pass svg').forEach(svg => {
+            svg.innerHTML = closedEyePaths;
+        });
     };
 
     function populateDays() {
@@ -1041,25 +1037,7 @@
         }
     }
 
-    window.closeModal = () => {
-    const modal = document.getElementById('auth-modal');
-    const content = modal.querySelector('.modal-content');
-    content.classList.add('closing'); // Activa animación de cierre
-
-    const handler = () => {
-        content.classList.remove('closing'); // Limpia clase
-        modal.classList.add('hidden'); // Oculta finalmente
-        content.removeEventListener('animationend', handler); // Limpia listener
-    };
-    content.addEventListener('animationend', handler);
-};
-    const content = modal.querySelector('.modal-content');
-    content.classList.add('closing'); // Activa animación de cierre
-    setTimeout(() => {
-        content.classList.remove('closing'); // Limpia clase después de animación
-        modal.classList.add('hidden'); // Oculta finalmente
-    }, 300); // Duración matching a la animación (0.3s)
-};
+    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
 
     window.doRegister = async () => {
         const pin = document.getElementById('reg-pin').value; 
