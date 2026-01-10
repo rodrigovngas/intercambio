@@ -312,6 +312,19 @@
         height: auto;
     }
 }
+@media (max-width: 500px) {
+    #admin-modal.modal-overlay {
+        align-items: center;
+    }
+    #admin-modal .modal-content {
+        height: auto;
+        max-height: 95dvh;
+        border-radius: 24px;
+        overflow-y: auto;
+        display: block; /* Elimina el espacio innecesario entre elementos para contenido pequeño */
+        padding: 35px 30px; /* Restaura el padding original para consistencia */
+    }
+}
     </style>
 </head>
 <body>
