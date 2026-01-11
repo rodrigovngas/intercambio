@@ -1,3 +1,4 @@
+<DOCUMENT filename="index 2.html">
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -250,11 +251,13 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- STYLES FOR CUSTOM PIN UI --- */
-        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
-        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
-        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
+        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 15px; }
+        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; align-items: center; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s, transform 0.2s; border: 1px solid #d1d5db; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: transparent; }
         .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
         .pin-dot.success { background: var(--success); border-color: var(--success); }
+        .pin-dots.show-pin .pin-dot { background: transparent; border: none; transform: none; color: var(--primary); width: auto; height: auto; }
+        .pin-dots.show-pin .pin-dot.filled { color: var(--primary); }
         
         .pin-keyboard {
             display: grid; grid-template-columns: repeat(3, 1fr);
@@ -272,6 +275,15 @@
         .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
         .pin-btn-back { background: transparent; border: none; box-shadow: none; }
         .pin-btn-back:active { background: transparent; opacity: 0.5; }
+
+        /* New styles for PIN eye toggle (distinct from password toggle) */
+        .btn-toggle-pin {
+            background: none; border: none; padding: 0; cursor: pointer;
+            color: var(--text-sec); transition: color 0.2s; display: flex; align-items: center; justify-content: center;
+        }
+        .btn-toggle-pin:hover { color: var(--primary-hover); }
+        .icon-pin-eye { width: 20px; height: 20px; stroke-width: 1.8; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
 /* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
 @media (max-width: 500px) {
     .modal-overlay {
@@ -499,6 +511,9 @@
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                 </div>
+                <button class="btn-toggle-pin" onclick="togglePinVisibility('reg')">
+                    <svg class="icon-pin-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
             </div>
             <div class="pin-keyboard">
                 <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
@@ -533,6 +548,9 @@
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
                 </div>
+                <button class="btn-toggle-pin" onclick="togglePinVisibility('login')">
+                    <svg class="icon-pin-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
             </div>
             <div class="pin-keyboard">
                 <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
@@ -637,6 +655,10 @@
         val += digit;
         input.value = val;
         updatePinDots(val.length, dotsId);
+        if (document.getElementById(dotsId).classList.contains('show-pin')) {
+            togglePinVisibility(type); // Force refresh to show new digit if visible
+            togglePinVisibility(type);
+        }
     };
 
     window.backspacePin = (type) => {
@@ -648,6 +670,10 @@
             val = val.slice(0, -1);
             input.value = val;
             updatePinDots(val.length, dotsId);
+            if (document.getElementById(dotsId).classList.contains('show-pin')) {
+                togglePinVisibility(type); // Force refresh
+                togglePinVisibility(type);
+            }
         }
     };
 
@@ -678,6 +704,41 @@
             input.type = "password";
             btn.style.color = "var(--text-sec)";
             svg.innerHTML = closedEyePaths;
+        }
+    };
+
+    // --- PIN VISIBILITY TOGGLE (DISTINCT LOGIC AND STYLE) ---
+    const openPinEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    const closedPinEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
+    
+    document.querySelectorAll('.btn-toggle-pin svg').forEach(svg => { svg.innerHTML = closedPinEyePaths; });
+
+    window.togglePinVisibility = (type) => {
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const container = document.getElementById(dotsId);
+        const input = document.getElementById(inputId);
+        const btn = container.parentElement.querySelector('.btn-toggle-pin');
+        const svg = btn.querySelector('svg');
+        const isVisible = container.classList.toggle('show-pin');
+        
+        if (isVisible) {
+            btn.style.color = "var(--primary)";
+            svg.innerHTML = openPinEyePaths;
+            const dots = container.querySelectorAll('.pin-dot');
+            const val = input.value;
+            dots.forEach((dot, idx) => {
+                dot.innerText = val[idx] || '';
+                dot.classList.remove('filled'); // Remove filled class in text mode
+            });
+        } else {
+            btn.style.color = "var(--text-sec)";
+            svg.innerHTML = closedPinEyePaths;
+            const dots = container.querySelectorAll('.pin-dot');
+            dots.forEach(dot => {
+                dot.innerText = '';
+            });
+            updatePinDots(input.value.length, dotsId); // Restore dot visuals
         }
     };
 
@@ -997,7 +1058,9 @@
         
         // Reset Inputs and Displays
         ['reg-pin', 'login-pin'].forEach(pid => document.getElementById(pid).value = '');
-        document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('filled'));
+        document.querySelectorAll('.pin-dot').forEach(d => { d.classList.remove('filled'); d.innerText = ''; });
+        document.querySelectorAll('.pin-dots').forEach(c => c.classList.remove('show-pin'));
+        document.querySelectorAll('.btn-toggle-pin svg').forEach(svg => { svg.innerHTML = closedPinEyePaths; });
 
         m.classList.remove('hidden'); 
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
@@ -1146,4 +1209,4 @@
 </script>
 
 </body>
-</html>
+</html></DOCUMENT>
