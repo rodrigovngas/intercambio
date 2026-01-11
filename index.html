@@ -1,4 +1,3 @@
-<DOCUMENT filename="index 2.html">
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -69,13 +68,23 @@
         
         .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
         .btn-toggle-pass {
-            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; padding: 10px; cursor: pointer;
-            color: var(--text-sec); display: flex; align-items: center; justify-content: center;
-            width: auto; margin: 0; z-index: 10; transition: color 0.2s;
-        }
+    position: static;  /* Quita absolute para que sea flex item */
+    transform: none;   /* Elimina transform vertical */
+    background: none;
+    border: none;
+    padding: 10px;      /* Reduce padding para acercarlo (original era 10px) */
+    cursor: pointer;
+    color: var(--text-sec);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    margin: 0;
+    z-index: 10;
+    transition: color 0.2s;
+}
 
-        input:not([type="checkbox"]), textarea, select {
+      input:not([type="checkbox"]), textarea, select {
             width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
             font-size: 1rem; background: #fff; color: var(--text-main); 
             font-family: inherit; appearance: none; outline: none;
@@ -251,13 +260,11 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- STYLES FOR CUSTOM PIN UI --- */
-        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 15px; }
-        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; align-items: center; }
-        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s, transform 0.2s; border: 1px solid #d1d5db; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: transparent; }
+        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
+        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
         .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
         .pin-dot.success { background: var(--success); border-color: var(--success); }
-        .pin-dots.show-pin .pin-dot { background: transparent; border: none; transform: none; color: var(--primary); width: auto; height: auto; }
-        .pin-dots.show-pin .pin-dot.filled { color: var(--primary); }
         
         .pin-keyboard {
             display: grid; grid-template-columns: repeat(3, 1fr);
@@ -275,15 +282,6 @@
         .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
         .pin-btn-back { background: transparent; border: none; box-shadow: none; }
         .pin-btn-back:active { background: transparent; opacity: 0.5; }
-
-        /* New styles for PIN eye toggle (distinct from password toggle) */
-        .btn-toggle-pin {
-            background: none; border: none; padding: 0; cursor: pointer;
-            color: var(--text-sec); transition: color 0.2s; display: flex; align-items: center; justify-content: center;
-        }
-        .btn-toggle-pin:hover { color: var(--primary-hover); }
-        .icon-pin-eye { width: 20px; height: 20px; stroke-width: 1.8; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-
 /* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
 @media (max-width: 500px) {
     .modal-overlay {
@@ -336,6 +334,10 @@
         display: block; /* Elimina el espacio innecesario entre elementos para contenido pequeño */
         padding: 35px 30px; /* Restaura el padding original para consistencia */
     }
+}
+.pin-digit {
+    width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; font-weight: bold; color: var(--primary); transition: all 0.2s;
 }
     </style>
 </head>
@@ -504,73 +506,77 @@
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
 
         <div id="form-register" class="hidden">
-            <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
-            <input type="hidden" id="reg-pin" value="">
-            <div class="pin-display-wrapper">
-                <div class="pin-dots" id="dots-reg">
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
-                <button class="btn-toggle-pin" onclick="togglePinVisibility('reg')">
-                    <svg class="icon-pin-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                </button>
+    <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
+    <input type="hidden" id="reg-pin" value="">
+    <div class="password-wrapper" style="justify-content: center; position: relative;">
+        <div class="pin-display-wrapper">
+            <div class="pin-dots" id="dots-reg">
+                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
             </div>
-            <div class="pin-keyboard">
-                <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
-                <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
-                <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
-                <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
-                <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
-                <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
-                <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
-                <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
-                <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
-                <div class="pin-btn pin-btn-empty"></div>
-                <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
-                <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
-                </button>
-            </div>
-
-            <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
-                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
-                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
-            </div>
-            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
         </div>
+        <button class="btn-toggle-pass" onclick="togglePinVisibility('reg')" type="button">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        </button>
+    </div>
+    <div class="pin-keyboard">
+        <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
+        <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
+        <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
+        <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
+        <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
+        <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
+        <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
+        <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
+        <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
+        <div class="pin-btn pin-btn-empty"></div>
+        <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
+        <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+        </button>
+    </div>
+
+    <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+        <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
+        <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
+        <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+    <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+</div>
 
         <div id="form-login" class="hidden">
-            <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
-            <input type="hidden" id="login-pin" value="">
-            <div class="pin-display-wrapper">
-                <div class="pin-dots" id="dots-login">
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                </div>
-                <button class="btn-toggle-pin" onclick="togglePinVisibility('login')">
-                    <svg class="icon-pin-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-                </button>
+    <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
+    <input type="hidden" id="login-pin" value="">
+    <div class="password-wrapper" style="justify-content: center; position: relative;">
+        <div class="pin-display-wrapper">
+            <div class="pin-dots" id="dots-login">
+                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
             </div>
-            <div class="pin-keyboard">
-                <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
-                <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
-                <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
-                <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
-                <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
-                <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
-                <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
-                <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
-                <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
-                <div class="pin-btn pin-btn-empty"></div>
-                <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
-                <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
-                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
-                </button>
-            </div>
-
-            <button class="btn-accent" onclick="doLogin()">Entrar</button>
         </div>
+        <button class="btn-toggle-pass" onclick="togglePinVisibility('login')" type="button">
+            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+        </button>
+    </div>
+    <div class="pin-keyboard">
+        <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
+        <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
+        <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
+        <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
+        <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
+        <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
+        <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
+        <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
+        <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
+        <div class="pin-btn pin-btn-empty"></div>
+        <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
+        <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+        </button>
+    </div>
+
+    <button class="btn-accent" onclick="doLogin()">Entrar</button>
+</div>
         
         <div id="admin-override-box" class="hidden">
             <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
@@ -655,10 +661,6 @@
         val += digit;
         input.value = val;
         updatePinDots(val.length, dotsId);
-        if (document.getElementById(dotsId).classList.contains('show-pin')) {
-            togglePinVisibility(type); // Force refresh to show new digit if visible
-            togglePinVisibility(type);
-        }
     };
 
     window.backspacePin = (type) => {
@@ -670,10 +672,6 @@
             val = val.slice(0, -1);
             input.value = val;
             updatePinDots(val.length, dotsId);
-            if (document.getElementById(dotsId).classList.contains('show-pin')) {
-                togglePinVisibility(type); // Force refresh
-                togglePinVisibility(type);
-            }
         }
     };
 
@@ -704,41 +702,6 @@
             input.type = "password";
             btn.style.color = "var(--text-sec)";
             svg.innerHTML = closedEyePaths;
-        }
-    };
-
-    // --- PIN VISIBILITY TOGGLE (DISTINCT LOGIC AND STYLE) ---
-    const openPinEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-    const closedPinEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
-    
-    document.querySelectorAll('.btn-toggle-pin svg').forEach(svg => { svg.innerHTML = closedPinEyePaths; });
-
-    window.togglePinVisibility = (type) => {
-        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-        const container = document.getElementById(dotsId);
-        const input = document.getElementById(inputId);
-        const btn = container.parentElement.querySelector('.btn-toggle-pin');
-        const svg = btn.querySelector('svg');
-        const isVisible = container.classList.toggle('show-pin');
-        
-        if (isVisible) {
-            btn.style.color = "var(--primary)";
-            svg.innerHTML = openPinEyePaths;
-            const dots = container.querySelectorAll('.pin-dot');
-            const val = input.value;
-            dots.forEach((dot, idx) => {
-                dot.innerText = val[idx] || '';
-                dot.classList.remove('filled'); // Remove filled class in text mode
-            });
-        } else {
-            btn.style.color = "var(--text-sec)";
-            svg.innerHTML = closedPinEyePaths;
-            const dots = container.querySelectorAll('.pin-dot');
-            dots.forEach(dot => {
-                dot.innerText = '';
-            });
-            updatePinDots(input.value.length, dotsId); // Restore dot visuals
         }
     };
 
@@ -1058,9 +1021,7 @@
         
         // Reset Inputs and Displays
         ['reg-pin', 'login-pin'].forEach(pid => document.getElementById(pid).value = '');
-        document.querySelectorAll('.pin-dot').forEach(d => { d.classList.remove('filled'); d.innerText = ''; });
-        document.querySelectorAll('.pin-dots').forEach(c => c.classList.remove('show-pin'));
-        document.querySelectorAll('.btn-toggle-pin svg').forEach(svg => { svg.innerHTML = closedPinEyePaths; });
+        document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('filled'));
 
         m.classList.remove('hidden'); 
         document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
@@ -1206,7 +1167,47 @@
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
         } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
     });
+let isPinVisible_reg = false;
+let isPinVisible_login = false;
+
+window.togglePinVisibility = (type) => {
+    const isVisible = type === 'reg' ? isPinVisible_reg : isPinVisible_login;
+    const newVisible = !isVisible;
+    if (type === 'reg') isPinVisible_reg = newVisible;
+    else isPinVisible_login = newVisible;
+
+    const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+    const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+    const container = document.getElementById(dotsId);
+    const btn = container.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+    const svg = btn.querySelector('svg');
+    const pinValue = document.getElementById(inputId).value;
+
+    if (newVisible) {
+        // Mostrar números
+        container.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+            const span = document.createElement('span');
+            span.className = 'pin-digit';
+            span.innerText = (i < pinValue.length) ? pinValue[i] : '';
+            container.appendChild(span);
+        }
+        btn.style.color = "var(--primary)";
+        svg.innerHTML = openEyePaths;  // Ojo abierto (usa variable ya en tu código)
+    } else {
+        // Mostrar dots
+        container.innerHTML = '';
+        for (let i = 0; i < 6; i++) {
+            const div = document.createElement('div');
+            div.className = 'pin-dot';
+            if (i < pinValue.length) div.classList.add('filled');
+            container.appendChild(div);
+        }
+        btn.style.color = "var(--text-sec)";
+        svg.innerHTML = closedEyePaths;  // Ojo cerrado (usa variable ya en tu código)
+    }
+};
 </script>
 
 </body>
-</html></DOCUMENT>
+</html>
