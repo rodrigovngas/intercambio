@@ -332,6 +332,17 @@
     color: var(--primary);
     opacity: 0.9;
 }
+/* Ocultar scrollbar sin desactivar scroll */
+.container,
+.modal-content {
+    scrollbar-width: none;        /* Firefox */
+    -ms-overflow-style: none;     /* IE / Edge viejo */
+}
+
+.container::-webkit-scrollbar,
+.modal-content::-webkit-scrollbar {
+    display: none;                /* Chrome, Safari, Edge */
+}
     </style>
 </head>
 <body>
