@@ -68,23 +68,13 @@
         
         .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
         .btn-toggle-pass {
-    position: static;  /* Quita absolute para que sea flex item */
-    transform: none;   /* Elimina transform vertical */
-    background: none;
-    border: none;
-    padding: 10px;      /* Reduce padding para acercarlo (original era 10px) */
-    cursor: pointer;
-    color: var(--text-sec);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    margin: 0;
-    z-index: 10;
-    transition: color 0.2s;
-}
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; padding: 10px; cursor: pointer;
+            color: var(--text-sec); display: flex; align-items: center; justify-content: center;
+            width: auto; margin: 0; z-index: 10; transition: color 0.2s;
+        }
 
-      input:not([type="checkbox"]), textarea, select {
+        input:not([type="checkbox"]), textarea, select {
             width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
             font-size: 1rem; background: #fff; color: var(--text-main); 
             font-family: inherit; appearance: none; outline: none;
@@ -335,10 +325,6 @@
         padding: 35px 30px; /* Restaura el padding original para consistencia */
     }
 }
-.pin-digit {
-    width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; font-weight: bold; color: var(--primary); transition: all 0.2s;
-}
     </style>
 </head>
 <body>
@@ -506,77 +492,67 @@
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
 
         <div id="form-register" class="hidden">
-    <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
-    <input type="hidden" id="reg-pin" value="">
-    <div class="password-wrapper" style="justify-content: center; position: relative;">
-        <div class="pin-display-wrapper">
-            <div class="pin-dots" id="dots-reg">
-                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+            <label style="text-align:center; margin-bottom:15px;">Crea tu PIN (6 dígitos)</label> 
+            <input type="hidden" id="reg-pin" value="">
+            <div class="pin-display-wrapper">
+                <div class="pin-dots" id="dots-reg">
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                </div>
             </div>
-        </div>
-        <button class="btn-toggle-pass" onclick="togglePinVisibility('reg')" type="button">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-        </button>
-    </div>
-    <div class="pin-keyboard">
-        <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
-        <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
-        <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
-        <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
-        <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
-        <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
-        <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
-        <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
-        <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
-        <div class="pin-btn pin-btn-empty"></div>
-        <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
-        <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
-        </button>
-    </div>
+            <div class="pin-keyboard">
+                <button class="pin-btn" onclick="addPinDigit(1, 'reg')">1</button>
+                <button class="pin-btn" onclick="addPinDigit(2, 'reg')">2</button>
+                <button class="pin-btn" onclick="addPinDigit(3, 'reg')">3</button>
+                <button class="pin-btn" onclick="addPinDigit(4, 'reg')">4</button>
+                <button class="pin-btn" onclick="addPinDigit(5, 'reg')">5</button>
+                <button class="pin-btn" onclick="addPinDigit(6, 'reg')">6</button>
+                <button class="pin-btn" onclick="addPinDigit(7, 'reg')">7</button>
+                <button class="pin-btn" onclick="addPinDigit(8, 'reg')">8</button>
+                <button class="pin-btn" onclick="addPinDigit(9, 'reg')">9</button>
+                <div class="pin-btn pin-btn-empty"></div>
+                <button class="pin-btn" onclick="addPinDigit(0, 'reg')">0</button>
+                <button class="pin-btn pin-btn-back" onclick="backspacePin('reg')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+                </button>
+            </div>
 
-    <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
-        <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
-        <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
-        <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
-    </div>
-    <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
-</div>
+            <div id="claim-children-section" class="hidden" style="margin-top:20px; border-top:1px solid #eee; padding-top:15px;">
+                <label style="margin-top:0; color:var(--primary); font-size:0.85em;">¿Gestionas a algún menor?</label>
+                <p style="font-size:0.75em; margin:0 0 10px 0; text-align:left;">Selecciónalos para verlos en tu cuenta.</p>
+                <div id="children-list-check" style="display:flex; flex-direction:column; gap:8px;"></div>
+            </div>
+            <button class="btn-accent" onclick="doRegister()">Guardar y Entrar</button>
+        </div>
 
         <div id="form-login" class="hidden">
-    <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
-    <input type="hidden" id="login-pin" value="">
-    <div class="password-wrapper" style="justify-content: center; position: relative;">
-        <div class="pin-display-wrapper">
-            <div class="pin-dots" id="dots-login">
-                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
-                <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+            <label style="text-align:center; margin-bottom:15px;">Ingresa tu PIN</label> 
+            <input type="hidden" id="login-pin" value="">
+            <div class="pin-display-wrapper">
+                <div class="pin-dots" id="dots-login">
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+                </div>
             </div>
-        </div>
-        <button class="btn-toggle-pass" onclick="togglePinVisibility('login')" type="button">
-            <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line></svg>
-        </button>
-    </div>
-    <div class="pin-keyboard">
-        <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
-        <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
-        <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
-        <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
-        <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
-        <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
-        <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
-        <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
-        <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
-        <div class="pin-btn pin-btn-empty"></div>
-        <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
-        <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
-        </button>
-    </div>
+            <div class="pin-keyboard">
+                <button class="pin-btn" onclick="addPinDigit(1, 'login')">1</button>
+                <button class="pin-btn" onclick="addPinDigit(2, 'login')">2</button>
+                <button class="pin-btn" onclick="addPinDigit(3, 'login')">3</button>
+                <button class="pin-btn" onclick="addPinDigit(4, 'login')">4</button>
+                <button class="pin-btn" onclick="addPinDigit(5, 'login')">5</button>
+                <button class="pin-btn" onclick="addPinDigit(6, 'login')">6</button>
+                <button class="pin-btn" onclick="addPinDigit(7, 'login')">7</button>
+                <button class="pin-btn" onclick="addPinDigit(8, 'login')">8</button>
+                <button class="pin-btn" onclick="addPinDigit(9, 'login')">9</button>
+                <div class="pin-btn pin-btn-empty"></div>
+                <button class="pin-btn" onclick="addPinDigit(0, 'login')">0</button>
+                <button class="pin-btn pin-btn-back" onclick="backspacePin('login')">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg>
+                </button>
+            </div>
 
-    <button class="btn-accent" onclick="doLogin()">Entrar</button>
-</div>
+            <button class="btn-accent" onclick="doLogin()">Entrar</button>
+        </div>
         
         <div id="admin-override-box" class="hidden">
             <button class="btn-danger-text" onclick="promptForAdmin(() => adminOverride())">
@@ -1167,46 +1143,6 @@
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
         } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
     });
-let isPinVisible_reg = false;
-let isPinVisible_login = false;
-
-window.togglePinVisibility = (type) => {
-    const isVisible = type === 'reg' ? isPinVisible_reg : isPinVisible_login;
-    const newVisible = !isVisible;
-    if (type === 'reg') isPinVisible_reg = newVisible;
-    else isPinVisible_login = newVisible;
-
-    const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-    const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-    const container = document.getElementById(dotsId);
-    const btn = container.closest('.password-wrapper').querySelector('.btn-toggle-pass');
-    const svg = btn.querySelector('svg');
-    const pinValue = document.getElementById(inputId).value;
-
-    if (newVisible) {
-        // Mostrar números
-        container.innerHTML = '';
-        for (let i = 0; i < 6; i++) {
-            const span = document.createElement('span');
-            span.className = 'pin-digit';
-            span.innerText = (i < pinValue.length) ? pinValue[i] : '';
-            container.appendChild(span);
-        }
-        btn.style.color = "var(--primary)";
-        svg.innerHTML = openEyePaths;  // Ojo abierto (usa variable ya en tu código)
-    } else {
-        // Mostrar dots
-        container.innerHTML = '';
-        for (let i = 0; i < 6; i++) {
-            const div = document.createElement('div');
-            div.className = 'pin-dot';
-            if (i < pinValue.length) div.classList.add('filled');
-            container.appendChild(div);
-        }
-        btn.style.color = "var(--text-sec)";
-        svg.innerHTML = closedEyePaths;  // Ojo cerrado (usa variable ya en tu código)
-    }
-};
 </script>
 
 </body>
