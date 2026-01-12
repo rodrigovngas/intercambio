@@ -356,6 +356,15 @@
         padding: 35px 30px; /* Igual al de admin para consistencia */
     }
 }
+.modal-overlay {
+    overscroll-behavior: none; /* Previene pull-to-refresh y rebote en móviles */
+}
+
+@media (max-width: 500px) {
+    #confirm-modal .modal-content {
+        overflow-y: hidden; /* Cambia de 'auto' a 'hidden' para bloquear cualquier deslizamiento */
+    }
+}
     </style>
 </head>
 <body>
