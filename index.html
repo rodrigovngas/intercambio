@@ -304,69 +304,27 @@
         font-size: 1.3rem; /* Ajusta fuente para mantener proporción */
     }
 }
-
-/* Para pantallas más grandes, mantiene el diseño original */
-@media (min-width: 501px) {
-    .modal-content {
-        max-height: 95dvh; /* Restaura original */
-        height: auto;
-    }
-}
-@media (max-width: 500px) {
-    #admin-modal.modal-overlay {
-        align-items: flex-end;
-    }
-    #admin-modal .modal-content {
-        height: auto;
-        max-height: 95dvh;
-        border-radius: 24px 24px 0 0;
-        overflow-y: auto;
-        display: block; /* Elimina el espacio innecesario entre elementos para contenido pequeño */
-        padding: 35px 30px; /* Restaura el padding original para consistencia */
-    }
-}
-.pin-lock-top {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 15px;
-    color: var(--primary);
-    opacity: 0.9;
-}
-/* Ocultar scrollbar sin desactivar scroll */
-.container,
-.modal-content {
-    scrollbar-width: none;        /* Firefox */
-    -ms-overflow-style: none;     /* IE / Edge viejo */
-}
-
-.container::-webkit-scrollbar,
-.modal-content::-webkit-scrollbar {
-    display: none;                /* Chrome, Safari, Edge */
-}
 @media (max-width: 500px) {
     #auth-modal.modal-overlay {
-        align-items: stretch; /* Mantiene full-screen */
+        align-items: flex-end; /* Hace que el modal aparezca desde abajo como un bottom sheet */
     }
     #auth-modal .modal-content {
-        height: 100%; /* Tamaño completo */
-        max-height: none;
-        border-radius: 0;
-        overflow-y: auto; /* Scroll si es necesario */
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start; /* Todo desde arriba */
-        padding: 20px 20px 10px; /* Padding original */
-        padding-top: calc(20px + env(safe-area-inset-top)); /* Espacio extra para notch/barra en iOS/Android */
+        height: auto; /* Altura basada en el contenido, no full-screen */
+        max-height: 95dvh; /* Límite para no exceder la pantalla */
+        border-radius: 24px 24px 0 0; /* Bordes redondeados solo arriba, como un sheet */
+        overflow-y: auto; /* Scroll si el contenido excede */
+        display: block; /* Elimina flex para flujo normal, evita espacios grandes */
+        justify-content: initial; /* Resetea el space-between */
+        padding: 35px 30px; /* Padding consistente con otros modals */
     }
-    /* Baja el teclado al fondo */
+    /* Ajuste para el teclado: sin flex, usa margen fijo para separarlo un poco */
     .pin-keyboard {
-        margin-top: auto;
+        margin-top: 20px; /* Espacio arriba del teclado para que no quede pegado, ajusta si necesitas más */
         padding-bottom: 20px;
     }
-    /* Fuerza el ícono gris a ser visible desde el top */
+    /* Asegura que el ícono gris tenga algo de espacio superior en bottom sheet */
     #auth-modal .modal-content > svg {
-        margin-top: 0; /* Pegado al top */
-        margin-bottom: 15px; /* Espacio abajo */
+        margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
     }
 }
     </style>
