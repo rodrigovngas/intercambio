@@ -377,6 +377,29 @@
         margin-top: 20px; /* Espacio extra en la parte superior para simular "pin-lock-top" */
     }
 }
+@media (max-width: 500px) {
+    #auth-modal.modal-overlay {
+        align-items: flex-end; /* Hace que el modal aparezca desde abajo como un bottom sheet */
+    }
+    #auth-modal .modal-content {
+        height: auto; /* Altura basada en el contenido, no full-screen */
+        max-height: 95dvh; /* Límite para no exceder la pantalla */
+        border-radius: 24px 24px 0 0; /* Bordes redondeados solo arriba, como un sheet */
+        overflow-y: auto; /* Scroll si el contenido excede */
+        display: block; /* Elimina flex para flujo normal, evita espacios grandes */
+        justify-content: initial; /* Resetea el space-between */
+        padding: 35px 30px; /* Padding consistente con otros modals */
+    }
+    /* Ajuste para el teclado: sin flex, usa margen fijo para separarlo un poco */
+    .pin-keyboard {
+        margin-top: 20px; /* Espacio arriba del teclado para que no quede pegado, ajusta si necesitas más */
+        padding-bottom: 20px;
+    }
+    /* Asegura que el ícono gris tenga algo de espacio superior en bottom sheet */
+    #auth-modal .modal-content > svg {
+        margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
+    }
+}
     </style>
 </head>
 <body>
