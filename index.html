@@ -329,7 +329,7 @@
     }
 }
 
-
+/*MODAL ADMIN PASS*/
 @media (max-width: 500px) {
     #admin-modal.modal-overlay {
         align-items: flex-end; /* Aparece como bottom sheet desde abajo */
@@ -345,6 +345,26 @@
     }
     /* Ajuste opcional para el ícono gris en el top */
     #admin-modal .modal-content > svg {
+        margin-top: 10px; /* Espacio superior para no pegarse al borde */
+    }
+}
+
+/*MODAL CONFIRMACION confirm-modal*/
+@media (max-width: 500px) {
+    #confirm-modal.modal-overlay {
+        align-items: flex-end; /* Aparece como bottom sheet desde abajo */
+    }
+    #confirm-modal .modal-content {
+        height: auto; /* Altura basada en contenido, no full-screen */
+        max-height: 100dvh; /* No excede la pantalla */
+        border-radius: 24px 24px 0 0; /* Redondeado solo arriba para estilo sheet */
+        overflow-y: auto; /* Scroll si el contenido es largo */
+        display: block; /* Flujo normal, evita gaps en flex */
+        justify-content: initial; /* Resetea space-between */
+        padding: 35px 30px; /* Mantiene padding consistente */
+    }
+    /* Ajuste opcional para el ícono gris en el top */
+    #confirm-modal .modal-content > svg {
         margin-top: 10px; /* Espacio superior para no pegarse al borde */
     }
 }
