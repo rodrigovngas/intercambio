@@ -304,6 +304,7 @@
         font-size: 1.3rem; /* Ajusta fuente para mantener proporción */
     }
 }
+/*MODAL PIN*/
 @media (max-width: 500px) {
     #auth-modal.modal-overlay {
         align-items: flex-end; /* Hace que el modal aparezca desde abajo como un bottom sheet */
@@ -325,6 +326,26 @@
     /* Asegura que el ícono gris tenga algo de espacio superior en bottom sheet */
     #auth-modal .modal-content > svg {
         margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
+    }
+}
+
+
+@media (max-width: 500px) {
+    #admin-modal.modal-overlay {
+        align-items: flex-end; /* Aparece como bottom sheet desde abajo */
+    }
+    #admin-modal .modal-content {
+        height: auto; /* Altura basada en contenido, no full-screen */
+        max-height: 100dvh; /* No excede la pantalla */
+        border-radius: 24px 24px 0 0; /* Redondeado solo arriba para estilo sheet */
+        overflow-y: auto; /* Scroll si el contenido es largo */
+        display: block; /* Flujo normal, evita gaps en flex */
+        justify-content: initial; /* Resetea space-between */
+        padding: 35px 30px; /* Mantiene padding consistente */
+    }
+    /* Ajuste opcional para el ícono gris en el top */
+    #admin-modal .modal-content > svg {
+        margin-top: 10px; /* Espacio superior para no pegarse al borde */
     }
 }
     </style>
