@@ -365,6 +365,18 @@
         overflow-y: hidden; /* Cambia de 'auto' a 'hidden' para bloquear cualquier deslizamiento */
     }
 }
+/* Ajuste para centrar el ícono gris en todos los dispositivos */
+.modal-content > svg {
+    display: block;
+    margin: 0 auto 15px;
+}
+
+/* En móviles, hazlo más prominente si es necesario */
+@media (max-width: 500px) {
+    .modal-content > svg {
+        margin-top: 20px; /* Espacio extra en la parte superior para simular "pin-lock-top" */
+    }
+}
     </style>
 </head>
 <body>
@@ -527,12 +539,6 @@
 
 <div id="auth-modal" class="modal-overlay hidden">
     <div class="modal-content">
-<div class="pin-lock-top">
-    <svg class="icon icon-lg" viewBox="0 0 24 24">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>
-</div>
         <svg class="icon icon-lg" style="color:var(--text-sec); margin:0 auto 15px; display:block;" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <h2 id="modal-title" style="margin-bottom:5px;">Seguridad</h2>
         <p id="modal-desc" style="font-size:0.9em; margin-bottom:25px;">Acceso mediante PIN</p>
