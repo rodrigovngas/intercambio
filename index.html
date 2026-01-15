@@ -400,6 +400,30 @@
         margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
     }
 }
+@media (max-width: 500px) {
+    #auth-modal.modal-overlay {
+        align-items: stretch; /* Vuelve a full-screen en lugar de bottom sheet */
+    }
+    #auth-modal .modal-content {
+        height: 100%; /* Tamaño completo como lo quieres */
+        max-height: none; /* Sin límite, ocupa todo */
+        border-radius: 0; /* Sin bordes redondeados para full-screen */
+        overflow-y: auto; /* Scroll si excede, pero con contenido corto no habrá */
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start; /* Agrupa todo desde arriba, evita spaces que escondan el top */
+        padding: 20px 20px 10px; /* Padding original para espacio */
+    }
+    /* Empuja el teclado hacia abajo sin crear gaps que oculten el ícono */
+    .pin-keyboard {
+        margin-top: auto; /* Baja el teclado al fondo */
+        padding-bottom: 20px; /* Espacio abajo para comodidad */
+    }
+    /* Asegura que el ícono gris quede visible y no pegado al top */
+    #auth-modal .modal-content > svg {
+        margin-top: 20px; /* Espacio extra arriba para visibilidad en full-screen */
+    }
+}
     </style>
 </head>
 <body>
