@@ -344,84 +344,29 @@
     display: none;                /* Chrome, Safari, Edge */
 }
 @media (max-width: 500px) {
-    #confirm-modal.modal-overlay {
-        align-items: flex-end;
-    }
-    #confirm-modal .modal-content {
-        height: auto;
-        max-height: 95dvh;
-        border-radius: 24px 24px 0 0;
-        overflow-y: auto;
-        display: block; /* Elimina flex para que no estire innecesariamente */
-        padding: 35px 30px; /* Igual al de admin para consistencia */
-    }
-}
-.modal-overlay {
-    overscroll-behavior: none; /* Previene pull-to-refresh y rebote en móviles */
-}
-
-@media (max-width: 500px) {
-    #confirm-modal .modal-content {
-        overflow-y: hidden; /* Cambia de 'auto' a 'hidden' para bloquear cualquier deslizamiento */
-    }
-}
-/* Ajuste para centrar el ícono gris en todos los dispositivos */
-.modal-content > svg {
-    display: block;
-    margin: 0 auto 15px;
-}
-
-/* En móviles, hazlo más prominente si es necesario */
-@media (max-width: 500px) {
-    .modal-content > svg {
-        margin-top: 20px; /* Espacio extra en la parte superior para simular "pin-lock-top" */
-    }
-}
-@media (max-width: 500px) {
     #auth-modal.modal-overlay {
-        align-items: flex-end; /* Hace que el modal aparezca desde abajo como un bottom sheet */
+        align-items: stretch; /* Mantiene full-screen */
     }
     #auth-modal .modal-content {
-        height: auto; /* Altura basada en el contenido, no full-screen */
-        max-height: 95dvh; /* Límite para no exceder la pantalla */
-        border-radius: 24px 24px 0 0; /* Bordes redondeados solo arriba, como un sheet */
-        overflow-y: auto; /* Scroll si el contenido excede */
-        display: block; /* Elimina flex para flujo normal, evita espacios grandes */
-        justify-content: initial; /* Resetea el space-between */
-        padding: 35px 30px; /* Padding consistente con otros modals */
-    }
-    /* Ajuste para el teclado: sin flex, usa margen fijo para separarlo un poco */
-    .pin-keyboard {
-        margin-top: 20px; /* Espacio arriba del teclado para que no quede pegado, ajusta si necesitas más */
-        padding-bottom: 20px;
-    }
-    /* Asegura que el ícono gris tenga algo de espacio superior en bottom sheet */
-    #auth-modal .modal-content > svg {
-        margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
-    }
-}
-@media (max-width: 500px) {
-    #auth-modal.modal-overlay {
-        align-items: stretch; /* Vuelve a full-screen en lugar de bottom sheet */
-    }
-    #auth-modal .modal-content {
-        height: 100%; /* Tamaño completo como lo quieres */
-        max-height: none; /* Sin límite, ocupa todo */
-        border-radius: 0; /* Sin bordes redondeados para full-screen */
-        overflow-y: auto; /* Scroll si excede, pero con contenido corto no habrá */
+        height: 100%; /* Tamaño completo */
+        max-height: none;
+        border-radius: 0;
+        overflow-y: auto; /* Scroll si es necesario */
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* Agrupa todo desde arriba, evita spaces que escondan el top */
-        padding: 20px 20px 10px; /* Padding original para espacio */
+        justify-content: flex-start; /* Todo desde arriba */
+        padding: 20px 20px 10px; /* Padding original */
+        padding-top: calc(20px + env(safe-area-inset-top)); /* Espacio extra para notch/barra en iOS/Android */
     }
-    /* Empuja el teclado hacia abajo sin crear gaps que oculten el ícono */
+    /* Baja el teclado al fondo */
     .pin-keyboard {
-        margin-top: auto; /* Baja el teclado al fondo */
-        padding-bottom: 20px; /* Espacio abajo para comodidad */
+        margin-top: auto;
+        padding-bottom: 20px;
     }
-    /* Asegura que el ícono gris quede visible y no pegado al top */
+    /* Fuerza el ícono gris a ser visible desde el top */
     #auth-modal .modal-content > svg {
-        margin-top: 20px; /* Espacio extra arriba para visibilidad en full-screen */
+        margin-top: 0; /* Pegado al top */
+        margin-bottom: 15px; /* Espacio abajo */
     }
 }
     </style>
