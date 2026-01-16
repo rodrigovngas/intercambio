@@ -405,6 +405,25 @@
 .wishes-list::-webkit-scrollbar {
     display: none;
 }
+
+/* ===== PIN ERROR ANIMATION ===== */
+.pin-dots.error {
+    animation: shake 0.35s;
+}
+
+.pin-dot.error {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+}
     </style>
 </head>
 <body>
@@ -707,17 +726,26 @@
     let editingEventId = null;
 
     // --- PIN LOGIC WITH CUSTOM KEYPAD ---
-    window.addPinDigit = (digit, type) => {
-        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-        const input = document.getElementById(inputId);
-        let val = input.value;
-        if(val.length >= 6) return;
-        
-        val += digit;
-        input.value = val;
-        updatePinDots(val.length, dotsId);
-    };
+    window.addPinDigit = async (digit, type) => {
+    const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+    const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+    const input = document.getElementById(inputId);
+
+    let val = input.value;
+    if (val.length >= 6) return;
+
+    val += digit;
+    input.value = val;
+    updatePinDots(val.length, dotsId);
+
+    // 👉 Validación automática al llegar a 6 dígitos
+    if (val.length === 6) {
+        setTimeout(() => {
+            if (type === 'login') doLoginAuto();
+            if (type === 'reg') doRegisterAuto();
+        }, 150);
+    }
+};
 
     window.backspacePin = (type) => {
         const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
@@ -739,6 +767,29 @@
             else dot.classList.remove('filled');
         });
     }
+
+function pinError(type) {
+    const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+    const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+
+    const input = document.getElementById(inputId);
+    const dotsContainer = document.getElementById(dotsId);
+    const dots = dotsContainer.querySelectorAll('.pin-dot');
+
+    // animación + rojo
+    dotsContainer.classList.add('error');
+    dots.forEach(dot => dot.classList.add('error'));
+
+    // reset automático
+    setTimeout(() => {
+        dotsContainer.classList.remove('error');
+        dots.forEach(dot => {
+            dot.classList.remove('error');
+            dot.classList.remove('filled');
+        });
+        input.value = '';
+    }, 500);
+}
     
     // --- GENERIC VISIBILITY TOGGLE (FOR ADMIN PASS) ---
     const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
@@ -770,6 +821,37 @@
     }
 
     function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
+
+async function doLoginAuto() {
+    try {
+        await doLogin(); 
+    } catch (e) {
+        pinError('login');
+    }
+}
+
+    const pinHash = await hashString(pin);
+
+    // 👇 AQUÍ VA TU VALIDACIÓN REAL
+    const isCorrect = await validatePinFromDB(pinHash); 
+    // ⬆️ si ya tienes lógica dentro de doLogin(),
+    // solo copia esa lógica aquí
+
+    if (!isCorrect) {
+        pinError('login');
+        return;
+    }
+
+    // ✅ PIN correcto (feedback visual)
+    document
+        .querySelectorAll('#dots-login .pin-dot')
+        .forEach(d => d.classList.add('success'));
+
+    setTimeout(() => {
+        closeModal();
+        enterDashboard(); // tu flujo normal
+    }, 300);
+}
 
     window.showToast = (message, duration = 3000) => {
         const container = document.getElementById('toast-container');
@@ -1134,6 +1216,7 @@
             window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
             showToast("PIN incorrecto");
+throw new Error("PIN incorrecto");
             document.getElementById('login-pin').value = '';
             updatePinDots(0, 'dots-login');
         }
