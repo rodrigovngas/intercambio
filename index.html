@@ -520,10 +520,16 @@
             <p>Comparte este enlace a los invitados:</p>
         </div>
         <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
-        <button class="btn-accent" onclick="copyLink()">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copiar Enlace
-        </button>
+        <button class="btn-accent" onclick="shareEvent()">
+    <svg class="icon" viewBox="0 0 24 24">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <line x1="8.6" y1="13.5" x2="15.4" y2="17.5"></line>
+        <line x1="15.4" y1="6.5" x2="8.6" y2="10.5"></line>
+    </svg>
+    Compartir Invitación
+</button>
         <button class="btn-secondary" onclick="goToEvent()">Entrar yo también</button>
         <button class="btn-danger-text" onclick="promptForAdmin(() => deleteEvent())" style="width:100%; margin-top:40px;">
             <svg class="icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
@@ -1284,6 +1290,31 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
         } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
     });
+
+
+
+
+window.shareEvent = async () => {
+    const link = document.getElementById('share-link-text').innerText;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Invitación al intercambio',
+                text: 'Únete a este intercambio 🎁',
+                url: link
+            });
+        } catch (err) {
+            // El usuario canceló, no pasa nada
+        }
+    } else {
+        // Fallback por si no soporta share
+        navigator.clipboard.writeText(link);
+        showToast("Enlace copiado");
+    }
+};
+
+
 </script>
 
 </body>
