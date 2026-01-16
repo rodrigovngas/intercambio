@@ -518,6 +518,20 @@
             </svg>
             <h2>¡Evento Creado!</h2>
             <p>Comparte este enlace a los invitados:</p>
+<!-- QR de invitación -->
+<div style="display:flex; justify-content:center; margin:20px 0;">
+    <img 
+        id="qr-invite"
+        alt="QR Invitación"
+        style="
+            width:180px;
+            height:180px;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            background:white;
+        "
+    >
+</div>
         </div>
         <div class="link-box" id="share-link-text"><div class="spinner" style="width:20px; height:20px; margin:0 auto;"></div></div>
         <button class="btn-accent" onclick="shareEvent()">
@@ -1315,6 +1329,18 @@ window.shareEvent = async () => {
 };
 
 
+
+
+function renderShareInfo(link) {
+    // 1. Mostrar el link en texto
+    document.getElementById('share-link-text').innerText = link;
+
+    // 2. Generar el QR
+    const qrImg = document.getElementById('qr-invite');
+    const encodedLink = encodeURIComponent(link);
+
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
+}
 </script>
 
 </body>
