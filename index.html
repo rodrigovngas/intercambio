@@ -822,15 +822,19 @@ function pinError(type) {
 
     function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
 
-async function doLoginAuto() {
-    try {
-        await doLogin(); 
-    } catch (e) {
-        pinError('login');
-    }
-}
+async function doLogin() {
+    const pin = document.getElementById('login-pin').value;
 
-    const pinHash = await hashString(pin);
+    const esValido = await validarPin(pin);
+    if (!esValido) {
+        pinError('login');
+        return;
+    }
+
+    // 👇 ESTO ES LO QUE TE FALTA
+    closeModal();
+    enterDashboard();
+}
 
     // 👇 AQUÍ VA TU VALIDACIÓN REAL
     const isCorrect = await validatePinFromDB(pinHash); 
