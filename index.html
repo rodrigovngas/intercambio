@@ -405,24 +405,20 @@
 .wishes-list::-webkit-scrollbar {
     display: none;
 }
-
-/* ===== PIN ERROR ANIMATION ===== */
-.pin-dots.error {
-    animation: shake 0.35s;
+/* --- ESTILOS PARA ERROR DE PIN --- */
+@keyframes shake-animation {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
 }
 
-.pin-dot.error {
-    background: var(--danger);
-    border-color: var(--danger);
+.shake-error {
+    animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-@keyframes shake {
-    0% { transform: translateX(0); }
-    20% { transform: translateX(-6px); }
-    40% { transform: translateX(6px); }
-    60% { transform: translateX(-4px); }
-    80% { transform: translateX(4px); }
-    100% { transform: translateX(0); }
+.shake-error .pin-dot {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
 }
     </style>
 </head>
@@ -726,26 +722,27 @@
     let editingEventId = null;
 
     // --- PIN LOGIC WITH CUSTOM KEYPAD ---
-    window.addPinDigit = async (digit, type) => {
-    const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-    const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-    const input = document.getElementById(inputId);
+        window.addPinDigit = (digit, type) => {
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const input = document.getElementById(inputId);
+        let val = input.value;
+        
+        if(val.length >= 6) return;
+        
+        val += digit;
+        input.value = val;
+        updatePinDots(val.length, dotsId);
 
-    let val = input.value;
-    if (val.length >= 6) return;
-
-    val += digit;
-    input.value = val;
-    updatePinDots(val.length, dotsId);
-
-    // 👉 Validación automática al llegar a 6 dígitos
-    if (val.length === 6) {
-        setTimeout(() => {
-            if (type === 'login') doLoginAuto();
-            if (type === 'reg') doRegisterAuto();
-        }, 150);
-    }
-};
+        // --- VALIDACIÓN AUTOMÁTICA ---
+        // Solo para login, para registro es mejor esperar confirmación manual por seguridad
+        if(type === 'login' && val.length === 6) {
+            // Pequeña pausa de 100ms para ver el 6to punto llenarse
+            setTimeout(() => {
+                doLogin();
+            }, 100); 
+        }
+    };
 
     window.backspacePin = (type) => {
         const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
@@ -767,29 +764,6 @@
             else dot.classList.remove('filled');
         });
     }
-
-function pinError(type) {
-    const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-    const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-
-    const input = document.getElementById(inputId);
-    const dotsContainer = document.getElementById(dotsId);
-    const dots = dotsContainer.querySelectorAll('.pin-dot');
-
-    // animación + rojo
-    dotsContainer.classList.add('error');
-    dots.forEach(dot => dot.classList.add('error'));
-
-    // reset automático
-    setTimeout(() => {
-        dotsContainer.classList.remove('error');
-        dots.forEach(dot => {
-            dot.classList.remove('error');
-            dot.classList.remove('filled');
-        });
-        input.value = '';
-    }, 500);
-}
     
     // --- GENERIC VISIBILITY TOGGLE (FOR ADMIN PASS) ---
     const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
@@ -821,41 +795,6 @@ function pinError(type) {
     }
 
     function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
-
-async function doLogin() {
-    const pin = document.getElementById('login-pin').value;
-
-    const esValido = await validarPin(pin);
-    if (!esValido) {
-        pinError('login');
-        return;
-    }
-
-    // 👇 ESTO ES LO QUE TE FALTA
-    closeModal();
-    enterDashboard();
-}
-
-    // 👇 AQUÍ VA TU VALIDACIÓN REAL
-    const isCorrect = await validatePinFromDB(pinHash); 
-    // ⬆️ si ya tienes lógica dentro de doLogin(),
-    // solo copia esa lógica aquí
-
-    if (!isCorrect) {
-        pinError('login');
-        return;
-    }
-
-    // ✅ PIN correcto (feedback visual)
-    document
-        .querySelectorAll('#dots-login .pin-dot')
-        .forEach(d => d.classList.add('success'));
-
-    setTimeout(() => {
-        closeModal();
-        enterDashboard(); // tu flujo normal
-    }, 300);
-}
 
     window.showToast = (message, duration = 3000) => {
         const container = document.getElementById('toast-container');
@@ -1213,16 +1152,35 @@ async function doLogin() {
         } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
-    window.doLogin = async () => {
+        window.doLogin = async () => {
         const pinInput = document.getElementById('login-pin').value;
+        const container = document.getElementById('dots-login'); // Referencia a los dots
+
+        // Si por alguna razón se ejecuta con menos de 6, no hacemos nada
+        if (pinInput.length < 6) return;
+
         const hInput = await hashString(pinInput);
+        
         if(hInput === selectedUserDoc.data.password) {
-            window.closeModal(); enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
+            // ÉXITO: Entramos
+            window.closeModal(); 
+            enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
-            showToast("PIN incorrecto");
-throw new Error("PIN incorrecto");
-            document.getElementById('login-pin').value = '';
-            updatePinDots(0, 'dots-login');
+            // ERROR: Animación de sacudida
+            if(navigator.vibrate) navigator.vibrate(200); // Vibrar celular si es posible
+            
+            // Agregamos clase de error
+            container.classList.add('shake-error');
+            
+            // Esperamos a que termine la animación (500ms) para limpiar
+            setTimeout(() => {
+                container.classList.remove('shake-error');
+                document.getElementById('login-pin').value = ''; // Limpiar input
+                updatePinDots(0, 'dots-login'); // Limpiar puntos visuales
+            }, 500);
+
+            // Opcional: mostrar Toast también, o dejar solo la animación
+            // showToast("PIN incorrecto"); 
         }
     };
 
