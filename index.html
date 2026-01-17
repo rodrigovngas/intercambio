@@ -425,20 +425,76 @@
 
 
 
-/* Animación de cierre del modal PIN */
-.modal-exit {
-    animation: slideDownFade 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+/* ===== ANIMACIONES MODALES (ENTRADA / SALIDA) ===== */
+
+/* Estado inicial (entrada) */
+.modal-overlay {
+    opacity: 0;
+    transition: opacity 0.35s ease;
 }
 
-@keyframes slideDownFade {
-    from {
-        transform: translateY(0);
-        opacity: 1;
-    }
-    to {
-        transform: translateY(100vh);
-        opacity: 0;
-    }
+.modal-overlay.modal-show {
+    opacity: 1;
+}
+
+/* Contenido entra desde abajo */
+.modal-content {
+    transform: translateY(60px);
+    opacity: 0;
+    transition:
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.25s ease;
+}
+
+/* Visible */
+.modal-overlay.modal-show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Salida */
+.modal-overlay.modal-exit {
+    opacity: 0;
+}
+
+.modal-overlay.modal-exit .modal-content {
+    transform: translateY(100px);
+    opacity: 0;
+}
+
+
+
+
+
+.modal-overlay {
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+.modal-overlay.modal-show {
+    opacity: 1;
+}
+
+.modal-content {
+    transform: translateY(60px);
+    opacity: 0;
+    transition:
+        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.25s ease;
+}
+
+.modal-overlay.modal-show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal-overlay.modal-exit {
+    opacity: 0;
+}
+
+.modal-overlay.modal-exit .modal-content {
+    transform: translateY(100px);
+    opacity: 0;
 }
     </style>
 </head>
@@ -1372,6 +1428,72 @@ function renderShareInfo(link) {
     const encodedLink = encodeURIComponent(link);
 
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
+}
+
+
+
+
+
+
+//CIERRES MODALES
+window.openModal = (id) => {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+
+    modal.classList.remove('hidden', 'modal-exit');
+    requestAnimationFrame(() => {
+        modal.classList.add('modal-show');
+    });
+};
+
+window.closeModalById = (id) => {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+
+    modal.classList.remove('modal-show');
+    modal.classList.add('modal-exit');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('modal-exit');
+    }, 350);
+};
+
+
+
+
+
+
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+
+    // Cuando se muestre el modal, le agregamos animación
+    const observer = new MutationObserver(() => {
+        if (!modal.classList.contains('hidden')) {
+            requestAnimationFrame(() => {
+                modal.classList.add('modal-show');
+            });
+        }
+    });
+
+    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+    // Cerrar tocando el fondo
+    modal.addEventListener('click', e => {
+        if (e.target === modal) animateClose(modal);
+    });
+});
+
+function animateClose(modal) {
+    if (modal.classList.contains('hidden')) return;
+
+    modal.classList.remove('modal-show');
+    modal.classList.add('modal-exit');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('modal-exit');
+    }, 350);
 }
 </script>
 
