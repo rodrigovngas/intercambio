@@ -1056,6 +1056,8 @@
                 eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
                 document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
                 document.getElementById('share-link-text').innerText = link;
+// QR
+renderShareInfo(link);
             }
         } catch(e) { btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; showToast("Error: " + e.message); }
     });
