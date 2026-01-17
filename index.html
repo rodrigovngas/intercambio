@@ -420,6 +420,26 @@
     background-color: var(--danger) !important;
     border-color: var(--danger) !important;
 }
+
+
+
+
+
+/* Animación de cierre del modal PIN */
+.modal-exit {
+    animation: slideDownFade 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes slideDownFade {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+}
     </style>
 </head>
 <body>
@@ -1166,7 +1186,20 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         }
     }
 
-    window.closeModal = () => document.getElementById('auth-modal').classList.add('hidden');
+    window.closeModal = () => {
+    const modal = document.getElementById('auth-modal');
+    const content = modal.querySelector('.modal-content');
+
+    // Evita dobles cierres
+    if (modal.classList.contains('hidden')) return;
+
+    content.classList.add('modal-exit');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        content.classList.remove('modal-exit');
+    }, 350); // debe coincidir con la duración del CSS
+};
 
     window.doRegister = async () => {
         const pin = document.getElementById('reg-pin').value; 
