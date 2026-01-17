@@ -753,7 +753,7 @@
                 Olvidé mi PIN (Admin Reset)
             </button>
         </div>
-        <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
+        <button data-close-modal class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
     </div>
 </div>
 
@@ -770,7 +770,7 @@
         </div>
         <div style="display:flex; gap:10px;">
             <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
-            <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
+            <button data-close-modal class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
         </div>
     </div>
 </div>
@@ -785,7 +785,7 @@
         <h3 id="confirm-title" style="margin-bottom:5px;">¿Estás seguro?</h3>
         <p id="confirm-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Esta acción es irreversible.</p>
         <div style="display:flex; gap:10px;">
-            <button class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
+            <button data-close-modal class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
             <button class="btn-accent" onclick="executeConfirm()" style="background:var(--danger); border-color:var(--danger);">Sí, eliminar</button>
         </div>
     </div>
@@ -1495,6 +1495,15 @@ function animateClose(modal) {
         modal.classList.remove('modal-exit');
     }, 350);
 }
+
+
+
+document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const modal = btn.closest('.modal-overlay');
+        if (modal) animateClose(modal);
+    });
+});
 </script>
 
 </body>
