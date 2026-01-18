@@ -449,13 +449,14 @@
 }
 
 /* B) ANIMACIÓN DE SALIDA (Se activa con JS) */
-/* SALIDA más lenta y elegante */
+/* SALIDA – más lenta y con peso */
 .modal-closing {
-    animation: fadeOut 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+    animation: fadeOut 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+    pointer-events: none;
 }
 
 .modal-closing .modal-content {
-    animation: slideDown 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    animation: slideDown 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 
