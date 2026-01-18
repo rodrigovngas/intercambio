@@ -13,35 +13,51 @@
 
     <style>
         :root {
-            --bg-color: #f3f4f6;
-            --primary: #111827; 
-            --primary-hover: #374151;
-            --accent: #000000; 
-            --text-main: #1f2937;
-            --text-sec: #6b7280;
-            --border: #e5e7eb;
-            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            --radius: 16px;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
+    /* Variables Base (Modo Claro) */
+    --bg-gradient: linear-gradient(to bottom, #ffffff, #f3f4f6);
+    --container-bg: #ffffff;
+    --input-bg: #ffffff;
+    --primary: #111827; 
+    --primary-hover: #374151;
+    --accent: #000000; 
+    --text-main: #1f2937;
+    --text-sec: #6b7280;
+    --border: #e5e7eb;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    --radius: 16px;
+    --danger: #ef4444;
+    --success: #10b981;
+    --modal-overlay: rgba(0,0,0,0.6);
+}
+
+/* Variables Modo Oscuro */
+body.dark-mode {
+    --bg-gradient: linear-gradient(to bottom, #111827, #0f172a);
+    --container-bg: #1f2937; /* Gris oscuro elegante */
+    --input-bg: #374151;     /* Gris medio para inputs */
+    --primary: #f9fafb;      /* Blanco humo para títulos */
+    --primary-hover: #d1d5db;
+    --accent: #ffffff;       /* Acento blanco en oscuro */
+    --text-main: #e5e7eb;    /* Texto principal claro */
+    --text-sec: #9ca3af;     /* Texto secundario gris suave */
+    --border: #374151;       /* Bordes sutiles */
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --modal-overlay: rgba(0,0,0,0.8);
+}
+
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom, #ffffff, #f3f4f6);
-            color: var(--text-main); margin: 0; padding: 0;
-            height: 100dvh; width: 100vw; overflow: hidden; 
-            display: flex; justify-content: center; align-items: center;
-        }
+    background: var(--bg-gradient); /* Antes era linear-gradient fijo */
+    color: var(--text-main);
+    transition: background 0.3s ease, color 0.3s ease; /* Transición suave al cambiar */
+}
 
         .container {
-            background: #ffffff; width: 100%; height: 100%; max-width: 500px;
-            overflow-y: auto; padding: 30px 25px 0 25px;
-            display: flex; flex-direction: column; position: relative;
-        }
+    background: var(--container-bg); /* Antes #ffffff */
+}
 
         @media (min-width: 501px) {
             .container { 
@@ -75,11 +91,9 @@
         }
 
         input:not([type="checkbox"]), textarea, select {
-            width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
-            font-size: 1rem; background: #fff; color: var(--text-main); 
-            font-family: inherit; appearance: none; outline: none;
-            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-        }
+    background: var(--input-bg); /* Antes #fff */
+    color: var(--text-main);
+}
         
         input[type="password"] { padding-right: 48px !important; } 
         
@@ -111,7 +125,11 @@
         }
         .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
         
-        .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-secondary {
+    background-color: var(--container-bg); 
+    color: var(--text-main);
+    border-color: var(--border);
+}
         .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
         .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
         .btn-danger-text { 
@@ -132,10 +150,9 @@
         } 
         
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .name-card-admin {
-            background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
-            display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
-        }
+        .name-card-admin, .name-card-user, .master-event-card {
+    background: var(--container-bg); /* Antes white */
+}
         .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
         .btn-icon-delete { background: none; border: none; padding: 4px; color: #9ca3af; margin-top: 0; width: auto; cursor: pointer; transition: color 0.2s; }
         .btn-icon-delete:hover { color: var(--danger); }
@@ -146,7 +163,6 @@
             text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
             box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
         }
-        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
         
         .seen-badge {
             position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; 
@@ -154,11 +170,7 @@
         }
 
         #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .master-event-card {
-            background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
-        }
+        
         .master-event-card:hover { transform: translateX(2px); }
         .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
         .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
@@ -183,11 +195,8 @@
         }
         @media (min-width: 501px) { .modal-overlay { align-items: center; } }
         .modal-content {
-            background: white; padding: 35px 30px; 
-            border-top-left-radius: 24px; border-top-right-radius: 24px; 
-            width: 100%; max-width: 500px; max-height: 95dvh; overflow-y: auto;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    background: var(--container-bg); /* Antes white */
+}
         @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
         
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
@@ -493,6 +502,43 @@
 .modal-content {
     will-change: transform;
 }
+
+
+
+
+/* Ajuste específico para botones negros en modo oscuro para que resalten */
+body.dark-mode .btn-primary, 
+body.dark-mode .btn-accent {
+    background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%);
+    color: #111827; /* Texto oscuro en botón claro */
+    font-weight: 800;
+}
+
+
+
+
+/* Contenedor para alinear los botones arriba a la derecha */
+.header-controls {
+    position: absolute; top: 0; right: 0; 
+    z-index: 50; display: flex; align-items: center;
+    padding: 10px; gap: 5px;
+}
+
+/* Estilos comunes para botones del header */
+.header-btn {
+    background: transparent; border: none; padding: 8px; cursor: pointer;
+    color: #d1d5db; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.header-btn:hover { color: var(--primary); background: rgba(0,0,0,0.05); }
+body.dark-mode .header-btn:hover { background: rgba(255,255,255,0.1); }
+
+/* Animación del icono de tema */
+#theme-icon {
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+.rotate-icon { transform: rotate(360deg); }
+
     </style>
 </head>
 <body>
@@ -511,9 +557,17 @@
 
 <div class="container">
     <div id="screen-home" class="hidden screen-content">
-        <button class="btn-settings" onclick="promptForAdmin(() => goToMasterPanel())">
-            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        </button>
+        <div class="header-controls">
+    <button class="header-btn" onclick="toggleTheme()" aria-label="Cambiar tema">
+        <svg id="theme-icon" class="icon" viewBox="0 0 24 24" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+    
+    <button class="header-btn" onclick="promptForAdmin(() => goToMasterPanel())">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+    </button>
+</div>
         <h1>Intercambio</h1>
         <p>Organiza intercambios de forma sencilla.</p>
         <button class="btn-accent" onclick="showAdminSetup()">
@@ -1424,6 +1478,46 @@ function renderShareInfo(link) {
 
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
 }
+</script>
+<script>
+    // Configuración de iconos SVG
+    const moonIcon = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+    const sunIcon = '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>';
+
+    function toggleTheme() {
+        const body = document.body;
+        const iconSvg = document.getElementById('theme-icon');
+        
+        // 1. Alternar clase
+        body.classList.toggle('dark-mode');
+        const isDark = body.classList.contains('dark-mode');
+
+        // 2. Animación de rotación
+        iconSvg.classList.add('rotate-icon');
+        setTimeout(() => iconSvg.classList.remove('rotate-icon'), 500);
+
+        // 3. Cambiar icono y guardar preferencia
+        if (isDark) {
+            iconSvg.innerHTML = sunIcon;
+            localStorage.setItem('theme', 'dark');
+        } else {
+            iconSvg.innerHTML = moonIcon;
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    // Inicializar tema al cargar
+    (function initTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('theme-icon').innerHTML = sunIcon;
+        } else {
+            document.getElementById('theme-icon').innerHTML = moonIcon;
+        }
+    })();
 </script>
 
 </body>
