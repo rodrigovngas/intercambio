@@ -26,30 +26,12 @@
             --success: #10b981;
         }
 
-:root[data-theme="dark"] {
-    --bg-color: #020617;
-    --primary: #f8fafc;
-    --primary-hover: #e2e8f0;
-
-    --text-main: #e5e7eb;
-    --text-sec: #94a3b8;
-
-    --border: #1e293b;
-    --accent: #ffffff;
-
-    --card-shadow: 0 20px 40px rgba(0,0,0,0.6);
-
-    --success: #22c55e;
-    --danger: #f87171;
-}
-
-
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-color);
+            background: linear-gradient(to bottom, #ffffff, #f3f4f6);
             color: var(--text-main); margin: 0; padding: 0;
             height: 100dvh; width: 100vw; overflow: hidden; 
             display: flex; justify-content: center; align-items: center;
@@ -72,15 +54,11 @@
         .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
 
         .btn-settings {
-    background: transparent;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
-    color: #d1d5db;
-    transition: color 0.3s;
-    width: auto;
-    margin: 0;
-}
+            position: absolute; top: 0; right: 0; 
+            background: transparent; border: none; padding: 10px; cursor: pointer;
+            color: #d1d5db; transition: color 0.3s; z-index: 50; width: auto; margin: 0;
+        }
+        .btn-settings:hover { color: var(--primary); }
 
         h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
         h1 { font-size: 2.2rem; font-weight: 800; }
@@ -515,117 +493,6 @@
 .modal-content {
     will-change: transform;
 }
-
-
-
-
-
-
-/*ALINEAR BOTONES*/
-.top-actions {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    gap: 6px;
-    z-index: 50;
-}
-
-.btn-theme {
-    opacity: 0.8;
-}
-
-.btn-theme:hover {
-    opacity: 1;
-}
-
-
-
-
-
-
-/*ESTILOS PREMIUM DARK*/
-:root[data-theme="dark"] body {
-    background: radial-gradient(circle at top, #020617 0%, #000000 60%);
-}
-
-:root[data-theme="dark"] .container {
-    background: linear-gradient(180deg, #020617 0%, #000000 100%);
-}
-
-:root[data-theme="dark"] .name-card-user,
-:root[data-theme="dark"] .master-event-card,
-:root[data-theme="dark"] .modal-content,
-:root[data-theme="dark"] input,
-:root[data-theme="dark"] select,
-:root[data-theme="dark"] textarea {
-    background: #020617;
-    border-color: #1e293b;
-}
-
-:root[data-theme="dark"] input:focus,
-:root[data-theme="dark"] select:focus,
-:root[data-theme="dark"] textarea:focus {
-    box-shadow: 0 0 0 4px rgba(148,163,184,0.15);
-}
-
-
-
-
-/*ANIMACION ICONO*/
-/* Animación específica para el icono del sol/luna */
-.theme-icon {
-    width: 22px;
-    height: 22px;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-:root[data-theme="dark"] .sun,
-:root[data-theme="dark"] .sun-rays {
-    opacity: 0;
-    transform: scale(0);
-}
-
-:root[data-theme="dark"] .moon {
-    opacity: 1;
-    transform: scale(1);
-}
-
-:root[data-theme="dark"] .theme-icon {
-    transform: rotate(-20deg);
-}
-
-/* Estado inicial de la luna (oculta en modo claro) */
-.moon {
-    opacity: 0;
-    transition: all 0.4s ease;
-}
-
-.sun, .sun-rays {
-    transition: all 0.4s ease;
-}
-
-
-
-
-
-.top-actions {
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    gap: 6px;
-    z-index: 50;
-}
-
-
-
-
-
-/* Esto hará que todos los cambios de color sean suaves */
-* {
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-}
     </style>
 </head>
 <body>
@@ -644,61 +511,9 @@
 
 <div class="container">
     <div id="screen-home" class="hidden screen-content">
-        <div class="top-actions">
-    <!-- Botón modo claro / oscuro -->
-    <button class="btn-settings btn-theme" onclick="toggleTheme()" title="Modo claro / oscuro">
-        <svg class="theme-icon" viewBox="0 0 24 24">
-            <circle class="sun" cx="12" cy="12" r="5"/>
-            <g class="sun-rays">
-                <line x1="12" y1="1" x2="12" y2="3"/>
-                <line x1="12" y1="21" x2="12" y2="23"/>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                <line x1="1" y1="12" x2="3" y2="12"/>
-                <line x1="21" y1="12" x2="23" y2="12"/>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </g>
-            <path class="moon" d="M21 12.79A9 9 0 1 1 11.21 3
-                7 7 0 0 0 21 12.79z"/>
-        </svg>
-    </button>
-
-    <!-- Botón settings ORIGINAL -->
-    <button class="btn-settings" onclick="promptForAdmin(() => goToMasterPanel())">
-        <svg class="icon" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83
-                     2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33
-                     1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2
-                     2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4
-                     a1.65 1.65 0 0 0-1.82.33l-.06.06
-                     a2 2 0 0 1-2.83 0
-                     2 2 0 0 1 0-2.83l.06-.06
-                     a1.65 1.65 0 0 0 .33-1.82
-                     1.65 1.65 0 0 0-1.51-1H3
-                     a2 2 0 0 1-2-2
-                     2 2 0 0 1 2-2h.09
-                     A1.65 1.65 0 0 0 4.6 9
-                     a1.65 1.65 0 0 0-.33-1.82l-.06-.06
-                     a2 2 0 0 1 0-2.83
-                     2 2 0 0 1 2.83 0l.06.06
-                     a1.65 1.65 0 0 0 1.82.33H9
-                     a1.65 1.65 0 0 0 1-1.51V3
-                     a2 2 0 0 1 2-2
-                     2 2 0 0 1 2 2v.09
-                     a1.65 1.65 0 0 0 1 1.51
-                     1.65 1.65 0 0 0 1.82-.33l.06-.06
-                     a2 2 0 0 1 2.83 0
-                     2 2 0 0 1 0 2.83l-.06.06
-                     a1.65 1.65 0 0 0-.33 1.82V9
-                     a1.65 1.65 0 0 0 1.51 1H21
-                     a2 2 0 0 1 2 2
-                     2 2 0 0 1-2 2h-.09
-                     a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-    </button>
-</div>
+        <button class="btn-settings" onclick="promptForAdmin(() => goToMasterPanel())">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        </button>
         <h1>Intercambio</h1>
         <p>Organiza intercambios de forma sencilla.</p>
         <button class="btn-accent" onclick="showAdminSetup()">
@@ -1608,18 +1423,6 @@ function renderShareInfo(link) {
     const encodedLink = encodeURIComponent(link);
 
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
-}
-
-
-
-
-function toggleTheme() {
-    const root = document.documentElement;
-    const current = root.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
-
-    root.setAttribute("data-theme", next);
-    localStorage.setItem("theme", next);
 }
 </script>
 
