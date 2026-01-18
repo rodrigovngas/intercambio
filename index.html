@@ -425,76 +425,29 @@
 
 
 
-/* ===== ANIMACIONES MODALES (ENTRADA / SALIDA) ===== */
 
-/* Estado inicial (entrada) */
-.modal-overlay {
-    opacity: 0;
-    transition: opacity 0.35s ease;
+
+
+
+
+/* --- ANIMACIÓN DE CIERRE --- */
+@keyframes slideDown {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(100%); opacity: 0; }
 }
 
-.modal-overlay.modal-show {
-    opacity: 1;
+@keyframes fadeOutBg {
+    from { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+    to { background: rgba(0,0,0,0); backdrop-filter: blur(0px); }
 }
 
-/* Contenido entra desde abajo */
-.modal-content {
-    transform: translateY(60px);
-    opacity: 0;
-    transition:
-        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.25s ease;
+/* Esta clase se añade con JS al cerrar */
+.modal-closing {
+    animation: fadeOutBg 0.3s forwards !important;
 }
 
-/* Visible */
-.modal-overlay.modal-show .modal-content {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-/* Salida */
-.modal-overlay.modal-exit {
-    opacity: 0;
-}
-
-.modal-overlay.modal-exit .modal-content {
-    transform: translateY(100px);
-    opacity: 0;
-}
-
-
-
-
-
-.modal-overlay {
-    opacity: 0;
-    transition: opacity 0.35s ease;
-}
-
-.modal-overlay.modal-show {
-    opacity: 1;
-}
-
-.modal-content {
-    transform: translateY(60px);
-    opacity: 0;
-    transition:
-        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-        opacity 0.25s ease;
-}
-
-.modal-overlay.modal-show .modal-content {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-.modal-overlay.modal-exit {
-    opacity: 0;
-}
-
-.modal-overlay.modal-exit .modal-content {
-    transform: translateY(100px);
-    opacity: 0;
+.modal-closing .modal-content {
+    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
     </style>
 </head>
@@ -753,7 +706,7 @@
                 Olvidé mi PIN (Admin Reset)
             </button>
         </div>
-        <button data-close-modal class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
+        <button class="btn-text" onclick="closeModal()" style="margin-top:0;">Cerrar</button>
     </div>
 </div>
 
@@ -770,7 +723,7 @@
         </div>
         <div style="display:flex; gap:10px;">
             <button class="btn-secondary" onclick="closeAdminModal()">Cancelar</button>
-            <button data-close-modal class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
+            <button class="btn-accent" onclick="submitAdminAuth()">Entrar</button>
         </div>
     </div>
 </div>
@@ -785,7 +738,7 @@
         <h3 id="confirm-title" style="margin-bottom:5px;">¿Estás seguro?</h3>
         <p id="confirm-desc" style="font-size:0.85em; margin-bottom:20px; opacity:0.8;">Esta acción es irreversible.</p>
         <div style="display:flex; gap:10px;">
-            <button data-close-modal class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
+            <button class="btn-secondary" onclick="closeConfirmModal()">Cancelar</button>
             <button class="btn-accent" onclick="executeConfirm()" style="background:var(--danger); border-color:var(--danger);">Sí, eliminar</button>
         </div>
     </div>
@@ -1242,20 +1195,18 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         }
     }
 
-    window.closeModal = () => {
-    const modal = document.getElementById('auth-modal');
-    const content = modal.querySelector('.modal-content');
-
-    // Evita dobles cierres
-    if (modal.classList.contains('hidden')) return;
-
-    content.classList.add('modal-exit');
-
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        content.classList.remove('modal-exit');
-    }, 350); // debe coincidir con la duración del CSS
-};
+        window.closeModal = () => {
+        const modal = document.getElementById('auth-modal');
+        
+        // 1. Añadimos la clase de animación
+        modal.classList.add('modal-closing');
+        
+        // 2. Esperamos a que termine la animación (300ms) antes de ocultarlo
+        setTimeout(() => {
+            modal.classList.add('hidden');       // Lo ocultamos
+            modal.classList.remove('modal-closing'); // Limpiamos la clase para la próxima vez
+        }, 280); // Un poco menos de 300ms para evitar parpadeos
+    };
 
     window.doRegister = async () => {
         const pin = document.getElementById('reg-pin').value; 
@@ -1429,81 +1380,6 @@ function renderShareInfo(link) {
 
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
 }
-
-
-
-
-
-
-//CIERRES MODALES
-window.openModal = (id) => {
-    const modal = document.getElementById(id);
-    if (!modal) return;
-
-    modal.classList.remove('hidden', 'modal-exit');
-    requestAnimationFrame(() => {
-        modal.classList.add('modal-show');
-    });
-};
-
-window.closeModalById = (id) => {
-    const modal = document.getElementById(id);
-    if (!modal) return;
-
-    modal.classList.remove('modal-show');
-    modal.classList.add('modal-exit');
-
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('modal-exit');
-    }, 350);
-};
-
-
-
-
-
-
-
-document.querySelectorAll('.modal-overlay').forEach(modal => {
-
-    // Cuando se muestre el modal, le agregamos animación
-    const observer = new MutationObserver(() => {
-        if (!modal.classList.contains('hidden')) {
-            requestAnimationFrame(() => {
-                modal.classList.add('modal-show');
-            });
-        }
-    });
-
-    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
-
-    // Cerrar tocando el fondo
-    modal.addEventListener('click', e => {
-        if (e.target === modal) animateClose(modal);
-    });
-});
-
-function animateClose(modal) {
-    if (modal.classList.contains('hidden')) return;
-
-    modal.classList.remove('modal-show');
-    modal.classList.add('modal-exit');
-
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        modal.classList.remove('modal-exit');
-    }, 350);
-}
-
-
-
-document.querySelectorAll('[data-close-modal]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const modal = btn.closest('.modal-overlay');
-        if (modal) animateClose(modal);
-    });
-});
 </script>
 
 </body>
