@@ -573,45 +573,36 @@
 
 
 /*ANIMACION ICONO*/
+/* Animación específica para el icono del sol/luna */
 .theme-icon {
     width: 22px;
     height: 22px;
-    stroke: currentColor;
-    fill: none;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.sun {
-    fill: currentColor;
-    transition: r 0.35s ease, opacity 0.35s ease;
-}
-
-.sun-rays {
-    stroke-width: 2;
-    transition: opacity 0.35s ease;
-}
-
-.moon {
-    fill: currentColor;
-    opacity: 0;
-    transition: opacity 0.35s ease;
-}
-
-:root[data-theme="dark"] .sun {
-    r: 8;
-    opacity: 0;
-}
-
+:root[data-theme="dark"] .sun,
 :root[data-theme="dark"] .sun-rays {
     opacity: 0;
+    transform: scale(0);
 }
 
 :root[data-theme="dark"] .moon {
     opacity: 1;
+    transform: scale(1);
 }
 
 :root[data-theme="dark"] .theme-icon {
     transform: rotate(-20deg);
+}
+
+/* Estado inicial de la luna (oculta en modo claro) */
+.moon {
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+
+.sun, .sun-rays {
+    transition: all 0.4s ease;
 }
 
 
@@ -625,6 +616,15 @@
     display: flex;
     gap: 6px;
     z-index: 50;
+}
+
+
+
+
+
+/* Esto hará que todos los cambios de color sean suaves */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
     </style>
 </head>
@@ -1621,13 +1621,6 @@ function toggleTheme() {
     root.setAttribute("data-theme", next);
     localStorage.setItem("theme", next);
 }
-
-(function () {
-    const saved = localStorage.getItem("theme");
-    if (saved) {
-        document.documentElement.setAttribute("data-theme", saved);
-    }
-})();
 </script>
 
 </body>
