@@ -26,12 +26,30 @@
             --success: #10b981;
         }
 
+:root[data-theme="dark"] {
+    --bg-color: #020617;
+    --primary: #f8fafc;
+    --primary-hover: #e2e8f0;
+
+    --text-main: #e5e7eb;
+    --text-sec: #94a3b8;
+
+    --border: #1e293b;
+    --accent: #ffffff;
+
+    --card-shadow: 0 20px 40px rgba(0,0,0,0.6);
+
+    --success: #22c55e;
+    --danger: #f87171;
+}
+
+
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom, #ffffff, #f3f4f6);
+            background: var(--bg-color);
             color: var(--text-main); margin: 0; padding: 0;
             height: 100dvh; width: 100vw; overflow: hidden; 
             display: flex; justify-content: center; align-items: center;
@@ -515,6 +533,81 @@
 
 .btn-theme:hover {
     opacity: 1;
+}
+
+
+
+
+
+
+/*ESTILOS PREMIUM DARK*/
+:root[data-theme="dark"] body {
+    background: radial-gradient(circle at top, #020617 0%, #000000 60%);
+}
+
+:root[data-theme="dark"] .container {
+    background: linear-gradient(180deg, #020617 0%, #000000 100%);
+}
+
+:root[data-theme="dark"] .name-card-user,
+:root[data-theme="dark"] .master-event-card,
+:root[data-theme="dark"] .modal-content,
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+    background: #020617;
+    border-color: #1e293b;
+}
+
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] select:focus,
+:root[data-theme="dark"] textarea:focus {
+    box-shadow: 0 0 0 4px rgba(148,163,184,0.15);
+}
+
+
+
+
+/*ANIMACION ICONO*/
+.theme-icon {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    transition: transform 0.4s ease;
+}
+
+.sun {
+    fill: currentColor;
+    transition: r 0.35s ease, opacity 0.35s ease;
+}
+
+.sun-rays {
+    stroke-width: 2;
+    transition: opacity 0.35s ease;
+}
+
+.moon {
+    fill: currentColor;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+
+:root[data-theme="dark"] .sun {
+    r: 8;
+    opacity: 0;
+}
+
+:root[data-theme="dark"] .sun-rays {
+    opacity: 0;
+}
+
+:root[data-theme="dark"] .moon {
+    opacity: 1;
+}
+
+:root[data-theme="dark"] .theme-icon {
+    transform: rotate(-20deg);
 }
     </style>
 </head>
@@ -1499,6 +1592,26 @@ function renderShareInfo(link) {
 
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
 }
+
+
+
+
+//
+function toggleTheme() {
+    const root = document.documentElement;
+    const current = root.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+
+    root.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+}
+
+(function () {
+    const saved = localStorage.getItem("theme");
+    if (saved) {
+        document.documentElement.setAttribute("data-theme", saved);
+    }
+})();
 </script>
 
 </body>
