@@ -441,12 +441,11 @@
 /* A) ANIMACIÓN DE ENTRADA (Automática al quitar 'hidden') */
 /* Cuando el modal NO está oculto y NO se está cerrando */
 #auth-modal:not(.hidden):not(.modal-closing) {
-    animation: fadeIn 0.3s ease-out forwards;
+    animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 #auth-modal:not(.hidden):not(.modal-closing) .modal-content {
-    /* Sube desde abajo */
-    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* B) ANIMACIÓN DE SALIDA (Se activa con JS) */
@@ -470,6 +469,21 @@
 
 .modal-content {
     will-change: transform;
+}
+
+
+
+
+
+@keyframes slideUp {
+    from {
+        transform: translateY(24px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
     </style>
 </head>
