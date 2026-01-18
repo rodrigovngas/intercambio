@@ -430,24 +430,34 @@
 
 
 
-/* --- ANIMACIÓN DE CIERRE --- */
-@keyframes slideDown {
-    from { transform: translateY(0); opacity: 1; }
-    to { transform: translateY(100%); opacity: 0; }
+/* --- ANIMACIONES DE ENTRADA Y SALIDA --- */
+
+/* Definición de movimientos */
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* A) ANIMACIÓN DE ENTRADA (Automática al quitar 'hidden') */
+/* Cuando el modal NO está oculto y NO se está cerrando */
+#auth-modal:not(.hidden):not(.modal-closing) {
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
-@keyframes fadeOutBg {
-    from { background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
-    to { background: rgba(0,0,0,0); backdrop-filter: blur(0px); }
+#auth-modal:not(.hidden):not(.modal-closing) .modal-content {
+    /* Sube desde abajo */
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Esta clase se añade con JS al cerrar */
+/* B) ANIMACIÓN DE SALIDA (Se activa con JS) */
 .modal-closing {
-    animation: fadeOutBg 0.3s forwards !important;
+    animation: fadeOut 0.25s ease-in forwards !important;
+    pointer-events: none; /* Evita clics mientras se cierra */
 }
 
 .modal-closing .modal-content {
-    animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    /* Baja hacia el fondo */
+    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
     </style>
 </head>
@@ -1195,17 +1205,17 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         }
     }
 
-        window.closeModal = () => {
+            window.closeModal = () => {
         const modal = document.getElementById('auth-modal');
         
-        // 1. Añadimos la clase de animación
+        // 1. Activamos la animación de bajada
         modal.classList.add('modal-closing');
         
-        // 2. Esperamos a que termine la animación (300ms) antes de ocultarlo
+        // 2. Esperamos 250ms (lo que dura la animación CSS)
         setTimeout(() => {
-            modal.classList.add('hidden');       // Lo ocultamos
-            modal.classList.remove('modal-closing'); // Limpiamos la clase para la próxima vez
-        }, 280); // Un poco menos de 300ms para evitar parpadeos
+            modal.classList.add('hidden');       // Ocultamos realmente
+            modal.classList.remove('modal-closing'); // Limpiamos para la próxima
+        }, 250);
     };
 
     window.doRegister = async () => {
