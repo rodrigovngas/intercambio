@@ -1613,7 +1613,6 @@ function renderShareInfo(link) {
 
 
 
-//
 function toggleTheme() {
     const root = document.documentElement;
     const current = root.getAttribute("data-theme");
@@ -1629,33 +1628,6 @@ function toggleTheme() {
         document.documentElement.setAttribute("data-theme", saved);
     }
 })();
-
-
-
-
-
-
-// ... (resto de tu código anterior, imports de Firebase, funciones, etc.)
-
-function toggleTheme() {
-    const root = document.documentElement;
-    const current = root.getAttribute("data-theme");
-    const next = current === "dark" ? "light" : "dark";
-
-    root.setAttribute("data-theme", next);
-    localStorage.setItem("theme", next);
-}
-
-window.toggleTheme = toggleTheme;  // <- Esto lo expone globalmente
-
-(function () {
-    const saved = localStorage.getItem("theme");
-    if (saved) {
-        document.documentElement.setAttribute("data-theme", saved);
-    }
-})();
-
-// ... (si hay más código después)
 </script>
 
 </body>
