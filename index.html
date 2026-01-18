@@ -450,13 +450,12 @@
 
 /* B) ANIMACIÓN DE SALIDA (Se activa con JS) */
 .modal-closing {
-    animation: fadeOut 0.25s ease-in forwards !important;
-    pointer-events: none; /* Evita clics mientras se cierra */
+    animation: fadeOut 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+    pointer-events: none;
 }
 
 .modal-closing .modal-content {
-    /* Baja hacia el fondo */
-    animation: slideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+    animation: slideDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
 
@@ -478,6 +477,20 @@
     .modal-content {
         box-shadow: 0 -6px 16px rgba(0,0,0,0.12);
     }
+}
+
+
+
+
+@media (max-width: 500px) {
+    .modal-content {
+        will-change: transform;
+    }
+}
+
+
+.modal-content {
+    will-change: transform;
 }
     </style>
 </head>
