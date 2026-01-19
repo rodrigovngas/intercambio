@@ -546,6 +546,39 @@ body.dark-mode .btn-settings {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
+
+
+
+
+
+/* Mejorar legibilidad de los "pill" en modo oscuro */
+body.dark-mode .pill {
+  background: rgba(255,255,255,0.04) !important; /* sutil contraste sobre el card-bg */
+  color: var(--text-main) !important;             /* texto claro */
+  border-color: rgba(255,255,255,0.06) !important;/* borde tenue en lugar del blanco sólido */
+}
+
+
+
+
+
+/* Nuevo estilo para el indicador 'visto' (sin borde blanco + destello tenue) */
+.seen-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: var(--success);       /* mantiene el verde actual (#10b981) */
+  border-radius: 50%;
+  border: none;                     /* elimina cualquier borde blanco */
+  /* glow externo y un halo suave para el "destello" */
+  box-shadow:
+    0 0 10px rgba(16,185,129,0.22), /* glow principal */
+    0 0 2px rgba(16,185,129,0.12);  /* halo adicional más tenue */
+  /* pequeño highlight interno para dar sensación brillante */
+  background-image: radial-gradient(circle at 28% 28%, rgba(255,255,255,0.28), rgba(255,255,255,0) 40%);
+}
     </style>
 </head>
 <body>
