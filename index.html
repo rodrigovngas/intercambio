@@ -13,29 +13,29 @@
 
     <style>
         :root {
-            --bg-color: #f3f4f6;
-            --primary: #111827; 
-            --primary-hover: #374151;
-            --accent: #000000; 
-            --text-main: #1f2937;
-            --text-sec: #6b7280;
-            --border: #e5e7eb;
-            --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            --radius: 16px;
-            --danger: #ef4444;
-            --success: #10b981;
-        }
+    --bg-color: #f3f4f6;
+    --bg-color-secondary: #ffffff;
+    --primary: #111827; 
+    --accent: #111827; 
+    --text-main: #1f2937;
+    --text-sec: #6b7280;
+    --border: #e5e7eb;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    --radius: 16px;
+    --danger: #ef4444;
+    --success: #10b981;
+}
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
         input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(to bottom, #ffffff, #f3f4f6);
-            color: var(--text-main); margin: 0; padding: 0;
-            height: 100dvh; width: 100vw; overflow: hidden; 
-            display: flex; justify-content: center; align-items: center;
-        }
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to bottom, var(--bg-color-secondary), var(--bg-color));
+    color: var(--text-main); margin: 0; padding: 0;
+    height: 100dvh; width: 100vw; overflow: hidden; 
+    display: flex; justify-content: center; align-items: center;
+}
 
         .container {
             background: #ffffff; width: 100%; height: 100%; max-width: 500px;
@@ -54,11 +54,11 @@
         .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
 
         .btn-settings {
-            position: absolute; top: 0; right: 0; 
-            background: transparent; border: none; padding: 10px; cursor: pointer;
-            color: #d1d5db; transition: color 0.3s; z-index: 50; width: auto; margin: 0;
-        }
-        .btn-settings:hover { color: var(--primary); }
+    position: absolute; top: 0; right: 0;
+    background: transparent; border: none; padding: 10px; cursor: pointer;
+    color: var(--text-sec); transition: color 0.3s; z-index: 50; width: auto; margin: 0;
+}
+.btn-settings:hover { color: var(--primary); }
 
         h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
         h1 { font-size: 2.2rem; font-weight: 800; }
@@ -499,14 +499,18 @@
 
 /* --- DARK MODE --- */
 body.dark-mode {
-    --bg-color: #111827;       /* Fondo oscuro */
-    --text-main: #f9fafb;      /* Texto claro */
-    --text-sec: #9ca3af;       /* Texto secundario más claro */
-    --border: #374151;         /* Bordes oscuros */
-    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    --bg-color: #0b1220;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
+    --bg-color-secondary: #0f1724;  /* degradado sutil */
+    --primary: #f3f4f6;             /* títulos / elementos importantes (claro) */
+    --text-main: #e6eef8;           /* texto principal */
+    --text-sec: #9aa6b2;            /* texto secundario */
+    --border: #263343;              /* bordes */
+    --card-bg: #0f1724;             /* tarjetas/inputs */
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    --accent: #93c5fd;              /* acento para iconos / highlights */
 }
 
-/* Ajustes específicos para elementos que eran blancos */
+/* Aplicar card-bg y colores usando variables para consistencia */
 body.dark-mode .container,
 body.dark-mode .modal-content,
 body.dark-mode .name-card-user,
@@ -518,18 +522,21 @@ body.dark-mode textarea,
 body.dark-mode #profile-switcher,
 body.dark-mode .btn-secondary,
 body.dark-mode .btn-icon-action {
-    background-color: #1f2937 !important; /* Gris oscuro para tarjetas */
-    color: #f9fafb !important;
-    border-color: #374151 !important;
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
 }
-
 body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
-    color: #f9fafb !important; /* Títulos en blanco */
+    color: var(--primary) !important;
+}
+body.dark-mode .btn-settings {
+    color: var(--text-main) !important;
 }
 
-body.dark-mode .btn-settings {
-    color: #f9fafb !important;
-}
+
+
+
+
 
 /* Animación de giro */
 .spin-anim {
@@ -1015,6 +1022,13 @@ window.toggleDarkMode = () => {
     const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
     
     btn.innerHTML = isDark ? sunIcon : moonIcon;
+
+    // fuerza que el botón tome el color desde las variables CSS (evita iconos negros inesperados)
+    if (isDark) {
+        btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-main');
+    } else {
+        btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-sec');
+    }
 
     // 4. Animación de giro
     btn.classList.remove('spin-anim'); // Reiniciar animacion
