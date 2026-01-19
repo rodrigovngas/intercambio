@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="theme-color" content="#f3f4f6" id="theme-color-meta">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
     <title>Intercambio</title>
     
@@ -576,6 +577,38 @@ body.dark-mode .pill {
     0 0 16px rgba(34,255,136,0.55), /* glow fosforescente */
     0 0 6px  rgba(34,255,136,0.30); /* halo cercano */
 }
+
+
+
+
+
+
+/* --- CORRECCIONES DARK MODE (Pegar al final del CSS) --- */
+
+/* 1. Teclas del PIN en modo oscuro: Gris oscuro para que se vean */
+body.dark-mode .pin-btn {
+    background-color: #1f2937; /* Gris oscuro */
+    color: #ffffff;            /* Número blanco */
+    border-color: #374151;     /* Borde sutil */
+}
+body.dark-mode .pin-btn:active {
+    background-color: #374151; /* Color al presionar */
+}
+
+/* 2. Dots (Puntos) en modo oscuro */
+/* Punto vacío: Anillo blanco */
+body.dark-mode .pin-dot {
+    background-color: transparent;
+    border-color: #ffffff;
+    opacity: 0.6;
+}
+/* Punto LLENO: Azul brillante (para que resalte sobre el negro y blanco) */
+body.dark-mode .pin-dot.filled {
+    background-color: #3b82f6; /* Azul eléctrico */
+    border-color: #3b82f6;
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Pequeño brillo */
+}
     </style>
 </head>
 <body>
@@ -1035,41 +1068,62 @@ document.addEventListener('contextmenu', event => event.preventDefault());
         }
     };
 
-// --- LÓGICA DARK MODE ---
-window.toggleDarkMode = () => {
-    const body = document.body;
-    const btn = document.getElementById('btn-dark-mode');
-    
-    // 1. Toggle clase
-    body.classList.toggle('dark-mode');
-    const isDark = body.classList.contains('dark-mode');
-    
-    // 2. Guardar preferencia
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // --- LÓGICA DARK MODE MEJORADA ---
+    const themeMeta = document.getElementById('theme-color-meta');
 
-    // 3. Cambiar icono (Luna <-> Sol)
-    const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
-    const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-    
-    btn.innerHTML = isDark ? sunIcon : moonIcon;
-
-    // fuerza que el botón tome el color desde las variables CSS (evita iconos negros inesperados)
-    if (isDark) {
-        btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-main');
-    } else {
-        btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-sec');
+    // Función principal para aplicar el modo
+    function setDarkMode(isDark) {
+        const body = document.body;
+        const btn = document.getElementById('btn-dark-mode');
+        
+        if (isDark) {
+            body.classList.add('dark-mode');
+            themeMeta.setAttribute('content', '#0b1220'); // Barra navegador OSCURA
+            if(btn) btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+            if(btn) btn.style.color = "#e6eef8";
+        } else {
+            body.classList.remove('dark-mode');
+            themeMeta.setAttribute('content', '#f3f4f6'); // Barra navegador CLARA
+            if(btn) btn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+            if(btn) btn.style.color = "#6b7280";
+        }
     }
 
-    // 4. Animación de giro
-    btn.classList.remove('spin-anim'); // Reiniciar animacion
-    void btn.offsetWidth; // Forzar reflow (truco para reiniciar animaciones CSS)
-    btn.classList.add('spin-anim');
-};
+    // 1. Detectar preferencia del sistema automáticamente al cargar
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Si ya guardó una preferencia manual, úsala. Si no, usa la del sistema.
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        setDarkMode(savedTheme === 'dark');
+    } else {
+        setDarkMode(systemDark.matches);
+    }
 
-// Cargar preferencia al iniciar
-if (localStorage.getItem('theme') === 'dark') {
-    toggleDarkMode(); // Aplica el tema guardado
-}
+    // 2. Escuchar cambios del sistema en tiempo real (si cambia la config del cel mientras usa la app)
+    systemDark.addEventListener('change', (e) => {
+        if (!localStorage.getItem('theme')) { // Solo si el usuario no forzó un modo manual
+            setDarkMode(e.matches);
+        }
+    });
+
+    // 3. Botón Manual (Toggle)
+    window.toggleDarkMode = () => {
+        const isDark = !document.body.classList.contains('dark-mode');
+        setDarkMode(isDark);
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        
+        // Animación de giro
+        const btn = document.getElementById('btn-dark-mode');
+        btn.classList.remove('spin-anim');
+        void btn.offsetWidth;
+        btn.classList.add('spin-anim');
+    };
+
+
+
+
+
 
     window.onload = () => {
         populateDays();
