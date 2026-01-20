@@ -499,19 +499,25 @@ background-color: var(--bg-color-secondary);
 
 
 
-/* --- DARK MODE --- */
 body.dark-mode {
-    --bg-color: #0f1220 !important;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
-    --bg-color-secondary: #0f1220 !important;  /* degradado sutil */
-background-color: #0f1220 !important;
-    --primary: #0f1220;             /* títulos / elementos importantes (claro) */
-    --text-main: #e6eef8;           /* texto principal */
-    --text-sec: #9aa6b2;            /* texto secundario */
-    --border: #263343;              /* bordes */
-    --card-bg: #0f1724;             /* tarjetas/inputs */
-    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
-    --accent: #93c5fd;              /* acento para iconos / highlights */
+    /* --- PALETA OFICIAL APPLE IOS --- */
+    --bg-color: #000000 !important;           /* Negro OLED Puro */
+    --bg-color-secondary: #000000 !important; /* Negro Puro */
+    background-color: #000000 !important;
+    
+    --primary: #FFFFFF !important;            /* Títulos Blanco Puro */
+    --text-main: #FFFFFF !important;          /* Texto Principal Blanco */
+    --text-sec: #8E8E93 !important;           /* 'System Gray' de Apple */
+    
+    --card-bg: #1C1C1E !important;            /* Gris Oscuro (Tarjetas iOS) */
+    --border: #38383A !important;             /* Borde sutil */
+    --accent: #0A84FF !important;             /* Azul iOS */
+    --danger: #FF453A !important;             /* Rojo iOS */
+    --success: #30D158 !important;            /* Verde iOS */
+    
+    --card-shadow: 0 4px 12px rgba(0,0,0,0.5); 
 }
+
 
 /* Aplicar card-bg y colores usando variables para consistencia */
 body.dark-mode .container,
@@ -632,8 +638,7 @@ html {
 }
 
 html:has(body.dark-mode) {
-    /* Y forzamos el mismo color exacto aquí */
-    background-color: #0f1220 !important;
+    background-color: #000000 !important; /* Negro Puro */
 }
     </style>
 </head>
@@ -1622,17 +1627,21 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // Mismo color EXACTO que pusimos en el CSS (#0f1220)
-    const unifiedColor = '#0f1220'; 
+    // CONFIGURACIÓN APPLE
+    // Dark: #000000 (Negro Puro)
+    // Light: #ffffff (Blanco)
+    
+    const appleBlack = '#000000'; 
+    const appleWhite = '#ffffff'; 
+    const appleGray  = '#f3f4f6'; // Para el fondo light
 
-    // Si es dark, usamos unifiedColor. Si es light, blanco.
-    const colorTop = isDark ? unifiedColor : '#ffffff';
-    const colorBottom = isDark ? unifiedColor : '#f3f4f6';
+    const colorTop = isDark ? appleBlack : appleWhite;
+    const colorBottom = isDark ? appleBlack : appleGray;
 
     // 1. Barra Superior
     if (metaTheme) metaTheme.setAttribute('content', colorTop);
 
-    // 2. Barra Inferior / Fondo HTML
+    // 2. Barra Inferior / Rebote
     document.documentElement.style.backgroundColor = colorBottom;
 }
 
@@ -1640,7 +1649,6 @@ function renderShareInfo(link) {
 const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-// Ejecutar inmediatamente
 updateSafariTheme();
 </script>
 
