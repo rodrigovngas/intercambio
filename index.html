@@ -1622,26 +1622,21 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // Leemos las variables CSS del elemento raíz (ignora transiciones)
-    const style = getComputedStyle(document.documentElement);
-    const darkColor = style.getPropertyValue('--bg-color-secondary').trim(); // Usamos el secundario que es el del body (#0f1220)
+    // CORRECCIÓN AQUÍ: Usamos #0f1220 que es tu color real de fondo (bg-color-secondary)
+    const darkColor = '#0f1220'; 
     
-    // DEFINIMOS EL COLOR FINAL:
-    // En Dark Mode usaremos 'darkColor' (que viene de tu CSS).
-    // En Light Mode usaremos '#ffffff' y '#f3f4f6' (tus colores originales).
-    
-    let colorTop = isDark ? darkColor : '#ffffff';
-    let colorBottom = isDark ? darkColor : '#f3f4f6';
+    const colorTop = isDark ? darkColor : '#ffffff';
+    const colorBottom = isDark ? darkColor : '#f3f4f6';
 
-    // 1. Aplicar a la barra de estado (Arriba)
+    // 1. Cambiar la barra de arriba (Status Bar)
     if (metaTheme) {
         metaTheme.setAttribute('content', colorTop);
     }
 
-    // 2. Aplicar al fondo del HTML (Abajo / Rebote)
-    // IMPORTANTE: Forzamos el color directamente para evitar que el CSS de 'html' interfiera
+    // 2. Cambiar el fondo del HTML (para el rebote de abajo en Safari)
     document.documentElement.style.backgroundColor = colorBottom;
 }
+
 
 // Observador para detectar el cambio de clase al instante
 const observer = new MutationObserver((mutations) => {
