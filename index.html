@@ -632,7 +632,7 @@ html {
 
 /* En modo oscuro, aseguramos que el fondo del html también sea oscuro */
 html:has(body.dark-mode) {
-    background-color: #0f1220;
+    background-color: #0b1220;
 }
 
     </style>
@@ -1622,8 +1622,8 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // EL TONO CORRECTO ES ESTE: #0f1220 (Mismo que tu body)
-    const darkTone = '#0f1220'; 
+    // USAMOS EL TONO PROFUNDO: #0b1220
+    const darkTone = '#0b1220'; 
 
     const colorTop = isDark ? darkTone : '#ffffff';
     const colorBottom = isDark ? darkTone : '#f3f4f6';
@@ -1631,17 +1631,15 @@ function renderShareInfo(link) {
     // 1. Barra Superior
     if (metaTheme) metaTheme.setAttribute('content', colorTop);
 
-    // 2. Barra Inferior (Rebote)
+    // 2. Barra Inferior (Fondo del HTML)
     document.documentElement.style.backgroundColor = colorBottom;
 }
 
-// Observador para detectar cambios al instante
+// El observador se mantiene igual
 const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-// Ejecutar ya
 updateSafariTheme();
-
 </script>
 
 </body>
