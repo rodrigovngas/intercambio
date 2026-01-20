@@ -1622,28 +1622,26 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // Usamos #0f1220 para que coincida exactamente con tu body y el cambio CSS que hicimos
-    const bgHex = isDark ? '#0f1220' : '#ffffff'; 
-    const bottomHex = isDark ? '#0f1220' : '#f3f4f6';
+    // EL TONO CORRECTO ES ESTE: #0f1220 (Mismo que tu body)
+    const darkTone = '#0f1220'; 
 
-    // 1. Barra superior (Status Bar)
-    if (metaTheme) {
-        metaTheme.setAttribute('content', bgHex);
-    }
+    const colorTop = isDark ? darkTone : '#ffffff';
+    const colorBottom = isDark ? darkTone : '#f3f4f6';
 
-    // 2. Barra inferior / Fondo (HTML)
-    // Esto asegura que el JS y el CSS estén sincronizados
-    document.documentElement.style.backgroundColor = bottomHex;
+    // 1. Barra Superior
+    if (metaTheme) metaTheme.setAttribute('content', colorTop);
+
+    // 2. Barra Inferior (Rebote)
+    document.documentElement.style.backgroundColor = colorBottom;
 }
 
-// Asegurarse de que el observador esté activo para detectar el cambio
-const observer = new MutationObserver((mutations) => {
-    updateSafariTheme();
-});
+// Observador para detectar cambios al instante
+const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-// Ejecutar al cargar
+// Ejecutar ya
 updateSafariTheme();
+
 </script>
 
 </body>
