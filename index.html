@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#ffffff" id="theme-color-meta">
     <title>Intercambio</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -606,6 +607,14 @@ body.dark-mode .pin-dot.filled {
     border-color: #3b82f6;
     opacity: 1;
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Pequeño brillo */
+}
+
+
+
+/* Agrega esto al final de tu style */
+html {
+    background-color: var(--bg-color);
+    transition: background-color 0.5s ease;
 }
     </style>
 </head>
@@ -1580,6 +1589,33 @@ function renderShareInfo(link) {
 
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
 }
+</script>
+<script>
+    // -----------------------------------------------------------------------
+    // SCRIPT DE COLOR INMERSIVO (Copia y pega esto al final del body)
+    // -----------------------------------------------------------------------
+    (function() {
+        const metaTheme = document.getElementById('theme-color-meta');
+        const body = document.body;
+
+        function updateBrowserColors() {
+            // 1. Leemos los colores reales que tiene tu CSS en ese momento
+            const style = getComputedStyle(body);
+            const topColor = style.getPropertyValue('--bg-color-secondary').trim(); // Color de arriba
+            
+            // 2. Aplicamos el color a la barra del navegador (Arriba)
+            if (topColor && metaTheme) {
+                metaTheme.setAttribute('content', topColor);
+            }
+        }
+
+        // Ejecutar al cargar la página
+        updateBrowserColors();
+
+        // "Escuchar" cambios: Si el cuerpo cambia de clase (Dark Mode), actualiza solo
+        const observer = new MutationObserver(updateBrowserColors);
+        observer.observe(body, { attributes: true, attributeFilter: ['class'] });
+    })();
 </script>
 
 </body>
