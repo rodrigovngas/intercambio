@@ -1644,20 +1644,6 @@ observer.observe(document.body, { attributes: true, attributeFilter: ['class'] }
 
 // Ejecutar al cargar
 updateSafariTheme();
-
-
-// Observador para detectar el cambio de clase al instante
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-            updateSafariTheme();
-        }
-    });
-});
-observer.observe(document.body, { attributes: true });
-
-// Ejecutar una vez al cargar por si ya estamos en dark mode
-updateSafariTheme();
 </script>
 
 </body>
