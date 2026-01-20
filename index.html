@@ -501,10 +501,16 @@ background-color: var(--bg-color-secondary);
 
 /* --- DARK MODE --- */
 body.dark-mode {
-    /* Forzamos el color exacto aquí */
-    --bg-color: #0f1220 !important;
-    --bg-color-secondary: #0f1220 !important;
-    background-color: #0f1220 !important;
+    --bg-color: #0f1220 !important;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
+    --bg-color-secondary: #0f1220 !important;  /* degradado sutil */
+background-color: #0f1220 !important;
+    --primary: #f3f4f6;             /* títulos / elementos importantes (claro) */
+    --text-main: #e6eef8;           /* texto principal */
+    --text-sec: #9aa6b2;            /* texto secundario */
+    --border: #263343;              /* bordes */
+    --card-bg: #0f1724;             /* tarjetas/inputs */
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
+    --accent: #93c5fd;              /* acento para iconos / highlights */
 }
 
 /* Aplicar card-bg y colores usando variables para consistencia */
