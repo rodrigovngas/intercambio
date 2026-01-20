@@ -1622,20 +1622,28 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // CORRECCIÓN AQUÍ: Usamos #0f1220 que es tu color real de fondo (bg-color-secondary)
-    const darkColor = '#0f1220'; 
-    
-    const colorTop = isDark ? darkColor : '#ffffff';
-    const colorBottom = isDark ? darkColor : '#f3f4f6';
+    // Usamos #0f1220 para que coincida exactamente con tu body y el cambio CSS que hicimos
+    const bgHex = isDark ? '#0f1220' : '#ffffff'; 
+    const bottomHex = isDark ? '#0f1220' : '#f3f4f6';
 
-    // 1. Cambiar la barra de arriba (Status Bar)
+    // 1. Barra superior (Status Bar)
     if (metaTheme) {
-        metaTheme.setAttribute('content', colorTop);
+        metaTheme.setAttribute('content', bgHex);
     }
 
-    // 2. Cambiar el fondo del HTML (para el rebote de abajo en Safari)
-    document.documentElement.style.backgroundColor = colorBottom;
+    // 2. Barra inferior / Fondo (HTML)
+    // Esto asegura que el JS y el CSS estén sincronizados
+    document.documentElement.style.backgroundColor = bottomHex;
 }
+
+// Asegurarse de que el observador esté activo para detectar el cambio
+const observer = new MutationObserver((mutations) => {
+    updateSafariTheme();
+});
+observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+// Ejecutar al cargar
+updateSafariTheme();
 
 
 // Observador para detectar el cambio de clase al instante
