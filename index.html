@@ -1622,30 +1622,39 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    let colorTop, colorBottom;
+    // Leemos las variables CSS del elemento raíz (ignora transiciones)
+    const style = getComputedStyle(document.documentElement);
+    const darkColor = style.getPropertyValue('--bg-color-secondary').trim(); // Usamos el secundario que es el del body (#0f1220)
+    
+    // DEFINIMOS EL COLOR FINAL:
+    // En Dark Mode usaremos 'darkColor' (que viene de tu CSS).
+    // En Light Mode usaremos '#ffffff' y '#f3f4f6' (tus colores originales).
+    
+    let colorTop = isDark ? darkColor : '#ffffff';
+    let colorBottom = isDark ? darkColor : '#f3f4f6';
 
-    if (isDark) {
-        // MODO OSCURO:
-        // En lugar de usar un color fijo manual, leemos el color real del navegador
-        // para que coincida 100% con tu diseño, aunque cambies el CSS después.
-        const computedColor = getComputedStyle(document.body).backgroundColor;
-        colorTop = computedColor;
-        colorBottom = computedColor;
-    } else {
-        // MODO CLARO (Tu configuración original):
-        // Arriba Blanco, Abajo Gris
-        colorTop = '#ffffff';
-        colorBottom = '#f3f4f6';
-    }
-
-    // 1. Cambiar la barra de arriba (Status Bar)
+    // 1. Aplicar a la barra de estado (Arriba)
     if (metaTheme) {
         metaTheme.setAttribute('content', colorTop);
     }
 
-    // 2. Cambiar el fondo del HTML (para el rebote de abajo en Safari)
+    // 2. Aplicar al fondo del HTML (Abajo / Rebote)
+    // IMPORTANTE: Forzamos el color directamente para evitar que el CSS de 'html' interfiera
     document.documentElement.style.backgroundColor = colorBottom;
 }
+
+// Observador para detectar el cambio de clase al instante
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class') {
+            updateSafariTheme();
+        }
+    });
+});
+observer.observe(document.body, { attributes: true });
+
+// Ejecutar una vez al cargar por si ya estamos en dark mode
+updateSafariTheme();
 </script>
 
 </body>
