@@ -1643,6 +1643,37 @@ function renderShareInfo(link) {
     // Observar cambios en la clase del body (para cuando tocas el botón)
     const observer = new MutationObserver(updateSafariTheme);
     observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+
+
+
+
+
+    function syncThemeColor() {
+        const metaTheme = document.getElementById('theme-color-meta');
+        const isDark = document.body.classList.contains('dark-mode');
+        
+        // Colores manuales para asegurar coincidencia TOTAL
+        // Deben ser LOS MISMOS que pusiste en el CSS arriba
+        const colorClaro = '#ffffff'; 
+        const colorOscuro = '#0b1220'; 
+        
+        const colorFinal = isDark ? colorOscuro : colorClaro;
+
+        // 1. Pinta la barra de arriba (Android/iOS)
+        if (metaTheme) {
+            metaTheme.setAttribute('content', colorFinal);
+        }
+        
+        // 2. Pinta el fondo "rebote" de Safari (Abajo)
+        document.documentElement.style.backgroundColor = colorFinal;
+        document.body.style.backgroundColor = colorFinal;
+    }
+
+    // Ejecutar al cargar y al cambiar de modo
+    syncThemeColor();
+    const observer = new MutationObserver(syncThemeColor);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 </script>
 
 </body>
