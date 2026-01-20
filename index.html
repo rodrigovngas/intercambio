@@ -501,7 +501,7 @@
 /* --- DARK MODE --- */
 body.dark-mode {
     --bg-color: #0b1220;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
-    --bg-color-secondary: #0f1724;  /* degradado sutil */
+    --bg-color-secondary: #0f1220;  /* degradado sutil */
     --primary: #f3f4f6;             /* títulos / elementos importantes (claro) */
     --text-main: #e6eef8;           /* texto principal */
     --text-sec: #9aa6b2;            /* texto secundario */
@@ -616,6 +616,24 @@ html {
     background-color: var(--bg-color);
     transition: background-color 0.5s ease;
 }
+
+
+
+
+
+
+
+/* Esto pinta el fondo "detrás" de la página para el rebote de Safari */
+html {
+    background-color: var(--bg-color); 
+    height: 100%;
+}
+
+/* En modo oscuro, aseguramos que el fondo del html también sea oscuro */
+html:has(body.dark-mode) {
+    background-color: #0b1220;
+}
+
     </style>
 </head>
 <body>
@@ -1599,31 +1617,31 @@ function renderShareInfo(link) {
 
 
 
-    // -----------------------------------------------------------------------
-    // SCRIPT DE COLOR INMERSIVO (Copia y pega esto al final del body)
-    // -----------------------------------------------------------------------
-    (function() {
+    function updateSafariTheme() {
+        const isDark = document.body.classList.contains('dark-mode');
         const metaTheme = document.getElementById('theme-color-meta');
-        const body = document.body;
+        
+        // Colores manuales para asegurar que no falle
+        // Claro: Arriba Blanco, Abajo Gris
+        // Oscuro: Todo Azul Oscuro (#0b1220)
+        const colorTop = isDark ? '#0b1220' : '#ffffff';
+        const colorBottom = isDark ? '#0b1220' : '#f3f4f6';
 
-        function updateBrowserColors() {
-            // 1. Leemos los colores reales que tiene tu CSS en ese momento
-            const style = getComputedStyle(body);
-            const topColor = style.getPropertyValue('--bg-color-secondary').trim(); // Color de arriba
-            
-            // 2. Aplicamos el color a la barra del navegador (Arriba)
-            if (topColor && metaTheme) {
-                metaTheme.setAttribute('content', topColor);
-            }
+        // 1. Cambiar la barra de arriba (Status Bar)
+        if (metaTheme) {
+            metaTheme.setAttribute('content', colorTop);
         }
 
-        // Ejecutar al cargar la página
-        updateBrowserColors();
+        // 2. Cambiar el fondo del HTML (para el rebote de abajo en Safari)
+        document.documentElement.style.backgroundColor = colorBottom;
+    }
 
-        // "Escuchar" cambios: Si el cuerpo cambia de clase (Dark Mode), actualiza solo
-        const observer = new MutationObserver(updateBrowserColors);
-        observer.observe(body, { attributes: true, attributeFilter: ['class'] });
-    })();
+    // Ejecutar al inicio
+    updateSafariTheme();
+
+    // Observar cambios en la clase del body (para cuando tocas el botón)
+    const observer = new MutationObserver(updateSafariTheme);
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 </script>
 
 </body>
