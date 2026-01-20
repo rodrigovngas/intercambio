@@ -501,7 +501,7 @@ background-color: var(--bg-color-secondary);
 
 /* --- DARK MODE --- */
 body.dark-mode {
-    --bg-color: #0b1220;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
+    --bg-color: #0f1220;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
     --bg-color-secondary: #0f1220;  /* degradado sutil */
     --primary: #f3f4f6;             /* títulos / elementos importantes (claro) */
     --text-main: #e6eef8;           /* texto principal */
@@ -632,7 +632,7 @@ html {
 
 /* En modo oscuro, aseguramos que el fondo del html también sea oscuro */
 html:has(body.dark-mode) {
-    background-color: #0b1220;
+    background-color: #0f1220;
 }
 
     </style>
@@ -1622,23 +1622,24 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // USAMOS EL TONO PROFUNDO: #0b1220
-    const darkTone = '#0b1220'; 
+    // COLOR UNIFICADO: #0f1220
+    const unifiedColor = '#0f1220'; 
 
-    const colorTop = isDark ? darkTone : '#ffffff';
-    const colorBottom = isDark ? darkTone : '#f3f4f6';
+    const colorTop = isDark ? unifiedColor : '#ffffff';
+    const colorBottom = isDark ? unifiedColor : '#f3f4f6';
 
     // 1. Barra Superior
     if (metaTheme) metaTheme.setAttribute('content', colorTop);
 
-    // 2. Barra Inferior (Fondo del HTML)
+    // 2. Barra Inferior / Fondo HTML
     document.documentElement.style.backgroundColor = colorBottom;
 }
 
-// El observador se mantiene igual
+// Observador
 const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
+// Ejecutar
 updateSafariTheme();
 </script>
 
