@@ -1619,30 +1619,33 @@ function renderShareInfo(link) {
 
 
     function updateSafariTheme() {
-        const isDark = document.body.classList.contains('dark-mode');
-        const metaTheme = document.getElementById('theme-color-meta');
-        
-        // Colores manuales para asegurar que no falle
-        // Claro: Arriba Blanco, Abajo Gris
-        // Oscuro: Todo Azul Oscuro (#0b1220)
-        const colorTop = isDark ? '#0b1220' : '#ffffff';
-        const colorBottom = isDark ? '#0b1220' : '#f3f4f6';
+    const isDark = document.body.classList.contains('dark-mode');
+    const metaTheme = document.getElementById('theme-color-meta');
+    
+    let colorTop, colorBottom;
 
-        // 1. Cambiar la barra de arriba (Status Bar)
-        if (metaTheme) {
-            metaTheme.setAttribute('content', colorTop);
-        }
-
-        // 2. Cambiar el fondo del HTML (para el rebote de abajo en Safari)
-        document.documentElement.style.backgroundColor = colorBottom;
+    if (isDark) {
+        // MODO OSCURO:
+        // En lugar de usar un color fijo manual, leemos el color real del navegador
+        // para que coincida 100% con tu diseño, aunque cambies el CSS después.
+        const computedColor = getComputedStyle(document.body).backgroundColor;
+        colorTop = computedColor;
+        colorBottom = computedColor;
+    } else {
+        // MODO CLARO (Tu configuración original):
+        // Arriba Blanco, Abajo Gris
+        colorTop = '#ffffff';
+        colorBottom = '#f3f4f6';
     }
 
-    // Ejecutar al inicio
-    updateSafariTheme();
+    // 1. Cambiar la barra de arriba (Status Bar)
+    if (metaTheme) {
+        metaTheme.setAttribute('content', colorTop);
+    }
 
-    // Observar cambios en la clase del body (para cuando tocas el botón)
-    const observer = new MutationObserver(updateSafariTheme);
-    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    // 2. Cambiar el fondo del HTML (para el rebote de abajo en Safari)
+    document.documentElement.style.backgroundColor = colorBottom;
+}
 </script>
 
 </body>
