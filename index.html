@@ -501,15 +501,10 @@ background-color: var(--bg-color-secondary);
 
 /* --- DARK MODE --- */
 body.dark-mode {
-    --bg-color: #0f1220;            /* fondo principal oscuro (ajusta si quieres más o menos azul) */
-    --bg-color-secondary: #0f1220;  /* degradado sutil */
-    --primary: #f3f4f6;             /* títulos / elementos importantes (claro) */
-    --text-main: #e6eef8;           /* texto principal */
-    --text-sec: #9aa6b2;            /* texto secundario */
-    --border: #263343;              /* bordes */
-    --card-bg: #0f1724;             /* tarjetas/inputs */
-    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.6);
-    --accent: #93c5fd;              /* acento para iconos / highlights */
+    /* Forzamos el color exacto aquí */
+    --bg-color: #0f1220 !important;
+    --bg-color-secondary: #0f1220 !important;
+    background-color: #0f1220 !important;
 }
 
 /* Aplicar card-bg y colores usando variables para consistencia */
@@ -630,11 +625,10 @@ html {
     height: 100%;
 }
 
-/* En modo oscuro, aseguramos que el fondo del html también sea oscuro */
 html:has(body.dark-mode) {
-    background-color: #0f1220;
+    /* Y forzamos el mismo color exacto aquí */
+    background-color: #0f1220 !important;
 }
-
     </style>
 </head>
 <body>
@@ -1622,9 +1616,10 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // COLOR UNIFICADO: #0f1220
+    // Mismo color EXACTO que pusimos en el CSS (#0f1220)
     const unifiedColor = '#0f1220'; 
 
+    // Si es dark, usamos unifiedColor. Si es light, blanco.
     const colorTop = isDark ? unifiedColor : '#ffffff';
     const colorBottom = isDark ? unifiedColor : '#f3f4f6';
 
@@ -1635,11 +1630,11 @@ function renderShareInfo(link) {
     document.documentElement.style.backgroundColor = colorBottom;
 }
 
-// Observador
+// Aseguramos que el observador esté activo
 const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-// Ejecutar
+// Ejecutar inmediatamente
 updateSafariTheme();
 </script>
 
