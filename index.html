@@ -581,33 +581,32 @@ body.dark-mode .pill {
 
 
 
-/* --- AGREGA ESTO AL FINAL DE TU CSS O DENTRO DE body.dark-mode --- */
+/* --- CORRECCIONES DARK MODE (Pegar al final del CSS) --- */
 
-/* Ajuste 1: Teclas del teclado en Dark Mode */
-body.dark-mode #virtual-keypad button {
-    background-color: #333333; /* Gris oscuro para la tecla */
-    color: #ffffff;            /* Texto blanco */
-    border: 1px solid #444;    /* Borde sutil */
+/* 1. Teclas del PIN en modo oscuro: Gris oscuro para que se vean */
+body.dark-mode .pin-btn {
+    background-color: #1f2937; /* Gris oscuro */
+    color: #ffffff;            /* Número blanco */
+    border-color: #374151;     /* Borde sutil */
+}
+body.dark-mode .pin-btn:active {
+    background-color: #374151; /* Color al presionar */
 }
 
-body.dark-mode #virtual-keypad button:active {
-    background-color: #555555; /* Feedback al presionar */
-}
-
-/* Ajuste 2: Los Dots (Puntos del PIN) */
-/* Estado Vacío en Dark Mode: Anillo blanco */
+/* 2. Dots (Puntos) en modo oscuro */
+/* Punto vacío: Anillo blanco */
 body.dark-mode .pin-dot {
     background-color: transparent;
-    border: 2px solid #ffffff; 
+    border-color: #ffffff;
+    opacity: 0.6;
 }
-
-/* Estado Lleno en Dark Mode: Color de contraste (Azul Eléctrico) */
-body.dark-mode .pin-dot.active {
-    background-color: #3b82f6; /* Puedes cambiar este hex por el color que gustes */
-    border-color: #3b82f6;     /* Que el borde coincida */
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Un pequeño brillo opcional */
+/* Punto LLENO: Azul brillante (para que resalte sobre el negro y blanco) */
+body.dark-mode .pin-dot.filled {
+    background-color: #3b82f6; /* Azul eléctrico */
+    border-color: #3b82f6;
+    opacity: 1;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Pequeño brillo */
 }
-
     </style>
 </head>
 <body>
