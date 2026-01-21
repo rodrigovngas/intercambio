@@ -767,20 +767,33 @@ body.dark-mode .pin-btn:active {
     background-color: #374151; /* Color al presionar */
 }
 
-/* 2. Dots (Puntos) en modo oscuro */
-/* Punto vacío: Anillo blanco */
-body.dark-mode .pin-dot {
-    background-color: transparent;
-    border-color: #ffffff;
-    opacity: 0.6;
-}
-/* Punto LLENO: Azul brillante (para que resalte sobre el negro y blanco) */
+/* --- AJUSTES PIN MODO NOCHE Y COLOR DE ÉXITO --- */
+
+/* 1. MODO NOCHE: Puntos blancos y sin brillo (Mate) */
 body.dark-mode .pin-dot.filled {
-    background-color: #3b82f6; /* Azul eléctrico */
-    border-color: #3b82f6;
-    opacity: 1;
-    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5); /* Pequeño brillo */
+    background-color: #ffffff !important; /* Blanco puro */
+    border-color: #ffffff !important;
+    box-shadow: none !important; /* Elimina el resplandor azul/brillo */
+    filter: none !important;
 }
+
+/* Opcional: Puntos vacíos en modo noche (para que no sean tan brillantes) */
+body.dark-mode .pin-dot:not(.filled) {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-color: transparent;
+}
+
+/* 2. PIN CORRECTO: Color Rojo (en lugar de verde) */
+/* Esto afectará tanto a modo claro como oscuro */
+.pin-dot.success {
+    background-color: var(--danger) !important; /* Rojo (#ef4444) */
+    border-color: var(--danger) !important;
+    box-shadow: none !important; /* Sin brillo extra, o ajusta si prefieres */
+}
+
+
+
+
 
 
 
