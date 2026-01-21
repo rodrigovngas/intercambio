@@ -395,12 +395,33 @@ body.dark-mode #reveal-overlay span {
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* --- STYLES FOR CUSTOM PIN UI --- */
+        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
+        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
+        .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
+        .pin-dot.success { background: var(--success); border-color: var(--success); }
         
-
-
-
-
-
+        .pin-keyboard {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; margin: 0 auto; max-width: 280px; padding-bottom: 10px;
+        }
+        .pin-btn {
+            background: #f9fafb; border: 1px solid var(--border); border-radius: 50%;
+            width: 65px; height: 65px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 600; color: var(--primary);
+            cursor: pointer; transition: background 0.15s, transform 0.1s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); -webkit-tap-highlight-color: transparent;
+        }
+        .pin-btn:active { background: #e5e7eb; transform: scale(0.95); }
+        .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
+        .pin-btn-back { background: transparent; border: none; box-shadow: none; }
+        .pin-btn-back:active { background: transparent; opacity: 0.5; }
+/* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
+@media (max-width: 500px) {
+    .modal-overlay {
+        align-items: stretch; /* Cambia de flex-end a stretch para que el contenido ocupe toda la altura */
+    }
     .modal-content {
         max-height: none; /* Elimina límite de altura para ocupar todo */
         height: 100%; /* Ocupa toda la altura disponible */
@@ -528,6 +549,21 @@ body.dark-mode #reveal-overlay span {
 }
 .wishes-list::-webkit-scrollbar {
     display: none;
+}
+/* --- ESTILOS PARA ERROR DE PIN --- */
+@keyframes shake-animation {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shake-error {
+    animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.shake-error .pin-dot {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
 }
 
 
@@ -719,6 +755,48 @@ body.dark-mode .pill {
 
 
 
+/* --- CORRECCIONES DARK MODE (Pegar al final del CSS) --- */
+
+/* 1. Teclas del PIN en modo oscuro: Gris oscuro para que se vean */
+body.dark-mode .pin-btn {
+    background-color: #1f2937; /* Gris oscuro */
+    color: #ffffff;            /* Número blanco */
+    border-color: #374151;     /* Borde sutil */
+}
+body.dark-mode .pin-btn:active {
+    background-color: #374151; /* Color al presionar */
+}
+
+/* --- AJUSTES PIN MODO NOCHE Y COLOR DE ÉXITO --- */
+
+
+
+/* --- CORRECCIÓN DEFINITIVA PIN --- */
+
+/* 1. MODO NOCHE: Dots Blancos Puros (Mate) */
+/* Forzamos el blanco y quitamos cualquier filtro o sombra */
+body.dark-mode .pin-dot.filled {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+    box-shadow: none !important;
+    filter: none !important; 
+}
+
+/* 2. ERROR: Color Rojo al fallar */
+/* Cuando el contenedor tiembla (clase .shake), los puntos se vuelven rojos */
+.pin-dots.shake .pin-dot {
+    background-color: #ef4444 !important; /* Rojo Error */
+    border-color: #ef4444 !important;
+    transition: background-color 0.1s;
+}
+
+
+
+
+
+
+
+
 /* Agrega esto al final de tu style */
 html {
     background-color: var(--bg-color);
@@ -796,6 +874,37 @@ body.dark-mode #confirm-modal .modal-content {
     color: #FFFFFF !important;
     border: none !important;      /* <--- ESTO QUITA EL BORDE */
     box-shadow: none !important;  /* Quita sombras para que sea plano total */
+}
+
+/* Botones Numéricos (Gris Oscuro) */
+body.dark-mode .pin-btn {
+    background-color: #1C1C1E !important; 
+    color: #FFFFFF !important;
+    border: none !important;
+}
+body.dark-mode .pin-btn:active {
+    background-color: #333333 !important;
+}
+
+/* Botón Borrar (Transparente) */
+body.dark-mode .pin-btn.pin-btn-back, 
+body.dark-mode .pin-btn.pin-btn-empty {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #FFFFFF !important;
+}
+
+/* Dots (Azules) */
+body.dark-mode .pin-dot {
+    background-color: transparent !important;
+    border: 1px solid #8E8E93 !important;
+    opacity: 0.7;
+}
+body.dark-mode .pin-dot.filled {
+    background-color: #0A84FF !important;
+    border-color: #0A84FF !important;
+    box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
+    transform: scale(1.1);
 }
 
 
@@ -892,74 +1001,27 @@ body.dark-mode .info-card span {
 
 
 
+/* --- SOLUCIÓN DE PIN DEFINITIVA --- */
 
-
-/* ======================================================
-   PIN – CSS LIMPIO (BASE + LIGHT + DARK + ERROR)
-====================================================== */
-
-/* --- BASE --- */
-.pin-dots {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
+/* 1. MODO NOCHE: Dots Blancos y Mate (Sin Azul) */
+/* Atacamos tanto por ID como por clase para asegurar que se aplique */
+body.dark-mode .pin-dots .pin-dot.filled,
+body.dark-mode #dots-login .pin-dot.filled,
+body.dark-mode #dots-reg .pin-dot.filled {
+    background-color: #ffffff !important; /* Blanco puro */
+    border-color: #ffffff !important;
+    box-shadow: none !important;          /* Quita el brillo/resplandor */
+    filter: none !important;
 }
 
-.pin-dot {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: transparent;
-    border: 1px solid;
-    transition:
-        background-color 0.15s ease,
-        border-color 0.15s ease,
-        transform 0.15s ease;
-}
-
-/* --- LIGHT MODE --- */
-.pin-dot {
-    border-color: #d1d5db;
-}
-
-.pin-dot.filled {
-    background-color: #111827;
-    border-color: #111827;
-    transform: scale(1.1);
-}
-
-/* --- DARK MODE --- */
-body.dark-mode .pin-dot {
-    border-color: #8E8E93;
-}
-
-body.dark-mode .pin-dot.filled {
-    background-color: #ffffff;
-    border-color: #ffffff;
-}
-
-/* --- ERROR iOS STYLE --- */
-@keyframes pin-shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-4px); }
-    50% { transform: translateX(4px); }
-    75% { transform: translateX(-2px); }
-}
-
-@keyframes pin-error-flash {
-    0% { background-color: var(--danger); }
-    60% { background-color: var(--danger); }
-    100% { background-color: transparent; }
-}
-
-.pin-dots.error {
-    animation: pin-shake 0.35s ease;
-}
-
-.pin-dots.error .pin-dot {
-    background-color: var(--danger);
-    border-color: var(--danger);
-    animation: pin-error-flash 0.35s ease;
+/* 2. ERROR: Ponerse ROJO cuando tiembla */
+/* Funciona cuando el contenedor tiene la clase 'shake' */
+.pin-dots.shake .pin-dot,
+#dots-login.shake .pin-dot,
+#dots-reg.shake .pin-dot {
+    background-color: #ef4444 !important; /* Rojo Error */
+    border-color: #ef4444 !important;
+    transition: background-color 0.1s ease;
 }
     </style>
 </head>
@@ -1795,18 +1857,23 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             window.closeModal(); 
             enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
+            // ERROR: Animación de sacudida
+            if(navigator.vibrate) navigator.vibrate(200); // Vibrar celular si es posible
+            
+            // Agregamos clase de error
+            container.classList.add('shake-error');
+            
+            // Esperamos a que termine la animación (500ms) para limpiar
+            setTimeout(() => {
+                container.classList.remove('shake-error');
+                document.getElementById('login-pin').value = ''; // Limpiar input
+                updatePinDots(0, 'dots-login'); // Limpiar puntos visuales
+            }, 500);
 
-            // ERROR: PIN incorrecto (nuevo flujo limpio)
-if (navigator.vibrate) navigator.vibrate(150);
-
-container.classList.add('error');
-
-setTimeout(() => {
-    container.classList.remove('error');
-
-    document.getElementById('login-pin').value = '';
-    updatePinDots(0, 'dots-login');
-}, 400);
+            // Opcional: mostrar Toast también, o dejar solo la animación
+            // showToast("PIN incorrecto"); 
+        }
+    };
 
     window.adminOverride = async () => {
         await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
