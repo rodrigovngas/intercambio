@@ -266,75 +266,78 @@ body.dark-mode .btn-add-small:hover {
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .hidden { display: none !important; }
 
-        /* --- TARJETA DE REVELACIÓN (DISEÑO PLANO / MINIMALISTA) --- */
+/* --- TARJETA DE REVELACIÓN (ELEGANCIA PURA) --- */
 
-/* 1. La Tarjeta (El contenido revelado) */
-.info-card { 
-    /* MODO CLARO: Blanco limpio con borde suave */
-    background: #ffffff; 
-    color: #111827;           /* Texto negro */
+/* 1. La Tarjeta (Contenedor del resultado) */
+.info-card {
+    background: #ffffff;
     border: 1px solid #e5e7eb;
-    border-radius: 16px; 
-    padding: 30px; 
-    margin-bottom: 25px; 
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Sombra suave */
-    text-align: center;
-    position: relative; 
+    border-radius: 18px; /* Un poco más redondeado estilo iPhone 15 */
+    padding: 40px 30px;  /* Más espacio para que respire */
+    margin-bottom: 25px;
+    position: relative;
     overflow: hidden;
+    text-align: center;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); /* Sombra difusa premium */
 }
 
-/* 2. La Cubierta (La tapa que ocultas antes de tocar) */
+/* CORRECCIÓN DE TEXTO (MODO CLARO) */
+/* Forzamos que TODO el texto adentro sea negro oscuro */
+.info-card h1, .info-card h2, .info-card h3, 
+.info-card p, .info-card strong, .info-card span {
+    color: #111827 !important; 
+}
+
+/* 2. La Cubierta (Tapa) - LISO ES MÁS ELEGANTE */
 #reveal-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     
-    /* MODO CLARO: Negro Sólido (Máximo contraste y elegancia) */
-    background: #000000;      
-    color: #ffffff;           /* Texto/Icono blanco */
+    /* MODO CLARO: Negro Absoluto (Matte Black) */
+    background: #000000; 
     
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center;
-    z-index: 10; 
-    cursor: pointer; 
-    transition: opacity 0.5s ease;
+    /* Texto de la tapa: Blanco y fino */
+    color: #ffffff !important; 
+    font-weight: 500;
+    letter-spacing: 1px;
+    
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 15px; /* Separación entre icono y texto */
+    z-index: 10; cursor: pointer; 
+    
+    /* Transición suave estilo Apple */
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Estado oculto (después de revelar) */
-#reveal-overlay.faded { 
-    opacity: 0; 
-    pointer-events: none; 
-}
+#reveal-overlay.faded { opacity: 0; pointer-events: none; }
 
 
-/* --- ADAPTACIÓN DARK MODE (ESTILO iOS) --- */
+/* --- ADAPTACIÓN DARK MODE (FIX TEXTO BLANCO) --- */
 
-/* 1. Tarjeta Revelada (Se integra con el resto de inputs/listas) */
 body.dark-mode .info-card {
-    background: #1C1C1E !important; /* Gris Oscuro iOS */
-    color: #FFFFFF !important;
+    background: #1C1C1E !important; /* Gris Fondo iOS */
     border: 1px solid #2C2C2E !important;
     box-shadow: none !important;
 }
 
-/* 2. Cubierta en Dark Mode */
-body.dark-mode #reveal-overlay {
-    /* Un gris ligeramente distinto (#2C2C2E) para que se note sobre el fondo negro */
-    background: #2C2C2E !important; 
-    color: #FFFFFF !important;
-    
-    /* Opcional: Un patrón sutil de rayas para que parezca una tarjeta de "raspar" */
-    background-image: repeating-linear-gradient(
-        45deg,
-        #2C2C2E,
-        #2C2C2E 10px,
-        #38383A 10px,
-        #38383A 20px
-    ) !important;
+/* CORRECCIÓN DE TEXTO (MODO OSCURO) */
+/* Forzamos que TODO el texto adentro sea blanco puro */
+body.dark-mode .info-card h1, 
+body.dark-mode .info-card h2, 
+body.dark-mode .info-card h3, 
+body.dark-mode .info-card p, 
+body.dark-mode .info-card strong, 
+body.dark-mode .info-card span {
+    color: #FFFFFF !important; 
 }
 
-/* Ajuste para los enlaces dentro de la tarjeta */
+/* Enlaces dentro de la tarjeta (si los hay) */
 body.dark-mode .info-card a { color: #0A84FF !important; }
+
+/* Cubierta en Dark Mode (Gris sólido distinguido) */
+body.dark-mode #reveal-overlay {
+    background: #2C2C2E !important; /* Ligeramente más claro que el fondo */
+    color: #FFFFFF !important;
+}
         
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
         
