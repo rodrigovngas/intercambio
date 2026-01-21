@@ -957,6 +957,32 @@ body.dark-mode .qr-container {
     background-color: transparent !important;
     border: none !important;
 }
+
+
+
+
+
+
+
+/* --- CORRECCIÓN: MANTENER TARJETA GRIS AL REVELAR (Modo Oscuro) --- */
+
+/* 1. Cambiamos el fondo de la tarjeta para que coincida con la tapa (#2C2C2E) */
+body.dark-mode .info-card {
+    background-color: #2C2C2E !important; 
+    border-color: #3A3A3C !important; /* Borde más sutil para modo oscuro */
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); /* Sombra más oscura */
+}
+
+/* 2. Forzamos que TODO el texto dentro de la tarjeta sea blanco */
+/* (Es necesario usar !important porque tu CSS original fuerza el color negro) */
+body.dark-mode .info-card h1, 
+body.dark-mode .info-card h2, 
+body.dark-mode .info-card h3, 
+body.dark-mode .info-card p, 
+body.dark-mode .info-card strong, 
+body.dark-mode .info-card span {
+    color: #FFFFFF !important;
+}
     </style>
 </head>
 <body>
