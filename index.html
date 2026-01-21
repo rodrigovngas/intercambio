@@ -750,6 +750,23 @@ body.dark-mode .pin-dot.filled {
     box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
     transform: scale(1.1);
 }
+
+
+
+
+
+/* --- CORRECCIÓN: DEVOLVER EL ROJO A LOS ICONOS DE BASURA --- */
+body.dark-mode .btn-icon-danger {
+    color: #FF453A !important;           /* Rojo iOS brillante */
+    border-color: rgba(255, 69, 58, 0.3) !important; /* Borde rojo sutil */
+    background-color: rgba(255, 69, 58, 0.15) !important; /* Fondo rojizo muy suave */
+}
+
+/* Efecto al tocar el botón de basura */
+body.dark-mode .btn-icon-danger:active {
+    background-color: rgba(255, 69, 58, 0.3) !important;
+    color: #FFFFFF !important; /* Al presionar se vuelve blanco sobre rojo */
+}
     </style>
 </head>
 <body>
