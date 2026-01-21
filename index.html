@@ -266,20 +266,75 @@ body.dark-mode .btn-add-small:hover {
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .hidden { display: none !important; }
 
-        .info-card { 
-            background: linear-gradient(135deg, #374151 0%, #111827 100%); 
-            color: white; border-radius: 16px; padding: 30px; margin-bottom: 25px; 
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3); text-align: center;
-            border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;
-        }
-        
-        #reveal-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 10; cursor: pointer; transition: opacity 0.6s ease;
-        }
-        #reveal-overlay.faded { opacity: 0; pointer-events: none; }
+        /* --- TARJETA DE REVELACIÓN (DISEÑO PLANO / MINIMALISTA) --- */
+
+/* 1. La Tarjeta (El contenido revelado) */
+.info-card { 
+    /* MODO CLARO: Blanco limpio con borde suave */
+    background: #ffffff; 
+    color: #111827;           /* Texto negro */
+    border: 1px solid #e5e7eb;
+    border-radius: 16px; 
+    padding: 30px; 
+    margin-bottom: 25px; 
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); /* Sombra suave */
+    text-align: center;
+    position: relative; 
+    overflow: hidden;
+}
+
+/* 2. La Cubierta (La tapa que ocultas antes de tocar) */
+#reveal-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    
+    /* MODO CLARO: Negro Sólido (Máximo contraste y elegancia) */
+    background: #000000;      
+    color: #ffffff;           /* Texto/Icono blanco */
+    
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    z-index: 10; 
+    cursor: pointer; 
+    transition: opacity 0.5s ease;
+}
+
+/* Estado oculto (después de revelar) */
+#reveal-overlay.faded { 
+    opacity: 0; 
+    pointer-events: none; 
+}
+
+
+/* --- ADAPTACIÓN DARK MODE (ESTILO iOS) --- */
+
+/* 1. Tarjeta Revelada (Se integra con el resto de inputs/listas) */
+body.dark-mode .info-card {
+    background: #1C1C1E !important; /* Gris Oscuro iOS */
+    color: #FFFFFF !important;
+    border: 1px solid #2C2C2E !important;
+    box-shadow: none !important;
+}
+
+/* 2. Cubierta en Dark Mode */
+body.dark-mode #reveal-overlay {
+    /* Un gris ligeramente distinto (#2C2C2E) para que se note sobre el fondo negro */
+    background: #2C2C2E !important; 
+    color: #FFFFFF !important;
+    
+    /* Opcional: Un patrón sutil de rayas para que parezca una tarjeta de "raspar" */
+    background-image: repeating-linear-gradient(
+        45deg,
+        #2C2C2E,
+        #2C2C2E 10px,
+        #38383A 10px,
+        #38383A 20px
+    ) !important;
+}
+
+/* Ajuste para los enlaces dentro de la tarjeta */
+body.dark-mode .info-card a { color: #0A84FF !important; }
         
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
         
