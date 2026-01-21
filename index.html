@@ -780,6 +780,40 @@ body.dark-mode .link-box {
     border: 1px solid #38383A !important; /* Borde sutil */
     color: #0A84FF !important;            /* Texto Azul iOS (para indicar que es un link) */
 }
+
+
+
+
+/* --- ESTILO QR INTEGRADO --- */
+#qr-invite {
+    /* En modo claro: normal, quizás un poco de opacidad para que no sea negro puro 'duro' */
+    opacity: 0.9; 
+    transition: all 0.3s ease;
+    mix-blend-mode: multiply; /* Se funde mejor con el blanco */
+}
+
+/* EN MODO OSCURO: INVERTIR COLORES */
+body.dark-mode #qr-invite {
+    /* filter: invert(1) invierte los colores:
+       - Lo negro se vuelve blanco.
+       - Lo blanco se vuelve negro.
+    */
+    filter: invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5)); 
+    
+    /* mix-blend-mode: screen hace que la parte negra (ahora fondo) 
+       se vuelva transparente, dejando solo el código QR blanco flotando.
+    */
+    mix-blend-mode: screen; 
+    
+    opacity: 1;
+}
+
+/* Asegurar que el contenedor del QR no tenga fondo blanco forzado */
+/* Si el QR está dentro de un div, asegúrate de que ese div sea transparente en dark mode */
+body.dark-mode .qr-container {
+    background-color: transparent !important;
+    border: none !important;
+}
     </style>
 </head>
 <body>
