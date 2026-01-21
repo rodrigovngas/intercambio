@@ -288,55 +288,70 @@ body.dark-mode .btn-add-small:hover {
     color: #111827 !important; 
 }
 
-/* 2. La Cubierta (Tapa) - LISO ES MÁS ELEGANTE */
+/* --- TAPA DE REVELACIÓN (ICONO SVG CORRECTO) --- */
+
 #reveal-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     
-    /* MODO CLARO: Negro Absoluto (Matte Black) */
-    background: #000000; 
+    /* MODO CLARO: Fondo Blanco y Texto Negro */
+    background-color: #ffffff !important; 
+    color: #000000 !important;
     
-    /* Texto de la tapa: Blanco y fino */
-    color: #ffffff !important; 
-    font-weight: 500;
-    letter-spacing: 1px;
-    
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    gap: 15px; /* Separación entre icono y texto */
-    z-index: 10; cursor: pointer; 
-    
-    /* Transición suave estilo Apple */
-    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    gap: 15px;
+    z-index: 10; 
+    cursor: pointer; 
+    transition: opacity 0.5s ease;
 }
 
-#reveal-overlay.faded { opacity: 0; pointer-events: none; }
-
-
-/* --- ADAPTACIÓN DARK MODE (FIX TEXTO BLANCO) --- */
-
-body.dark-mode .info-card {
-    background: #1C1C1E !important; /* Gris Fondo iOS */
-    border: 1px solid #2C2C2E !important;
-    box-shadow: none !important;
+/* 1. MODO CLARO: El icono debe ser NEGRO PURO */
+#reveal-overlay .icon, 
+#reveal-overlay svg {
+    color: #000000 !important;
+    stroke: #000000 !important; /* Si es de líneas */
+    fill: none !important;      /* Normalmente los iconos de línea no tienen relleno */
+    opacity: 1 !important;
+    
+    /* Aseguramos tamaño grande */
+    width: 48px; height: 48px;
 }
 
-/* CORRECCIÓN DE TEXTO (MODO OSCURO) */
-/* Forzamos que TODO el texto adentro sea blanco puro */
-body.dark-mode .info-card h1, 
-body.dark-mode .info-card h2, 
-body.dark-mode .info-card h3, 
-body.dark-mode .info-card p, 
-body.dark-mode .info-card strong, 
-body.dark-mode .info-card span {
-    color: #FFFFFF !important; 
+/* Texto debajo del icono */
+#reveal-overlay p, 
+#reveal-overlay span,
+#reveal-overlay div {
+    color: #000000 !important;
+    font-weight: 600;
+    opacity: 1 !important;
 }
 
-/* Enlaces dentro de la tarjeta (si los hay) */
-body.dark-mode .info-card a { color: #0A84FF !important; }
 
-/* Cubierta en Dark Mode (Gris sólido distinguido) */
+/* --- MODO OSCURO (INVERTIDO) --- */
+
 body.dark-mode #reveal-overlay {
-    background: #2C2C2E !important; /* Ligeramente más claro que el fondo */
+    background-color: #2C2C2E !important; /* Gris oscuro elegante */
     color: #FFFFFF !important;
+}
+
+/* 2. MODO OSCURO: El icono se vuelve BLANCO */
+body.dark-mode #reveal-overlay .icon, 
+body.dark-mode #reveal-overlay svg {
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+
+body.dark-mode #reveal-overlay p, 
+body.dark-mode #reveal-overlay span {
+    color: #FFFFFF !important;
+}
+
+/* Ocultar al revelar */
+#reveal-overlay.faded { 
+    opacity: 0 !important; 
+    pointer-events: none; 
 }
         
         .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
