@@ -769,27 +769,27 @@ body.dark-mode .pin-btn:active {
 
 /* --- AJUSTES PIN MODO NOCHE Y COLOR DE ÉXITO --- */
 
-/* 1. MODO NOCHE: Puntos blancos y sin brillo (Mate) */
+
+
+/* --- CORRECCIÓN DEFINITIVA PIN --- */
+
+/* 1. MODO NOCHE: Dots Blancos Puros (Mate) */
+/* Forzamos el blanco y quitamos cualquier filtro o sombra */
 body.dark-mode .pin-dot.filled {
-    background-color: #ffffff !important; /* Blanco puro */
+    background-color: #ffffff !important;
     border-color: #ffffff !important;
-    box-shadow: none !important; /* Elimina el resplandor azul/brillo */
-    filter: none !important;
+    box-shadow: none !important;
+    filter: none !important; 
 }
 
-/* Opcional: Puntos vacíos en modo noche (para que no sean tan brillantes) */
-body.dark-mode .pin-dot:not(.filled) {
-    background-color: rgba(255, 255, 255, 0.2);
-    border-color: transparent;
+/* 2. ERROR: Color Rojo al fallar */
+/* Cuando el contenedor tiembla (clase .shake), los puntos se vuelven rojos */
+.pin-dots.shake .pin-dot {
+    background-color: #ef4444 !important; /* Rojo Error */
+    border-color: #ef4444 !important;
+    transition: background-color 0.1s;
 }
 
-/* 2. PIN CORRECTO: Color Rojo (en lugar de verde) */
-/* Esto afectará tanto a modo claro como oscuro */
-.pin-dot.success {
-    background-color: var(--danger) !important; /* Rojo (#ef4444) */
-    border-color: var(--danger) !important;
-    box-shadow: none !important; /* Sin brillo extra, o ajusta si prefieres */
-}
 
 
 
