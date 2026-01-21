@@ -106,12 +106,55 @@ background-color: var(--bg-color-secondary);
         }
         button:active { transform: scale(0.98); }
 
-        .btn-primary, .btn-accent { 
-            background: linear-gradient(135deg, #1f2937 0%, #000000 100%); color: white; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .btn-primary:hover, .btn-accent:hover { opacity: 0.95; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.15); }
+        /* --- NUEVOS BOTONES (ESTILO MINIMALISTA / iOS) --- */
+
+/* Estilo Base (Modo Claro) */
+.btn-primary, .btn-accent { 
+    background: #111827;  /* Negro mate sólido (casi gris muy oscuro) */
+    color: white; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    border: none; /* Sin borde superior */
+    transition: all 0.2s ease;
+}
+
+/* Efecto Hover (al pasar el mouse) */
+.btn-primary:hover, .btn-accent:hover { 
+    background: #000000; /* Se vuelve negro puro */
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Efecto Active (al presionar) */
+.btn-primary:active, .btn-accent:active {
+    transform: scale(0.98);
+    background: #1f2937;
+}
+
+/* --- ADAPTACIÓN DARK MODE (ESTILO iOS) --- */
+body.dark-mode .btn-primary, 
+body.dark-mode .btn-accent {
+    /* Opción A: Botón Blanco (Estilo Apple "Pay" / Acción Principal) 
+       - Máximo contraste sobre fondo negro.
+       - Texto negro para que se lea bien.
+    */
+    background: #FFFFFF !important; 
+    color: #000000 !important;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15); /* Resplandor blanco sutil */
+}
+
+/* Hover en Dark Mode */
+body.dark-mode .btn-primary:hover, 
+body.dark-mode .btn-accent:hover {
+    background: #f3f4f6 !important; /* Gris muy claro */
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+/* Active en Dark Mode */
+body.dark-mode .btn-primary:active, 
+body.dark-mode .btn-accent:active {
+    background: #e5e7eb !important;
+    transform: scale(0.98);
+}
         
         .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
         .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
