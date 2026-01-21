@@ -668,38 +668,34 @@ html:has(body.dark-mode) {
 
 
 
-/* --- ESTILO iOS FINAL (OLED BLACK + PIN) --- */
 
-/* 1. TEMA PRINCIPAL: NEGRO PURO (OLED) */
+
+
+/* --- ESTILO iOS FINAL (TODO NEGRO + DOTS AZULES + BORRAR TRANSPARENTE) --- */
+
+/* 1. TEMA PRINCIPAL */
 body.dark-mode {
-    --bg-color: #000000 !important;           /* Fondo Infinito */
+    --bg-color: #000000 !important;
     --bg-color-secondary: #000000 !important;
     background-color: #000000 !important;
-
-    /* Textos */
-    --primary: #FFFFFF !important;            /* Blanco Puro */
-    --text-main: #FFFFFF !important;
-    --text-sec: #8E8E93 !important;           /* Gris Apple */
-
-    /* Sistema de Capas iOS */
-    --container-bg: #000000 !important;       /* Contenedor Negro */
-    --card-bg: #1C1C1E !important;            /* Tarjetas Gris Oscuro */
     
-    --border: #2C2C2E !important;             /* Borde sutil */
-    --accent: #0A84FF !important;             /* Azul iOS */
+    /* Textos */
+    --primary: #FFFFFF !important;
+    --text-main: #FFFFFF !important;
+    --text-sec: #8E8E93 !important;
+
+    /* Capas */
+    --container-bg: #000000 !important;
+    --card-bg: #1C1C1E !important; /* Solo contenido resalta */
+    --border: #2C2C2E !important;
+    --accent: #0A84FF !important;
 }
 
-/* 2. CORRECCIÓN DE CAPAS (Para que las barras se vean negras) */
-html:has(body.dark-mode) {
-    background-color: #000000 !important;
-}
+/* 2. BARRAS Y FONDO */
+html:has(body.dark-mode) { background-color: #000000 !important; }
+body.dark-mode .container { background-color: var(--container-bg) !important; border-color: #000000 !important; }
 
-body.dark-mode .container {
-    background-color: var(--container-bg) !important; 
-    border-color: #000000 !important;
-}
-
-/* 3. COLOREAR ELEMENTOS (Gris sobre Negro) */
+/* 3. ELEMENTOS GRISES (Solo lo necesario) */
 body.dark-mode .name-card-user,
 body.dark-mode .name-card-admin,
 body.dark-mode .master-event-card,
@@ -708,39 +704,53 @@ body.dark-mode select,
 body.dark-mode textarea,
 body.dark-mode #profile-switcher,
 body.dark-mode .btn-secondary,
-body.dark-mode .btn-icon-action,
-body.dark-mode .modal-content {
+body.dark-mode .btn-icon-action {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--border) !important;
     color: var(--text-main) !important;
 }
 
-/* 4. MODAL Y PIN ESTILO iOS */
+/* 4. MODAL Y PIN (NEGRO TOTAL) */
 body.dark-mode #auth-modal .modal-content,
-body.dark-mode #admin-modal .modal-content {
-    background-color: #1C1C1E !important;
+body.dark-mode #admin-modal .modal-content,
+body.dark-mode #confirm-modal .modal-content {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border-top: 1px solid #333;
 }
 
-/* Botones del PIN (Círculos sin borde) */
+/* BOTONES NUMÉRICOS (GRIS OSCURO) */
 body.dark-mode .pin-btn {
-    background-color: #2C2C2E !important;
-    border: none !important;
+    background-color: #1C1C1E !important;
     color: #FFFFFF !important;
-    font-weight: 400;
+    border: none !important;
 }
 body.dark-mode .pin-btn:active {
-    background-color: #48484A !important;
+    background-color: #333333 !important;
 }
 
-/* Puntos del PIN */
+/* --- CORRECCIÓN SOLICITADA: BOTÓN BORRAR TRANSPARENTE --- */
+body.dark-mode .pin-btn.pin-btn-back {
+    background-color: transparent !important; /* Sin fondo */
+    box-shadow: none !important;
+    color: #FFFFFF !important; /* Ícono blanco */
+}
+body.dark-mode .pin-btn.pin-btn-back:active {
+    opacity: 0.5;
+    background-color: transparent !important;
+}
+
+/* DOTS AZULES NEÓN */
 body.dark-mode .pin-dot {
     background-color: transparent !important;
     border: 1px solid #8E8E93 !important;
+    opacity: 0.7;
 }
 body.dark-mode .pin-dot.filled {
-    background-color: #FFFFFF !important;     /* Relleno Blanco */
-    border-color: #FFFFFF !important;
-    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+    background-color: #0A84FF !important;
+    border-color: #0A84FF !important;
+    box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
+    transform: scale(1.1);
 }
     </style>
 </head>
