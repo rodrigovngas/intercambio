@@ -765,31 +765,6 @@ body.dark-mode .pin-btn:active {
     background-color: #374151; /* Color al presionar */
 }
 
-/* --- AJUSTES PIN MODO NOCHE Y COLOR DE ÉXITO --- */
-
-
-
-/* --- CORRECCIÓN DEFINITIVA PIN --- */
-
-/* 1. MODO NOCHE: Dots Blancos Puros (Mate) */
-/* Forzamos el blanco y quitamos cualquier filtro o sombra */
-body.dark-mode .pin-dot.filled {
-    background-color: #ffffff !important;
-    border-color: #ffffff !important;
-    box-shadow: none !important;
-    filter: none !important; 
-}
-
-/* 2. ERROR: Color Rojo al fallar */
-/* Cuando el contenedor tiembla (clase .shake), los puntos se vuelven rojos */
-.pin-dots.shake .pin-dot {
-    background-color: #ef4444 !important; /* Rojo Error */
-    border-color: #ef4444 !important;
-    transition: background-color 0.1s;
-}
-
-
-
 
 
 
