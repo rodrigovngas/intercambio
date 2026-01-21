@@ -755,16 +755,20 @@ body.dark-mode .pin-dot.filled {
 
 
 
-/* --- ICONOS DE BASURA: MISMO TONO ROJO QUE MODO CLARO --- */
+/* --- ICONOS DE BASURA: ESTILO EXACTO (Ícono Fuerte + Borde Tenue) --- */
 body.dark-mode .btn-icon-danger {
-    color: #ef4444 !important;               /* Rojo estándar (#ef4444) */
-    border: 1px solid #ef4444 !important;    /* Borde del mismo rojo */
-    background-color: transparent !important; /* Sin fondo */
+    color: #ef4444 !important;       /* Rojo Fuerte (Igual que en Light) */
+    
+    /* Aquí está el truco: Borde rojo al 30% de opacidad para que se vea "tenue" */
+    border: 1px solid rgba(239, 68, 68, 0.3) !important; 
+    
+    background-color: transparent !important;
 }
 
-/* Efecto al tocar */
+/* Al tocar, subimos un poco la intensidad del fondo */
 body.dark-mode .btn-icon-danger:active {
-    background-color: rgba(239, 68, 68, 0.1) !important; /* Rojo estándar muy tenue */
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important; /* El borde se marca más al presionar */
 }
     </style>
 </head>
