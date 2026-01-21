@@ -662,6 +662,86 @@ html {
 html:has(body.dark-mode) {
     background-color: #000000 !important; /* Negro Puro */
 }
+
+
+
+
+
+
+/* --- ESTILO iOS FINAL (OLED BLACK + PIN) --- */
+
+/* 1. TEMA PRINCIPAL: NEGRO PURO (OLED) */
+body.dark-mode {
+    --bg-color: #000000 !important;           /* Fondo Infinito */
+    --bg-color-secondary: #000000 !important;
+    background-color: #000000 !important;
+
+    /* Textos */
+    --primary: #FFFFFF !important;            /* Blanco Puro */
+    --text-main: #FFFFFF !important;
+    --text-sec: #8E8E93 !important;           /* Gris Apple */
+
+    /* Sistema de Capas iOS */
+    --container-bg: #000000 !important;       /* Contenedor Negro */
+    --card-bg: #1C1C1E !important;            /* Tarjetas Gris Oscuro */
+    
+    --border: #2C2C2E !important;             /* Borde sutil */
+    --accent: #0A84FF !important;             /* Azul iOS */
+}
+
+/* 2. CORRECCIÓN DE CAPAS (Para que las barras se vean negras) */
+html:has(body.dark-mode) {
+    background-color: #000000 !important;
+}
+
+body.dark-mode .container {
+    background-color: var(--container-bg) !important; 
+    border-color: #000000 !important;
+}
+
+/* 3. COLOREAR ELEMENTOS (Gris sobre Negro) */
+body.dark-mode .name-card-user,
+body.dark-mode .name-card-admin,
+body.dark-mode .master-event-card,
+body.dark-mode input:not([type="checkbox"]), 
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode #profile-switcher,
+body.dark-mode .btn-secondary,
+body.dark-mode .btn-icon-action,
+body.dark-mode .modal-content {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+}
+
+/* 4. MODAL Y PIN ESTILO iOS */
+body.dark-mode #auth-modal .modal-content,
+body.dark-mode #admin-modal .modal-content {
+    background-color: #1C1C1E !important;
+}
+
+/* Botones del PIN (Círculos sin borde) */
+body.dark-mode .pin-btn {
+    background-color: #2C2C2E !important;
+    border: none !important;
+    color: #FFFFFF !important;
+    font-weight: 400;
+}
+body.dark-mode .pin-btn:active {
+    background-color: #48484A !important;
+}
+
+/* Puntos del PIN */
+body.dark-mode .pin-dot {
+    background-color: transparent !important;
+    border: 1px solid #8E8E93 !important;
+}
+body.dark-mode .pin-dot.filled {
+    background-color: #FFFFFF !important;     /* Relleno Blanco */
+    border-color: #FFFFFF !important;
+    box-shadow: 0 0 10px rgba(255,255,255,0.3);
+}
     </style>
 </head>
 <body>
