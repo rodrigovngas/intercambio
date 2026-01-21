@@ -170,11 +170,50 @@ body.dark-mode .btn-accent:active {
         .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
 
         .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-        .btn-add-small { 
-            width: auto; margin-top: 0; padding: 0 16px; height: 52px; 
-            background: linear-gradient(135deg, #374151 0%, #111827 100%); 
-            color: white; 
-        } 
+
+        /* --- CORRECCIÓN: BOTÓN '+' (AGREGAR PARTICIPANTE) --- */
+
+/* Estilo Base (Modo Claro: Negro Sólido) */
+.btn-add-small { 
+    width: auto; 
+    margin-top: 0; 
+    padding: 0 16px; 
+    height: 52px; 
+    
+    /* CAMBIO: Color sólido en lugar de degradado */
+    background: #111827; 
+    color: white; 
+    
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: all 0.2s ease;
+    
+    /* Aseguramos que el icono esté centrado */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add-small:hover {
+    background: #000000; /* Negro puro al pasar mouse */
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-small:active {
+    transform: scale(0.96);
+}
+
+/* --- ADAPTACIÓN DARK MODE (Blanco iOS) --- */
+body.dark-mode .btn-add-small {
+    background: #FFFFFF !important; /* Blanco puro */
+    color: #000000 !important;      /* Icono negro */
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .btn-add-small:hover {
+    background: #f3f4f6 !important;
+}
         
         .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .name-card-admin {
