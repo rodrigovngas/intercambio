@@ -996,6 +996,33 @@ body.dark-mode .info-card strong,
 body.dark-mode .info-card span {
     color: #FFFFFF !important;
 }
+
+
+
+
+
+/* --- SOLUCIÓN DE PIN DEFINITIVA --- */
+
+/* 1. MODO NOCHE: Dots Blancos y Mate (Sin Azul) */
+/* Atacamos tanto por ID como por clase para asegurar que se aplique */
+body.dark-mode .pin-dots .pin-dot.filled,
+body.dark-mode #dots-login .pin-dot.filled,
+body.dark-mode #dots-reg .pin-dot.filled {
+    background-color: #ffffff !important; /* Blanco puro */
+    border-color: #ffffff !important;
+    box-shadow: none !important;          /* Quita el brillo/resplandor */
+    filter: none !important;
+}
+
+/* 2. ERROR: Ponerse ROJO cuando tiembla */
+/* Funciona cuando el contenedor tiene la clase 'shake' */
+.pin-dots.shake .pin-dot,
+#dots-login.shake .pin-dot,
+#dots-reg.shake .pin-dot {
+    background-color: #ef4444 !important; /* Rojo Error */
+    border-color: #ef4444 !important;
+    transition: background-color 0.1s ease;
+}
     </style>
 </head>
 <body>
