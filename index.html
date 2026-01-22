@@ -957,6 +957,23 @@ body.dark-mode .info-card strong,
 body.dark-mode .info-card span {
     color: #FFFFFF !important;
 }
+
+
+
+
+
+
+/* --- CORRECCIÓN: DOTS DEL PIN EN DARK MODE --- */
+body.dark-mode .pin-dot {
+    background-color: #3A3A3C !important; /* Gris oscuro para dots vacíos (fondo sutil) */
+    border-color: #4A4A4C !important;     /* Borde gris tenue para definición */
+}
+
+body.dark-mode .pin-dot.filled {
+    background-color: #FFFFFF !important; /* Blanco puro al llenarse */
+    border-color: #FFFFFF !important;     /* Borde blanco para consistencia */
+    transform: scale(1.1);                /* Mantiene el escalado para feedback */
+}
     </style>
 </head>
 <body>
