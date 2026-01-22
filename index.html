@@ -1524,41 +1524,94 @@ document.addEventListener('contextmenu', event => event.preventDefault());
         }
     };
 
-// --- LÓGICA DARK MODE ---
-window.toggleDarkMode = () => {
-    const body = document.body;
-    const btn = document.getElementById('btn-dark-mode');
-    
-    // 1. Toggle clase
-    body.classList.toggle('dark-mode');
-    const isDark = body.classList.contains('dark-mode');
-    
-    // 2. Guardar preferencia
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-    // 3. Cambiar icono (Luna <-> Sol)
-    const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
-    const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-    
+
+
+
+
+(function(){
+  const THEME_KEY = 'theme';
+  const btn = document.getElementById('btn-dark-mode');
+  const metaTheme = document.getElementById('theme-color-meta');
+
+  const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+  const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+  function setMetaThemeColor(isDark){
+    if(!metaTheme) return;
+    metaTheme.setAttribute('content', isDark ? '#000000' : '#ffffff');
+  }
+
+  function updateButtonAppearance(isDark){
+    if(!btn) return;
     btn.innerHTML = isDark ? sunIcon : moonIcon;
-
-    // fuerza que el botón tome el color desde las variables CSS (evita iconos negros inesperados)
+    // Forzar que el botón herede colores desde CSS variables (como ya hacías)
     if (isDark) {
-        btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-main');
+      btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-main') || '';
     } else {
-        btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-sec');
+      btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--text-sec') || '';
     }
-
-    // 4. Animación de giro
-    btn.classList.remove('spin-anim'); // Reiniciar animacion
-    void btn.offsetWidth; // Forzar reflow (truco para reiniciar animaciones CSS)
+    // reiniciar animación de giro (manteniendo tu UX)
+    btn.classList.remove('spin-anim');
+    void btn.offsetWidth;
     btn.classList.add('spin-anim');
-};
+  }
 
-// Cargar preferencia al iniciar
-if (localStorage.getItem('theme') === 'dark') {
-    toggleDarkMode(); // Aplica el tema guardado
-}
+  // Aplica el tema (no cambia UI aparte de clase + meta + icono)
+  function applyTheme(isDark, save = false){
+    document.body.classList.toggle('dark-mode', !!isDark);
+    updateButtonAppearance(!!isDark);
+    setMetaThemeColor(!!isDark);
+    if(save){
+      try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch(e){}
+    }
+  }
+
+  // Toggle que usa applyTheme (mantiene la API existente)
+  window.toggleDarkMode = function(){
+    const isDarkNow = document.body.classList.contains('dark-mode');
+    const target = !isDarkNow;
+    applyTheme(target, true); // el toggle guarda la preferencia del usuario
+  };
+
+  // Inicialización: decide tema según localStorage o prefers-color-scheme
+  function initThemeFromSystemOrSaved(){
+    let saved = null;
+    try { saved = localStorage.getItem(THEME_KEY); } catch(e) { saved = null; }
+
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if(saved === 'dark') applyTheme(true, false);
+    else if(saved === 'light') applyTheme(false, false);
+    else applyTheme(prefersDark, false);
+  }
+
+  // Si el sistema cambia (ej. usuario cambia el tema del dispositivo), aplicarlo
+  // solo si el usuario NO tiene una preferencia guardada.
+  function attachSystemChangeListener(){
+    if(!window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e) => {
+      try {
+        const saved = localStorage.getItem(THEME_KEY);
+        if(saved === 'dark' || saved === 'light') return; // usuario fijó preferencia: no reemplazar
+      } catch(e){}
+      applyTheme(e.matches, false);
+    };
+    // Modern API:
+    if (typeof mq.addEventListener === 'function') mq.addEventListener('change', handler);
+    else if (typeof mq.addListener === 'function') mq.addListener(handler); // fallback
+  }
+
+  // Arranque
+  initThemeFromSystemOrSaved();
+  attachSystemChangeListener();
+
+})();
+
+
+
+
 
     window.onload = () => {
         populateDays();
