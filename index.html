@@ -992,6 +992,36 @@ document.addEventListener('contextmenu', event => event.preventDefault());
         if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
         if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
     }
+
+
+
+
+
+/* --- AJUSTE PARA TOASTS (NOTIFICACIONES) --- */
+
+/* Base (Modo Claro): Fondo blanco semi-transparente + Texto Negro */
+.toast {
+    background: rgba(255, 255, 255, 0.95) !important; /* Blanco puro con opacidad para integración */
+    color: var(--primary) !important;                  /* Negro en claro (#111827) */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important; /* Sombra suave, menos intensa */
+    backdrop-filter: blur(8px) !important;             /* Blur un poco más fuerte para "vidrio" en claro */
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;  /* Borde sutil para definición */
+}
+
+/* Modo Oscuro: Fondo gris oscuro + Texto Blanco (OLED-friendly) */
+body.dark-mode .toast {
+    background: rgba(28, 28, 30, 0.95) !important;    /* Gris oscuro (#1C1C1E) con opacidad */
+    color: #FFFFFF !important;                        /* Blanco puro */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important; /* Sombra más profunda para dark */
+    backdrop-filter: blur(4px) !important;            /* Blur más sutil en dark para no "lavar" el negro */
+    border: 1px solid rgba(255, 255, 255, 0.05) !important; /* Borde tenue blanco para definición */
+}
+
+/* Animación y otros estilos se mantienen iguales, pero aseguramos transición suave */
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
 </script>
 <div id="toast-container"></div>
 
