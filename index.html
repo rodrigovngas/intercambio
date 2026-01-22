@@ -25,6 +25,8 @@
     --radius: 16px;
     --danger: #ef4444;
     --success: #10b981;
+    --toast-bg: rgba(17, 24, 39, 0.95); /* negro elegante */
+    --toast-text: #ffffff;
 }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
@@ -380,12 +382,29 @@ body.dark-mode #reveal-overlay span {
             pointer-events: none; width: 90%; max-width: 400px;
         }
         .toast {
-            background: rgba(31, 41, 55, 0.95); color: white; padding: 12px 20px;
-            border-radius: 50px; font-size: 0.9rem; font-weight: 500;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15); backdrop-filter: blur(4px);
-            opacity: 0; transform: translateY(-20px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex; align-items: center; justify-content: center; text-align: center;
-        }
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.toast.success {
+  --toast-bg: rgba(16, 185, 129, 0.95);
+}
+
+.toast.error {
+  --toast-bg: rgba(239, 68, 68, 0.95);
+}
         .toast.show { opacity: 1; transform: translateY(0); }
 
         .spinner {
@@ -819,6 +838,8 @@ body.dark-mode {
     --card-bg: #1C1C1E !important; /* Solo contenido resalta */
     --border: #2C2C2E !important;
     --accent: #0A84FF !important;
+    --toast-bg: rgba(0, 0, 0, 0.9);
+    --toast-text: #ffffff;
 }
 
 /* 2. BARRAS Y FONDO */
@@ -997,31 +1018,9 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 
 
 
-/* --- AJUSTE PARA TOASTS (NOTIFICACIONES) --- */
 
-/* Base (Modo Claro): Fondo blanco semi-transparente + Texto Negro */
-#toast-container .toast {
-    background: rgba(255, 255, 255, 0.95) !important; /* Blanco puro con opacidad para integración */
-    color: var(--primary) !important;                  /* Negro en claro (#111827) */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important; /* Sombra suave, menos intensa */
-    backdrop-filter: blur(8px) !important;             /* Blur un poco más fuerte para "vidrio" en claro */
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;  /* Borde sutil para definición */
-}
 
-/* Modo Oscuro: Fondo gris oscuro + Texto Blanco (OLED-friendly) */
-body.dark-mode #toast-container .toast {
-    background: rgba(28, 28, 30, 0.95) !important;    /* Gris oscuro (#1C1C1E) con opacidad */
-    color: #FFFFFF !important;                        /* Blanco puro */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important; /* Sombra más profunda para dark */
-    backdrop-filter: blur(4px) !important;            /* Blur más sutil en dark para no "lavar" el negro */
-    border: 1px solid rgba(255, 255, 255, 0.05) !important; /* Borde tenue blanco para definición */
-}
 
-/* Animación y otros estilos se mantienen iguales, pero aseguramos transición suave */
-#toast-container .toast.show {
-    opacity: 1;
-    transform: translateY(0);
-}
 </script>
 <div id="toast-container"></div>
 
@@ -2013,6 +2012,10 @@ const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
 updateSafariTheme();
+
+
+
+toast.classList.add('success');
 </script>
 
 </body>
