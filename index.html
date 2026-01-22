@@ -1529,11 +1529,9 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 
 
 
-// --- DARK MODE: SISTEMA + BOTÓN (module & Safari safe) ---
+// --- DARK MODE: SISTEMA + BOTÓN (reset al recargar) ---
 
-const THEME_KEY = 'theme';
 const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
 const btn = document.getElementById('btn-dark-mode');
 const metaTheme = document.getElementById('theme-color-meta');
 
@@ -1541,7 +1539,7 @@ const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r
 
 const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
 
-function applyTheme(isDark, save = false) {
+function applyTheme(isDark) {
   document.body.classList.toggle('dark-mode', isDark);
 
   if (btn) {
@@ -1557,52 +1555,27 @@ function applyTheme(isDark, save = false) {
   if (metaTheme) {
     metaTheme.setAttribute('content', isDark ? '#000000' : '#ffffff');
   }
-
-  if (save) {
-    try {
-      localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
-    } catch (e) {}
-  }
 }
 
-// 👉 BOTÓN (fuerza preferencia del usuario)
+// BOTÓN (solo sesión actual)
 window.toggleDarkMode = () => {
   const isDark = document.body.classList.contains('dark-mode');
-  applyTheme(!isDark, true);
+  applyTheme(!isDark);
 };
 
-// 👉 INICIALIZACIÓN
-(function initTheme() {
-  let saved = null;
-  try {
-    saved = localStorage.getItem(THEME_KEY);
-  } catch (e) {}
+// AL CARGAR → seguir sistema
+applyTheme(mediaQuery.matches);
 
-  if (saved === 'dark') {
-    applyTheme(true);
-  } else if (saved === 'light') {
-    applyTheme(false);
-  } else {
-    // seguir sistema
-    applyTheme(mediaQuery.matches);
-  }
-})();
-
-// 👉 CAMBIOS DEL SISTEMA (solo si el usuario NO eligió manualmente)
-const onSystemChange = e => {
-  try {
-    const saved = localStorage.getItem(THEME_KEY);
-    if (saved) return; // usuario mandó
-  } catch (e) {}
-
-  applyTheme(e.matches);
-};
-
+// SI CAMBIA EL SISTEMA → actualizar
 if (mediaQuery.addEventListener) {
-  mediaQuery.addEventListener('change', onSystemChange);
+  mediaQuery.addEventListener('change', e => applyTheme(e.matches));
 } else {
-  mediaQuery.addListener(onSystemChange); // Safari viejo
+  mediaQuery.addListener(e => applyTheme(e.matches)); // Safari viejo
 }
+
+
+
+
 
 
 
