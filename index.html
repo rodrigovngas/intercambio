@@ -1000,7 +1000,7 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 /* --- AJUSTE PARA TOASTS (NOTIFICACIONES) --- */
 
 /* Base (Modo Claro): Fondo blanco semi-transparente + Texto Negro */
-.toast {
+#toast-container .toast {
     background: rgba(255, 255, 255, 0.95) !important; /* Blanco puro con opacidad para integración */
     color: var(--primary) !important;                  /* Negro en claro (#111827) */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important; /* Sombra suave, menos intensa */
@@ -1009,7 +1009,7 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 }
 
 /* Modo Oscuro: Fondo gris oscuro + Texto Blanco (OLED-friendly) */
-body.dark-mode .toast {
+body.dark-mode #toast-container .toast {
     background: rgba(28, 28, 30, 0.95) !important;    /* Gris oscuro (#1C1C1E) con opacidad */
     color: #FFFFFF !important;                        /* Blanco puro */
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important; /* Sombra más profunda para dark */
@@ -1018,7 +1018,7 @@ body.dark-mode .toast {
 }
 
 /* Animación y otros estilos se mantienen iguales, pero aseguramos transición suave */
-.toast.show {
+#toast-container .toast.show {
     opacity: 1;
     transform: translateY(0);
 }
