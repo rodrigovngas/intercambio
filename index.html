@@ -212,8 +212,22 @@ body.dark-mode .btn-add-small:hover {
             display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
         }
         .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
-        .btn-icon-delete { background: none; border: none; padding: 4px; color: #9ca3af; margin-top: 0; width: auto; cursor: pointer; transition: color 0.2s; }
-        .btn-icon-delete:hover { color: var(--danger); }
+        .btn-icon-delete {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: rgba(239, 68, 68, 0.6); /* rojo tenue */
+  margin-top: 0;
+  width: auto;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+        .btn-icon-delete:hover {
+  color: rgba(239, 68, 68, 0.9);
+}
+        .btn-icon-delete:active {
+  transform: scale(0.92);
+}
 
         .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
         .name-card-user { 
@@ -725,6 +739,14 @@ body.dark-mode .btn-settings {
 }
 body.dark-mode .toast {
   backdrop-filter: blur(8px);
+}
+
+body.dark-mode .btn-icon-delete {
+  color: rgba(239, 68, 68, 0.75);
+}
+
+body.dark-mode .btn-icon-delete:hover {
+  color: #ef4444;
 }
 
 
