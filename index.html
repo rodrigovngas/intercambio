@@ -25,7 +25,7 @@
     --radius: 16px;
     --danger: #ef4444;
     --success: #10b981;
-    --toast-bg: rgba(17, 24, 39, 0.95); /* negro elegante */
+    --toast-bg: #000000;
     --toast-text: #ffffff;
 }
 
@@ -389,7 +389,6 @@ body.dark-mode #reveal-overlay span {
   font-size: 0.9rem;
   font-weight: 500;
   box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-  backdrop-filter: blur(8px);
   opacity: 0;
   transform: translateY(-20px);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -724,7 +723,9 @@ body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
 body.dark-mode .btn-settings {
     color: var(--text-main) !important;
 }
-
+body.dark-mode .toast {
+  backdrop-filter: blur(8px);
+}
 
 
 
