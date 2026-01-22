@@ -974,6 +974,11 @@ body.dark-mode .pin-dot.filled {
     border-color: #FFFFFF !important;     /* Borde blanco para consistencia */
     transform: scale(1.1);                /* Mantiene el escalado para feedback */
 }
+/* --- CORRECCIÓN: RESTAURAR EFECTO DE ERROR EN DARK MODE --- */
+body.dark-mode .shake-error .pin-dot {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
     </style>
 </head>
 <body>
