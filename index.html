@@ -1051,6 +1051,62 @@ body.dark-mode .btn-icon-edit {
 body.dark-mode .btn-icon-edit:hover {
   color: #ffffff; /* Blanco puro al hover */
 }
+
+
+
+
+
+
+/* --- MODO OSCURO: FONDO Y TEXTOS --- */
+body.dark-mode {
+    background-color: #000000 !important;
+    --bg-color: #000000;
+    --bg-color-secondary: #000000;
+    --text-main: #ffffff;
+    --text-sec: #a1a1aa; /* Gris más claro para leer bien sobre negro */
+    --border: #333333;    /* Bordes oscuros sutiles */
+    --card-shadow: 0 10px 15px -3px rgba(255, 255, 255, 0.05); /* Sombra blanca sutil */
+}
+
+/* Fondo del contenedor principal */
+body.dark-mode .container {
+    background-color: #000000 !important;
+    border-color: #333333;
+}
+
+/* Títulos en blanco */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3,
+body.dark-mode p {
+    color: #ffffff !important;
+}
+
+/* Tarjetas y Elementos en gris oscuro (estilo iOS Dark) */
+body.dark-mode .name-card-user,
+body.dark-mode .name-card-admin,
+body.dark-mode .master-event-card,
+body.dark-mode .info-card,
+body.dark-mode #profile-switcher {
+    background-color: #1c1c1e !important; /* Gris oscuro elegante */
+    border-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+/* Inputs (Campos de texto) */
+body.dark-mode input:not([type="checkbox"]), 
+body.dark-mode textarea, 
+body.dark-mode select {
+    background-color: #1c1c1e !important;
+    color: #ffffff !important;
+    border-color: #333333 !important;
+}
+
+/* Textos dentro de las tarjetas */
+body.dark-mode .name-card-user, 
+body.dark-mode .master-event-info h4 {
+    color: #ffffff !important;
+}
     </style>
 </head>
 <body>
