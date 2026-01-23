@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
     <title>Intercambio</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2069,23 +2067,33 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // AHORA SÍ: TODO ES NEGRO PURO
-    // Las barras son negras y tu fondo (.container) también será negro.
-    const appleBlack = '#000000'; 
-    const appleWhite = '#ffffff'; 
-    const appleGray  = '#f3f4f6';
+    // COLORES EXACTOS DE TU FONDO
+    // En tu CSS usas #ffffff para el fondo claro.
+    // Si en modo oscuro usas negro puro, pon #000000. 
+    // Si usas el gris oscuro de tu variable --primary (#111827), cámbialo aquí.
+    const bgDark  = '#000000'; 
+    const bgLight = '#ffffff'; 
 
-    const colorTop = isDark ? appleBlack : appleWhite;
-    const colorBottom = isDark ? appleBlack : appleGray;
+    // Seleccionamos el color según el modo
+    const currentColor = isDark ? bgDark : bgLight;
 
-    if (metaTheme) metaTheme.setAttribute('content', colorTop);
-    document.documentElement.style.backgroundColor = colorBottom;
+    // 1. Actualizar la meta etiqueta (Controla la barra superior e inferior en Chrome Android)
+    if (metaTheme) {
+        metaTheme.setAttribute('content', currentColor);
+    }
+
+    // 2. Actualizar el fondo del HTML (Controla el reborde/overscroll en Safari)
+    // Al ponerlo igual que el 'body', se elimina la franja de otro color.
+    document.documentElement.style.backgroundColor = currentColor;
 }
 
+// Asegúrate de que el observer siga activo
 const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
+// Ejecutar una vez al inicio por si acaso
 updateSafariTheme();
+
 
 
 
