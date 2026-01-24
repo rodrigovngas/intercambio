@@ -1052,50 +1052,6 @@ body.dark-mode .btn-icon-edit {
 body.dark-mode .btn-icon-edit:hover {
   color: #ffffff; /* Blanco puro al hover */
 }
-
-
-
-
-
-
-
-/* --- DARK MODE DEFINITIVO (Reemplaza los anteriores con esto) --- */
-
-/* 1. Fondo y Estructura: Arregla las barras grises en Chrome y el rebote en Safari */
-html.dark-mode, 
-body.dark-mode {
-    background-color: #000000 !important; /* Negro Puro forzado */
-    --bg-color: #000000 !important;
-    --bg-color-secondary: #000000 !important;
-}
-
-/* 2. Contenedor: Asegura que tu tarjeta también sea negra */
-body.dark-mode .container {
-    background-color: #000000 !important;
-    /* Un borde sutil ayuda a que el contenido no "flote" en el vacío negro */
-    border: 1px solid #333333 !important; 
-}
-
-/* 3. Textos: Asegura legibilidad sobre fondo negro */
-body.dark-mode h1, 
-body.dark-mode h2, 
-body.dark-mode h3,
-body.dark-mode strong {
-    color: #ffffff !important;
-}
-
-body.dark-mode p, 
-body.dark-mode label,
-body.dark-mode span,
-body.dark-mode li {
-    color: #d1d5db !important; /* Gris claro suave */
-}
-
-/* 4. Botones y Elementos Interactivos (Opcional, para mejor contraste) */
-body.dark-mode .btn-secondary {
-    background-color: #333333 !important;
-    color: #ffffff !important;
-}
     </style>
 </head>
 <body>
@@ -2109,34 +2065,25 @@ function renderShareInfo(link) {
 
 
     function updateSafariTheme() {
-    // 1. Detectar si estamos en modo oscuro
     const isDark = document.body.classList.contains('dark-mode');
-    
-    // 2. Definir colores EXACTOS
-    const pureBlack = '#000000'; // Negro AMOLED
-    const pureWhite = '#ffffff';
-    const grayBg    = '#f3f4f6'; // Gris para modo claro en Safari (rebote)
-
-    // 3. Determinar el color activo
-    const activeColor = isDark ? pureBlack : pureWhite;
-    const bottomColor = isDark ? pureBlack : grayBg;
-
-    // 4. Actualizar META TAG (Esto controla la barra de Chrome)
     const metaTheme = document.getElementById('theme-color-meta');
-    if (metaTheme) {
-        metaTheme.setAttribute('content', activeColor);
-    }
+    
+    // AHORA SÍ: TODO ES NEGRO PURO
+    // Las barras son negras y tu fondo (.container) también será negro.
+    const appleBlack = '#000000'; 
+    const appleWhite = '#ffffff'; 
+    const appleGray  = '#f3f4f6';
 
-    // 5. Actualizar propiedades CSS directamente (Para forzar al navegador)
-    document.documentElement.style.backgroundColor = bottomColor; // html
-    document.body.style.backgroundColor = activeColor;            // body
+    const colorTop = isDark ? appleBlack : appleWhite;
+    const colorBottom = isDark ? appleBlack : appleGray;
+
+    if (metaTheme) metaTheme.setAttribute('content', colorTop);
+    document.documentElement.style.backgroundColor = colorBottom;
 }
 
-// Asegúrate de que el observer siga activo para detectar cambios
 const observer = new MutationObserver(() => updateSafariTheme());
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
-// Ejecutar una vez al inicio por si acaso
 updateSafariTheme();
 
 
