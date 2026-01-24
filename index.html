@@ -1052,6 +1052,23 @@ body.dark-mode .btn-icon-edit {
 body.dark-mode .btn-icon-edit:hover {
   color: #ffffff; /* Blanco puro al hover */
 }
+
+
+
+
+
+
+
+/* Agrega esto justo después de tus estilos base o cerca de los otros estilos dark-mode */
+
+body.dark-mode {
+    /* Actualizamos la variable para que el fondo sea Negro Puro */
+    --bg-color-secondary: #000000 !important; 
+    
+    /* Opcional: Asegura que el texto sea visible si no lo estaba */
+    --text-main: #ffffff; 
+    background-color: #000000 !important; 
+}
     </style>
 </head>
 <body>
@@ -2068,23 +2085,30 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // AHORA SÍ: TODO ES NEGRO PURO
-    // Las barras son negras y tu fondo (.container) también será negro.
+    // Colores
     const appleBlack = '#000000'; 
     const appleWhite = '#ffffff'; 
     const appleGray  = '#f3f4f6';
 
+    // Lógica de colores
+    // En Chrome, colorTop domina ambas barras.
     const colorTop = isDark ? appleBlack : appleWhite;
+    
+    // Para Safari, el fondo 'bottom' da el efecto en la zona de rebote
     const colorBottom = isDark ? appleBlack : appleGray;
 
-    if (metaTheme) metaTheme.setAttribute('content', colorTop);
+    // 1. Actualizar Meta Tag (Para Chrome/Safari Barra Superior)
+    if (metaTheme) {
+        metaTheme.setAttribute('content', colorTop);
+    }
+
+    // 2. Actualizar fondos estructurales
     document.documentElement.style.backgroundColor = colorBottom;
+    
+    // IMPORTANTE PARA CHROME: 
+    // Forzamos el color del body para evitar "flashes" blancos o desajustes
+    document.body.style.backgroundColor = isDark ? appleBlack : appleWhite;
 }
-
-const observer = new MutationObserver(() => updateSafariTheme());
-observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-
-updateSafariTheme();
 
 
 
