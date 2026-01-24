@@ -1069,6 +1069,30 @@ body.dark-mode {
     --text-main: #ffffff; 
     background-color: #000000 !important; 
 }
+/* --- FORZAR MODO OSCURO "NEGRO PURO" --- */
+body.dark-mode {
+    background-color: #000000 !important; /* Fondo del navegador */
+    --bg-color-secondary: #000000 !important; /* Variable de fondo */
+}
+
+/* IMPORTANTE: Tu contenedor .container tiene fondo blanco fijo en el CSS original.
+   Necesitamos volverlo negro o transparente en dark mode. */
+body.dark-mode .container {
+    background-color: #000000 !important; /* Fondo de tu tarjeta/app */
+    border-color: #333 !important; /* Opcional: borde sutil para que se vea el límite */
+}
+
+/* Opcional: Ajustar textos para que resalten sobre el negro puro */
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3 {
+    color: #ffffff !important;
+}
+
+body.dark-mode p, 
+body.dark-mode label {
+    color: #9ca3af !important; /* Gris claro para lectura cómoda */
+}
     </style>
 </head>
 <body>
@@ -2085,29 +2109,26 @@ function renderShareInfo(link) {
     const isDark = document.body.classList.contains('dark-mode');
     const metaTheme = document.getElementById('theme-color-meta');
     
-    // Colores
-    const appleBlack = '#000000'; 
-    const appleWhite = '#ffffff'; 
-    const appleGray  = '#f3f4f6';
+    // DEFINICIÓN DE COLORES
+    const pureBlack = '#000000';  // <--- ESTO ES LA CLAVE
+    const white = '#ffffff';
+    const gray  = '#f3f4f6';
 
-    // Lógica de colores
-    // En Chrome, colorTop domina ambas barras.
-    const colorTop = isDark ? appleBlack : appleWhite;
+    // Chrome y Safari (Barra Superior)
+    const colorTop = isDark ? pureBlack : white;
     
-    // Para Safari, el fondo 'bottom' da el efecto en la zona de rebote
-    const colorBottom = isDark ? appleBlack : appleGray;
+    // Safari (Barra Inferior / Rebote)
+    // En modo oscuro usamos pureBlack para que se vea continuo
+    const colorBottom = isDark ? pureBlack : gray;
 
-    // 1. Actualizar Meta Tag (Para Chrome/Safari Barra Superior)
-    if (metaTheme) {
-        metaTheme.setAttribute('content', colorTop);
-    }
-
-    // 2. Actualizar fondos estructurales
+    // 1. Meta tag (Barra navegador)
+    if (metaTheme) metaTheme.setAttribute('content', colorTop);
+    
+    // 2. Fondo HTML (Zona de rebote)
     document.documentElement.style.backgroundColor = colorBottom;
     
-    // IMPORTANTE PARA CHROME: 
-    // Forzamos el color del body para evitar "flashes" blancos o desajustes
-    document.body.style.backgroundColor = isDark ? appleBlack : appleWhite;
+    // 3. Fondo Body (Contenido)
+    document.body.style.backgroundColor = colorTop;
 }
 
 
