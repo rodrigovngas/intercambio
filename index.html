@@ -13,584 +13,1046 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-    /* =========================================
-       1. VARIABLES & RESET
-       ========================================= */
-    :root {
-        --bg-color: #ffffff;
-        --bg-color-secondary: #ffffff;
-        --primary: #111827;
-        --accent: #111827;
-        --text-main: #1f2937;
-        --text-sec: #6b7280;
-        --border: #e5e7eb;
-        --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-        --radius: 16px;
-        --danger: #FF453A;
-        --success: #10b981;
-        --toast-bg: #000000;
-        --toast-text: #ffffff;
-        
-        /* Variables internas para Dark Mode logic */
-        --container-bg: #ffffff;
-        --card-bg: #ffffff;
-    }
+        :root {
+    --bg-color: #ffffff;
+    --bg-color-secondary: #ffffff;
+    --primary: #111827; 
+    --accent: #111827; 
+    --text-main: #1f2937;
+    --text-sec: #6b7280;
+    --border: #e5e7eb;
+    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+    --radius: 16px;
+    --danger: #FF453A;
+    --success: #10b981;
+    --toast-bg: #000000;
+    --toast-text: #ffffff;
+}
 
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-    
-    html {
-        background-color: var(--bg-color);
-        transition: background-color 0.5s ease;
-        height: 100%;
-    }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+        input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
 
-    body {
-        font-family: 'Inter', sans-serif;
-        background-color: var(--bg-color-secondary);
-        color: var(--text-main);
-        margin: 0; padding: 0;
-        height: 100dvh; width: 100vw; overflow: hidden;
-        display: flex; justify-content: center; align-items: center;
-    }
+        body {
+    font-family: 'Inter', sans-serif;
+background-color: var(--bg-color-secondary); 
+    color: var(--text-main); margin: 0; padding: 0;
+    height: 100dvh; width: 100vw; overflow: hidden; 
+    display: flex; justify-content: center; align-items: center;
+}
 
-    /* =========================================
-       2. LAYOUT (Container)
-       ========================================= */
-    .container {
-        background: var(--container-bg); 
-        width: 100%; height: 100%; max-width: 500px;
-        overflow-y: auto; padding: 30px 25px 0 25px;
-        display: flex; flex-direction: column; position: relative;
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
-    }
-    .container::-webkit-scrollbar { display: none; }
-
-    @media (min-width: 501px) {
         .container {
-            height: auto; max-height: 90dvh; 
-            border-radius: var(--radius);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-            padding-bottom: 30px; 
-            border: 1px solid rgba(0,0,0,0.02);
+            background: #ffffff; width: 100%; height: 100%; max-width: 500px;
+            overflow-y: auto; padding: 30px 25px 0 25px;
+            display: flex; flex-direction: column; position: relative;
         }
-    }
 
-    .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
-    .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        @media (min-width: 501px) {
+            .container { 
+                height: auto; max-height: 90dvh; border-radius: var(--radius); 
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+                padding-bottom: 30px; border: 1px solid rgba(0,0,0,0.02);
+            }
+        }
 
-    /* =========================================
-       3. TYPOGRAPHY
-       ========================================= */
-    h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
-    h1 { font-size: 2.2rem; font-weight: 800; }
-    p { color: var(--text-sec); line-height: 1.6; margin-bottom: 25px; text-align: center; font-size: 0.95rem; }
-    label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
+
+        .btn-settings {
+    position: absolute; top: 0; right: 0;
+    background: transparent; border: none; padding: 10px; cursor: pointer;
+    color: var(--text-sec); transition: color 0.3s; z-index: 50; width: auto; margin: 0;
+}
+.btn-settings:hover { color: var(--primary); }
+
+        h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
+        h1 { font-size: 2.2rem; font-weight: 800; }
+        p { color: var(--text-sec); line-height: 1.6; margin-bottom: 25px; text-align: center; font-size: 0.95rem; }
+
+        label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
+        
+        .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+        .btn-toggle-pass {
+            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; padding: 10px; cursor: pointer;
+            color: var(--text-sec); display: flex; align-items: center; justify-content: center;
+            width: auto; margin: 0; z-index: 10; transition: color 0.2s;
+        }
+
+        input:not([type="checkbox"]), textarea, select {
+            width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
+            font-size: 1rem; background: #fff; color: var(--text-main); 
+            font-family: inherit; appearance: none; outline: none;
+            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        
+        input[type="password"] { padding-right: 48px !important; } 
+        
+        input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
+
+        input[type="checkbox"] {
+            appearance: auto !important; -webkit-appearance: checkbox !important;
+            width: 20px !important; height: 20px !important; accent-color: var(--primary);
+            margin: 0 8px 0 0 !important; vertical-align: middle; cursor: pointer;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
+        }
+
+        button {
+            width: 100%; padding: 16px; border: none; border-radius: 12px; 
+            font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 24px; 
+            transition: transform 0.1s, opacity 0.2s; touch-action: manipulation;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        button:active { transform: scale(0.98); }
+
+        /* --- NUEVOS BOTONES (ESTILO MINIMALISTA / iOS) --- */
+
+/* --- BOTONES PRINCIPALES: NEGRO PURO (Modo Claro) --- */
+.btn-primary, .btn-accent, .btn-add-small { 
+    background-color: #000000 !important; /* Ahora sí: Negro #000000 real */
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+/* Efecto Hover (Modo Claro) */
+.btn-primary:hover, .btn-accent:hover, .btn-add-small:hover { 
+    background-color: #333333 !important; /* Gris oscuro al pasar el mouse */
+    transform: translateY(-1px);
+}
+
+/* Efecto Active */
+.btn-primary:active, .btn-accent:active, .btn-add-small:active {
+    transform: scale(0.98);
+}
+
+/* --- MODO OSCURO: BLANCO PURO (Estilo iOS) --- */
+body.dark-mode .btn-primary, 
+body.dark-mode .btn-accent, 
+body.dark-mode .btn-add-small {
+    background-color: #FFFFFF !important; /* Blanco Brillante */
+    color: #000000 !important;            /* Texto/Icono Negro */
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); /* Resplandor blanco */
+}
+
+/* Hover en Dark Mode */
+body.dark-mode .btn-primary:hover, 
+body.dark-mode .btn-accent:hover, 
+body.dark-mode .btn-add-small:hover {
+    background-color: #f3f4f6 !important;
+}
+        
+        .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
+        .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
+        .btn-danger-text { 
+            background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
+            border: 1px dashed var(--danger); padding: 10px; opacity: 0.8; 
+            display: flex; justify-content: center; align-items: center; gap: 6px;
+        }
+
+        .icon { width: 20px; height: 20px; stroke-width: 2; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+        .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
+        .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+
+        .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
+
+        /* --- CORRECCIÓN: BOTÓN '+' (AGREGAR PARTICIPANTE) --- */
+
+/* Estilo Base (Modo Claro: Negro Sólido) */
+.btn-add-small { 
+    width: auto; 
+    margin-top: 0; 
+    padding: 0 16px; 
+    height: 52px; 
     
-    .link-box {
-        background: #f9fafb; padding: 20px; border-radius: 12px;
-        word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; 
-        color: var(--text-main); font-size: 0.85em; text-align: center; 
-        margin: 20px 0; border: 1px solid var(--border);
-        user-select: all !important; -webkit-user-select: all !important;
-    }
-
-    /* =========================================
-       4. FORMS & INPUTS
-       ========================================= */
-    input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
-
-    input:not([type="checkbox"]), textarea, select {
-        width: 100%; padding: 14px 16px; 
-        border: 1px solid var(--border); border-radius: 12px;
-        font-size: 1rem; background: #fff; color: var(--text-main);
-        font-family: inherit; appearance: none; outline: none;
-        transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    }
-
-    input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: all 0.2s ease;
     
-    /* Password specific */
-    .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
-    input[type="password"] { padding-right: 48px !important; }
+    /* Aseguramos que el icono esté centrado */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add-small:hover {
+    background: #000000; /* Negro puro al pasar mouse */
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-add-small:active {
+    transform: scale(0.96);
+}
+
+/* --- ADAPTACIÓN DARK MODE (Blanco iOS) --- */
+body.dark-mode .btn-add-small {
+    background: #FFFFFF !important; /* Blanco puro */
+    color: #000000 !important;      /* Icono negro */
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+}
+
+body.dark-mode .btn-add-small:hover {
+    background: #f3f4f6 !important;
+}
+        
+        .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .name-card-admin {
+            background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
+            display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
+        }
+        .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
+        .btn-icon-delete {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: rgba(239, 68, 68, 0.6); /* rojo tenue */
+  margin-top: 0;
+  width: auto;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+        .btn-icon-delete:hover {
+  color: rgba(239, 68, 68, 0.9);
+}
+        .btn-icon-delete:active {
+  transform: scale(0.92);
+}
+
+
+
+
+.btn-icon-edit {
+  background: none;
+  border: none;
+  padding: 4px;
+  color: var(--text-sec); /* Gris tenue neutro */
+  margin-top: 0;
+  width: auto;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.1s ease;
+}
+.btn-icon-edit:hover {
+  color: var(--primary); /* Color principal al hover, para feedback */
+}
+.btn-icon-edit:active {
+  transform: scale(0.92);
+}
+
+
+
+
+        .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
+        .name-card-user { 
+            background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; 
+            text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
+            box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
+        }
+        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
+        
+        .seen-badge {
+            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; 
+            background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
+        }
+
+        #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
+        .master-event-card {
+            background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
+        }
+        .master-event-card:hover { transform: translateX(2px); }
+        .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+        .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
+        .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
+        .master-actions { display: flex; gap: 10px; }
+        .btn-icon-action { 
+            padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; 
+            background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
+        }
+        .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
+        .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
+        .btn-icon-danger:hover { background: #fef2f2; border-color: var(--danger); }
+
+        .date-picker-row { display: flex; gap: 10px; }
+        .date-picker-row select { flex: 1; }
+        .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
+        }
+        @media (min-width: 501px) { .modal-overlay { align-items: center; } }
+        .modal-content {
+            background: white; padding: 35px 30px; 
+            border-top-left-radius: 24px; border-top-right-radius: 24px; 
+            width: 100%; max-width: 500px; max-height: 95dvh; overflow-y: auto;
+            box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
+        
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .hidden { display: none !important; }
+
+/* --- TARJETA DE REVELACIÓN (ELEGANCIA PURA) --- */
+
+/* 1. La Tarjeta (Contenedor del resultado) */
+.info-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px; /* Un poco más redondeado estilo iPhone 15 */
+    padding: 40px 30px;  /* Más espacio para que respire */
+    margin-bottom: 25px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); /* Sombra difusa premium */
+}
+
+/* CORRECCIÓN DE TEXTO (MODO CLARO) */
+/* Forzamos que TODO el texto adentro sea negro oscuro */
+.info-card h1, .info-card h2, .info-card h3, 
+.info-card p, .info-card strong, .info-card span {
+    color: #111827 !important; 
+}
+
+/* --- TAPA DE REVELACIÓN (ICONO SVG CORRECTO) --- */
+
+#reveal-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     
-    .btn-toggle-pass {
-        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-        background: none; border: none; padding: 10px; cursor: pointer;
-        color: var(--text-sec); display: flex; align-items: center; justify-content: center;
-        width: auto; margin: 0; z-index: 10; transition: color 0.2s;
-    }
-
-    /* Checkbox & Select */
-    input[type="checkbox"] {
-        appearance: auto !important; -webkit-appearance: checkbox !important;
-        width: 20px !important; height: 20px !important; accent-color: var(--primary);
-        margin: 0 8px 0 0 !important; vertical-align: middle; cursor: pointer;
-    }
-
-    select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
-    }
+    /* MODO CLARO: Fondo Blanco y Texto Negro */
+    background-color: #ffffff !important; 
+    color: #000000 !important;
     
-    .date-picker-row { display: flex; gap: 10px; }
-    .date-picker-row select { flex: 1; }
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    gap: 15px;
+    z-index: 10; 
+    cursor: pointer; 
+    transition: opacity 0.5s ease;
+}
 
-    /* =========================================
-       5. BUTTONS & ICONS
-       ========================================= */
-    button {
-        width: 100%; padding: 16px; border: none; border-radius: 12px;
-        font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 24px;
-        transition: transform 0.1s, opacity 0.2s; touch-action: manipulation;
-        display: flex; justify-content: center; align-items: center; gap: 8px;
-    }
-    button:active { transform: scale(0.98); }
-
-    /* Settings Button (Top Right) */
-    .btn-settings {
-        position: absolute; top: 0; right: 0;
-        background: transparent; border: none; padding: 10px; cursor: pointer;
-        color: var(--text-sec); transition: color 0.3s; z-index: 50; width: auto; margin: 0;
-    }
-    .btn-settings:hover { color: var(--primary); }
-
-    /* Primary & Accent Buttons (Negro en Light, Blanco en Dark) */
-    .btn-primary, .btn-accent, .btn-add-small {
-        background-color: #000000 !important;
-        color: white !important;
-        border: none !important;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.2s ease;
-    }
-    .btn-primary:hover, .btn-accent:hover {
-        background-color: #333333 !important;
-        transform: translateY(-1px);
-    }
-
-    /* Small Add Button (+) */
-    .btn-add-small {
-        width: auto; margin-top: 0; padding: 0 16px; height: 52px;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .btn-add-small:hover {
-        background: #000000; transform: translateY(-1px);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    }
-    .btn-add-small:active { transform: scale(0.96); }
-
-    /* Secondary & Text Buttons */
-    .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
+/* 1. MODO CLARO: El icono debe ser NEGRO PURO */
+#reveal-overlay .icon, 
+#reveal-overlay svg {
+    color: #000000 !important;
+    stroke: #000000 !important; /* Si es de líneas */
+    fill: none !important;      /* Normalmente los iconos de línea no tienen relleno */
+    opacity: 1 !important;
     
-    .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
-    
-    .btn-danger-text {
-        background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em;
-        border: 1px dashed var(--danger); padding: 10px; opacity: 0.8;
-        display: flex; justify-content: center; align-items: center; gap: 6px;
-    }
+    /* Aseguramos tamaño grande */
+    width: 48px; height: 48px;
+}
 
-    /* Icons */
-    .icon { width: 20px; height: 20px; stroke-width: 2; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-    .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
-    .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
-    
-    .btn-icon-delete, .btn-icon-edit { background: none; border: none; padding: 4px; width: auto; margin-top: 0; cursor: pointer; transition: all 0.2s ease; }
-    .btn-icon-delete { color: rgba(239, 68, 68, 0.6); }
-    .btn-icon-delete:hover { color: rgba(239, 68, 68, 0.9); }
-    .btn-icon-edit { color: var(--text-sec); }
-    .btn-icon-edit:hover { color: var(--primary); }
+/* Texto debajo del icono */
+#reveal-overlay p, 
+#reveal-overlay span,
+#reveal-overlay div {
+    color: #000000 !important;
+    font-weight: 600;
+    opacity: 1 !important;
+}
 
-    .btn-icon-action {
-        padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer;
-        background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
-    }
-    .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
-    
-    .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
-    .btn-icon-danger:hover { background: #fef2f2; border-color: var(--danger); }
 
-    /* =========================================
-       6. SPECIFIC MODULES (Participants, Master, Reveal)
-       ========================================= */
-    /* Participants */
-    .participants-container { 
-        display: flex; flex-direction: column; gap: 8px; margin-top: 10px; 
-        scrollbar-width: none; -ms-overflow-style: none;
-    }
-    .participants-container::-webkit-scrollbar { display: none; }
-    
-    .name-card-admin {
-        background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
-        display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
-    }
-    .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-    .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
+/* --- MODO OSCURO (INVERTIDO) --- */
 
-    /* User Selection Grid */
-    .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
-    .name-card-user {
-        background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px;
-        text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
-        box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
-    }
-    .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
-    
-    .seen-badge {
-        position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
-        background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
-    }
+body.dark-mode #reveal-overlay {
+    background-color: #2C2C2E !important; /* Gris oscuro elegante */
+    color: #FFFFFF !important;
+}
 
-    /* Master List */
-    #master-list-container { 
-        margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; 
-        scrollbar-width: none; -ms-overflow-style: none;
-    }
-    #master-list-container::-webkit-scrollbar { display: none; }
+/* 2. MODO OSCURO: El icono se vuelve BLANCO */
+body.dark-mode #reveal-overlay .icon, 
+body.dark-mode #reveal-overlay svg {
+    color: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
 
-    .master-event-card {
-        background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
-        display: flex; justify-content: space-between; align-items: center;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
-    }
-    .master-event-card:hover { transform: translateX(2px); }
-    .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-    .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
-    .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
-    .master-actions { display: flex; gap: 10px; }
+body.dark-mode #reveal-overlay p, 
+body.dark-mode #reveal-overlay span {
+    color: #FFFFFF !important;
+}
 
-    /* Reveal Card (Info) */
-    .info-card {
-        background: #ffffff;
-        border: 1px solid #e5e7eb; border-radius: 18px;
-        padding: 40px 30px; margin-bottom: 25px;
-        position: relative; overflow: hidden; text-align: center;
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
-    }
-    .info-card h1, .info-card h2, .info-card h3, .info-card p, .info-card strong, .info-card span { color: #111827 !important; }
+/* Ocultar al revelar */
+#reveal-overlay.faded { 
+    opacity: 0 !important; 
+    pointer-events: none; 
+}
+        
+        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
+        
+        .link-box { 
+            background: #f9fafb; padding: 20px; border-radius: 12px; 
+            word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); 
+            font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); 
+            user-select: all !important; -webkit-user-select: all !important; 
+        }
+        
+        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; }
+        .wishes-list li { 
+            margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); 
+            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
+        }
+        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
+        .info-extra-link { overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal; display: block; width: 100%; }
 
-    /* Reveal Overlay */
-    #reveal-overlay {
-        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-        background-color: #ffffff !important; color: #000000 !important;
-        display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px;
-        z-index: 10; cursor: pointer; transition: opacity 0.5s ease;
-    }
-    #reveal-overlay .icon, #reveal-overlay svg {
-        color: #000000 !important; stroke: #000000 !important; fill: none !important; opacity: 1 !important;
-        width: 48px; height: 48px;
-    }
-    #reveal-overlay.faded { opacity: 0 !important; pointer-events: none; }
+        #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
 
-    /* Pills & Wishes */
-    .pill { 
-        display: inline-flex; align-items: center; gap: 5px; 
-        background: #f3f4f6; color: var(--primary); padding: 6px 14px; 
-        border-radius: 20px; font-size: 0.85rem; font-weight: 700; 
-        margin: 0 5px; border: 1px solid #e5e7eb; 
-    }
-    .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; scrollbar-width: none; }
-    .wishes-list::-webkit-scrollbar { display: none; }
-    .wishes-list li { 
-        margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3);
-        overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
-    }
-    .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
+        #toast-container {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 2000; display: flex; flex-direction: column; gap: 10px;
+            pointer-events: none; width: 90%; max-width: 400px;
+        }
+        .toast {
+  background: var(--toast-bg);
+  color: var(--toast-text);
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.toast.success {
+  --toast-bg: rgba(16, 185, 129, 0.95);
+}
 
-    /* Profile Switcher */
-    #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+.toast.error {
+  --toast-bg: rgba(239, 68, 68, 0.95);
+}
+        .toast.show { opacity: 1; transform: translateY(0); }
 
-    /* QR Code */
-    #qr-invite { opacity: 0.9; transition: all 0.3s ease; mix-blend-mode: multiply; }
+        .spinner {
+            width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
+            border-radius: 50%; border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Toast */
-    #toast-container {
-        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-        z-index: 2000; display: flex; flex-direction: column; gap: 10px;
-        pointer-events: none; width: 90%; max-width: 400px;
-    }
-    .toast {
-        background: var(--toast-bg); color: var(--toast-text);
-        padding: 12px 20px; border-radius: 999px; font-size: 0.9rem; font-weight: 500;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.15); opacity: 0; transform: translateY(-20px);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex; align-items: center; justify-content: center; text-align: center;
-    }
-    .toast.success { --toast-bg: rgba(16, 185, 129, 0.95); }
-    .toast.error { --toast-bg: rgba(239, 68, 68, 0.95); }
-    .toast.show { opacity: 1; transform: translateY(0); }
-
-    /* Spinner */
-    .spinner {
-        width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
-        border-radius: 50%; border-top-color: var(--primary);
-        animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
-    }
-
-    /* =========================================
-       7. MODALS & OVERLAYS
-       ========================================= */
-    .hidden { display: none !important; }
-    
+        /* --- STYLES FOR CUSTOM PIN UI --- */
+        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
+        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
+        .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
+        .pin-dot.success { background: var(--success); border-color: var(--success); }
+        
+        .pin-keyboard {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 15px; margin: 0 auto; max-width: 280px; padding-bottom: 10px;
+        }
+        .pin-btn {
+            background: #f9fafb; border: 1px solid var(--border); border-radius: 50%;
+            width: 65px; height: 65px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; font-weight: 600; color: var(--primary);
+            cursor: pointer; transition: background 0.15s, transform 0.1s;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); -webkit-tap-highlight-color: transparent;
+        }
+        .pin-btn:active { background: #e5e7eb; transform: scale(0.95); }
+        .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
+        .pin-btn-back { background: transparent; border: none; box-shadow: none; }
+        .pin-btn-back:active { background: transparent; opacity: 0.5; }
+/* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
+@media (max-width: 500px) {
     .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-        display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
+        align-items: stretch; /* Cambia de flex-end a stretch para que el contenido ocupe toda la altura */
     }
     .modal-content {
-        background: white; padding: 35px 30px; 
-        border-top-left-radius: 24px; border-top-right-radius: 24px; 
-        width: 100%; max-width: 500px; max-height: 95dvh; overflow-y: auto;
-        box-shadow: 0 -20px 60px rgba(0,0,0,0.25); 
-        will-change: transform; scrollbar-width: none; -ms-overflow-style: none;
+        max-height: none; /* Elimina límite de altura para ocupar todo */
+        height: 100%; /* Ocupa toda la altura disponible */
+        border-radius: 0; /* Quita bordes redondeados en full-screen para mejor ajuste */
+        overflow-y: auto; /* Habilita scroll interno si el contenido excede la altura */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; /* Distribuye el espacio para que el teclado quede abajo */
+        padding: 20px 20px 10px; /* Reduce padding ligeramente para ganar espacio vertical sin cambiar diseño */
     }
-    .modal-content::-webkit-scrollbar { display: none; }
-
-    /* Modal Responsive Logic (Desktop Center, Mobile Bottom-Sheet) */
-    @media (min-width: 501px) {
-        .modal-overlay { align-items: center; }
-        .modal-content { 
-            border-radius: 24px; width: 90%; max-width: 400px; 
-            animation: fadeIn 0.2s ease-out; 
-        }
-    }
-    
-    @media (max-width: 500px) {
-        /* Generic Mobile Modal Fixes */
-        .modal-overlay { align-items: flex-end; background: transparent; backdrop-filter: none; }
-        .modal-content { 
-            height: auto; max-height: 100dvh; border-radius: 24px 24px 0 0;
-            display: block; padding: 35px 30px; box-shadow: none;
-        }
-        
-        /* PIN Modal specific full screen mobile */
-        #auth-modal.modal-overlay { align-items: stretch; }
-        #auth-modal .modal-content {
-            height: 100%; max-height: none; border-radius: 0;
-            display: flex; flex-direction: column; justify-content: space-between;
-            padding: 20px 20px 10px;
-        }
-        #auth-modal .modal-content > svg { margin-top: 10px; }
-    }
-
-    /* =========================================
-       8. PIN UI
-       ========================================= */
-    .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
-    .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
-    .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
-    .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
-    .pin-dot.success { background: var(--success); border-color: var(--success); }
-    
     .pin-keyboard {
-        display: grid; grid-template-columns: repeat(3, 1fr);
-        gap: 15px; margin: 0 auto; max-width: 280px; padding-bottom: 10px;
+        margin-top: auto; /* Empuja el teclado hacia abajo */
+        padding-bottom: 20px; /* Añade algo de espacio abajo para comodidad */
     }
-    @media (max-width: 500px) {
-        .pin-keyboard { margin-top: auto; padding-bottom: 20px; gap: 10px; }
-        .pin-dots { gap: 8px; }
+    /* Reduce gaps y tamaños mínimamente para fitting en pantallas muy pequeñas */
+    .pin-dots {
+        gap: 8px; /* Reduce gap ligeramente */
     }
-
+    .pin-keyboard {
+        gap: 10px; /* Reduce gap para ahorrar altura */
+    }
     .pin-btn {
-        background: #f9fafb; border: 1px solid var(--border); border-radius: 50%;
-        width: 65px; height: 65px; margin: 0 auto;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.5rem; font-weight: 600; color: var(--primary);
-        cursor: pointer; transition: background 0.15s, transform 0.1s;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05); -webkit-tap-highlight-color: transparent;
+        width: 55px; /* Reduce tamaño de botones ligeramente para fitting */
+        height: 55px;
+        font-size: 1.3rem; /* Ajusta fuente para mantener proporción */
     }
-    @media (max-width: 500px) {
-        .pin-btn { width: 55px; height: 55px; font-size: 1.3rem; }
+}
+/*MODAL PIN*/
+@media (max-width: 500px) {
+    #auth-modal.modal-overlay {
+        align-items: flex-end; /* Hace que el modal aparezca desde abajo como un bottom sheet */
     }
-    .pin-btn:active { background: #e5e7eb; transform: scale(0.95); }
-    .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
-    .pin-btn-back { background: transparent; border: none; box-shadow: none; }
-    .pin-btn-back:active { background: transparent; opacity: 0.5; }
+    #auth-modal .modal-content {
+        height: auto; /* Altura basada en el contenido, no full-screen */
+        max-height: 100dvh; /* Límite para no exceder la pantalla */
+        /*border-radius: 24px 24px 0 0;  Bordes redondeados solo arriba, como un sheet */
+        overflow-y: auto; /* Scroll si el contenido excede */
+        display: block; /* Elimina flex para flujo normal, evita espacios grandes */
+        justify-content: initial; /* Resetea el space-between */
+        padding: 35px 30px; /* Padding consistente con otros modals */
+    }
+    /* Ajuste para el teclado: sin flex, usa margen fijo para separarlo un poco */
+    .pin-keyboard {
+        margin-top: 20px; /* Espacio arriba del teclado para que no quede pegado, ajusta si necesitas más */
+        padding-bottom: 20px;
+    }
+    /* Asegura que el ícono gris tenga algo de espacio superior en bottom sheet */
+    #auth-modal .modal-content > svg {
+        margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
+    }
+}
 
-    /* =========================================
-       9. ANIMATIONS
-       ========================================= */
-    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-    @keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes spin-once { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/*MODAL ADMIN PASS*/
+@media (max-width: 500px) {
+    #admin-modal.modal-overlay {
+        align-items: flex-end; /* Aparece como bottom sheet desde abajo */
+    }
+    #admin-modal .modal-content {
+        height: auto; /* Altura basada en contenido, no full-screen */
+        max-height: 100dvh; /* No excede la pantalla */
+        border-radius: 24px 24px 0 0; /* Redondeado solo arriba para estilo sheet */
+        overflow-y: auto; /* Scroll si el contenido es largo */
+        display: block; /* Flujo normal, evita gaps en flex */
+        justify-content: initial; /* Resetea space-between */
+        padding: 35px 30px; /* Mantiene padding consistente */
+    }
+    /* Ajuste opcional para el ícono gris en el top */
+    #admin-modal .modal-content > svg {
+        margin-top: 10px; /* Espacio superior para no pegarse al borde */
+    }
+}
+
+/*MODAL CONFIRMACION confirm-modal*/
+@media (max-width: 500px) {
+    #confirm-modal.modal-overlay {
+        align-items: flex-end; /* Aparece como bottom sheet desde abajo */
+    }
+    #confirm-modal .modal-content {
+        height: auto; /* Altura basada en contenido, no full-screen */
+        max-height: 100dvh; /* No excede la pantalla */
+        border-radius: 24px 24px 0 0; /* Redondeado solo arriba para estilo sheet */
+        overflow-y: auto; /* Scroll si el contenido es largo */
+        display: block; /* Flujo normal, evita gaps en flex */
+        justify-content: initial; /* Resetea space-between */
+        padding: 35px 30px; /* Mantiene padding consistente */
+    }
+    /* Ajuste opcional para el ícono gris en el top */
+    #confirm-modal .modal-content > svg {
+        margin-top: 10px; /* Espacio superior para no pegarse al borde */
+    }
+}
+
+/*OCULTAR SCROLL*/
+.container {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+.container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+#master-list-container {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+#master-list-container::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+.modal-content {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+.modal-content::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+.participants-container {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.participants-container::-webkit-scrollbar {
+    display: none;
+}
+.wishes-list {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+.wishes-list::-webkit-scrollbar {
+    display: none;
+}
+/* --- ESTILOS PARA ERROR DE PIN --- */
+@keyframes shake-animation {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+    20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.shake-error {
+    animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.shake-error .pin-dot {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+
+
+
+
+
+
+
+
+
+/* --- ANIMACIONES DE ENTRADA Y SALIDA --- */
+
+/* Definición de movimientos */
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* A) ANIMACIÓN DE ENTRADA (Automática al quitar 'hidden') */
+/* Cuando el modal NO está oculto y NO se está cerrando */
+#auth-modal:not(.hidden):not(.modal-closing) {
+    animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+#auth-modal:not(.hidden):not(.modal-closing) .modal-content {
+    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* B) ANIMACIÓN DE SALIDA (Se activa con JS) */
+/* SALIDA – más lenta y con peso */
+.modal-closing {
+    animation: fadeOut 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
+    pointer-events: none;
+}
+
+.modal-closing .modal-content {
+    animation: slideDown 0.70s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+
+
+
+
+
+@media (max-width: 500px) {
+    #auth-modal.modal-overlay {
+        background: transparent;
+        backdrop-filter: none;
+    }
+}
+
+
+
+/*SOMBRA MODAL*/
+@media (max-width: 500px) {
+    #auth-modal .modal-content {
+        box-shadow: none;
+    }
+}
+
+
+
+
+@media (max-width: 500px) {
+    .modal-content {
+        will-change: transform;
+    }
+}
+
+
+.modal-content {
+    will-change: transform;
+}
+
+
+
+
+body.dark-mode {
+    /* --- FONDO NEGRO PURO (OLED) --- */
+    --bg-color: #000000 !important;
+    --bg-color-secondary: #000000 !important;
+    background-color: #000000 !important;
+
+    /* TEXTOS */
+    --primary: #FFFFFF !important;            
+    --text-main: #FFFFFF !important;
+    --text-sec: #8E8E93 !important;           /* Gris Apple */
+
+    /* --- LA MAGIA: EL CONTENEDOR ES NEGRO, LOS ELEMENTOS SON GRISES --- */
+    --container-bg: #000000 !important;       /* El fondo de la App es negro */
+    --card-bg: #1C1C1E !important;            /* Las tarjetas/inputs son gris oscuro */
     
-    .spin-anim { animation: spin-once 0.5s ease-in-out; }
+    --border: #2C2C2E !important;             /* Borde muy sutil */
+    --accent: #0A84FF !important;
 
-    /* Error Shake */
-    @keyframes shake-animation {
-        0%, 100% { transform: translateX(0); }
-        10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-        20%, 40%, 60%, 80% { transform: translateX(4px); }
-    }
-    .shake-error { animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both; }
-    .shake-error .pin-dot { background-color: var(--danger) !important; border-color: var(--danger) !important; }
+/* APLICAR COLORES: FONDO NEGRO vs ELEMENTOS GRISES */
 
-    /* Modal States */
-    #auth-modal:not(.hidden):not(.modal-closing) { animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-    #auth-modal:not(.hidden):not(.modal-closing) .modal-content { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+/* 1. El contenedor principal se vuelve NEGRO para fundirse con los bordes */
+body.dark-mode .container {
+    background-color: var(--container-bg) !important; 
+    border-color: #000000 !important; /* Sin bordes visibles */
+}
+
+/* 2. Los elementos internos se vuelven GRISES para resaltar */
+body.dark-mode .name-card-user,
+body.dark-mode .name-card-admin,
+body.dark-mode .master-event-card,
+body.dark-mode input:not([type="checkbox"]), 
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode #profile-switcher,
+body.dark-mode .btn-secondary,
+body.dark-mode .btn-icon-action,
+body.dark-mode .modal-content {
+    background-color: var(--card-bg) !important; /* Gris #1C1C1E */
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+}
+
+/* 3. Ajuste especial para inputs en iOS Dark */
+body.dark-mode input:not([type="checkbox"]) {
+    background-color: #2C2C2E !important; /* Un gris un pelín más claro para escribir */
+}
+
+/* 4. Títulos brillantes */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
+    color: var(--primary) !important;
+}
+
+    background-color: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border-color: var(--border) !important;
+}
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
+    color: var(--primary) !important;
+}
+body.dark-mode .btn-settings {
+    color: var(--text-main) !important;
+}
+body.dark-mode .toast {
+  backdrop-filter: blur(8px);
+}
+
+body.dark-mode .btn-icon-delete {
+  color: rgba(239, 68, 68, 0.75);
+}
+
+body.dark-mode .btn-icon-delete:hover {
+  color: #ef4444;
+}
+
+
+
+
+
+/* Animación de giro */
+.spin-anim {
+    animation: spin-once 0.5s ease-in-out;
+}
+@keyframes spin-once {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+
+
+
+/* Mejorar legibilidad de los "pill" en modo oscuro */
+body.dark-mode .pill {
+  background: rgba(255,255,255,0.04) !important; /* sutil contraste sobre el card-bg */
+  color: var(--text-main) !important;             /* texto claro */
+  border-color: rgba(255,255,255,0.06) !important;/* borde tenue en lugar del blanco sólido */
+}
+
+
+
+
+
+/* Nuevo estilo para el indicador 'visto' (sin borde blanco + destello tenue) */
+.seen-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #22ff88;
+  border-radius: 50%;
+  border: none;
+  box-shadow:
+    0 0 16px rgba(34,255,136,0.55), /* glow fosforescente */
+    0 0 6px  rgba(34,255,136,0.30); /* halo cercano */
+}
+
+
+
+
+
+/* --- CORRECCIONES DARK MODE (Pegar al final del CSS) --- */
+
+/* 1. Teclas del PIN en modo oscuro: Gris oscuro para que se vean */
+body.dark-mode .pin-btn {
+    background-color: #1f2937; /* Gris oscuro */
+    color: #ffffff;            /* Número blanco */
+    border-color: #374151;     /* Borde sutil */
+}
+body.dark-mode .pin-btn:active {
+    background-color: #374151; /* Color al presionar */
+}
+
+
+
+
+
+
+/* Agrega esto al final de tu style */
+html {
+    background-color: var(--bg-color);
+    transition: background-color 0.5s ease;
+}
+
+
+
+
+
+
+
+/* Esto pinta el fondo "detrás" de la página para el rebote de Safari */
+html {
+    background-color: var(--bg-color); 
+    height: 100%;
+}
+
+html:has(body.dark-mode) {
+    background-color: #000000 !important; /* Negro Puro */
+}
+
+
+
+
+
+
+
+
+
+/* --- ESTILO iOS FINAL (TODO NEGRO + BORRAR TRANSPARENTE) --- */
+
+/* 1. TEMA PRINCIPAL */
+body.dark-mode {
+    --bg-color: #000000 !important;
+    --bg-color-secondary: #000000 !important;
+    background-color: #000000 !important;
     
-    .modal-closing { animation: fadeOut 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; pointer-events: none; }
-    .modal-closing .modal-content { animation: slideDown 0.70s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
+    /* Textos */
+    --primary: #FFFFFF !important;
+    --text-main: #FFFFFF !important;
+    --text-sec: #8E8E93 !important;
 
-    /* =========================================
-       10. DARK MODE (CONSOLIDADO - ESTILO iOS)
-       ========================================= */
-    /* ESTRATEGIA: 
-       Fondo de página = Negro Puro (#000000)
-       Tarjetas / Inputs = Gris Oscuro (#1C1C1E)
-       Textos = Blanco (#FFFFFF)
-       Bordes = Eliminados o muy tenues
+    /* Capas */
+    --container-bg: #000000 !important;
+    --card-bg: #1C1C1E !important; /* Solo contenido resalta */
+    --border: #2C2C2E !important;
+    --accent: #0A84FF !important;
+    --toast-bg: rgba(0, 0, 0, 0.9);
+    --toast-text: #ffffff;
+}
+
+/* 2. BARRAS Y FONDO */
+html:has(body.dark-mode) { background-color: #000000 !important; }
+body.dark-mode .container { background-color: var(--container-bg) !important; border-color: #000000 !important; }
+
+/* 3. ELEMENTOS GRISES (Solo lo necesario) */
+body.dark-mode .name-card-user,
+body.dark-mode .name-card-admin,
+body.dark-mode .master-event-card,
+body.dark-mode input:not([type="checkbox"]), 
+body.dark-mode select,
+body.dark-mode textarea,
+body.dark-mode #profile-switcher,
+body.dark-mode .btn-secondary,
+body.dark-mode .btn-icon-action {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text-main) !important;
+}
+
+/* 4. MODAL Y PIN (SOLO CONTENIDO, SIN BORDES) */
+body.dark-mode #auth-modal .modal-content,
+body.dark-mode #admin-modal .modal-content,
+body.dark-mode #confirm-modal .modal-content {
+    background-color: #000000 !important;
+    color: #FFFFFF !important;
+    border: none !important;      /* <--- ESTO QUITA EL BORDE */
+    box-shadow: none !important;  /* Quita sombras para que sea plano total */
+}
+
+/* Botones Numéricos (Gris Oscuro) */
+body.dark-mode .pin-btn {
+    background-color: #1C1C1E !important; 
+    color: #FFFFFF !important;
+    border: none !important;
+}
+body.dark-mode .pin-btn:active {
+    background-color: #333333 !important;
+}
+
+/* Botón Borrar (Transparente) */
+body.dark-mode .pin-btn.pin-btn-back, 
+body.dark-mode .pin-btn.pin-btn-empty {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: #FFFFFF !important;
+}
+
+
+
+
+
+/* --- ICONOS DE BASURA: ESTILO EXACTO (Ícono Fuerte + Borde Tenue) --- */
+body.dark-mode .btn-icon-danger {
+    color: #ef4444 !important;       /* Rojo Fuerte (Igual que en Light) */
+    
+    /* Aquí está el truco: Borde rojo al 30% de opacidad para que se vea "tenue" */
+    border: 1px solid rgba(239, 68, 68, 0.3) !important; 
+    
+    background-color: transparent !important;
+}
+
+/* Al tocar, subimos un poco la intensidad del fondo */
+body.dark-mode .btn-icon-danger:active {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    border-color: #ef4444 !important; /* El borde se marca más al presionar */
+}
+
+
+
+
+/* --- CORRECCIÓN: CAJA DEL LINK EN DARK MODE --- */
+body.dark-mode .link-box {
+    background-color: #1C1C1E !important; /* Gris oscuro (tarjeta iOS) */
+    border: 1px solid #38383A !important; /* Borde sutil */
+    color: #0A84FF !important;            /* Texto Azul iOS (para indicar que es un link) */
+}
+
+
+
+
+/* --- ESTILO QR INTEGRADO --- */
+#qr-invite {
+    /* En modo claro: normal, quizás un poco de opacidad para que no sea negro puro 'duro' */
+    opacity: 0.9; 
+    transition: all 0.3s ease;
+    mix-blend-mode: multiply; /* Se funde mejor con el blanco */
+}
+
+/* EN MODO OSCURO: INVERTIR COLORES */
+body.dark-mode #qr-invite {
+    /* filter: invert(1) invierte los colores:
+       - Lo negro se vuelve blanco.
+       - Lo blanco se vuelve negro.
     */
-
-    body.dark-mode {
-        /* Variables Re-mapeadas */
-        --bg-color: #000000 !important;
-        --bg-color-secondary: #000000 !important;
-        --container-bg: #000000 !important;
-        --card-bg: #1C1C1E !important;
-        
-        --primary: #FFFFFF !important;
-        --text-main: #FFFFFF !important;
-        --text-sec: #8E8E93 !important; /* Gris Apple */
-        --border: #2C2C2E !important;
-        --accent: #0A84FF !important;
-        --toast-bg: rgba(0, 0, 0, 0.9);
-        --toast-text: #ffffff;
-        
-        background-color: #000000 !important;
-    }
-
-    /* Fondo Global */
-    html:has(body.dark-mode) { background-color: #000000 !important; }
+    filter: invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5)); 
     
-    /* Contenedor Principal */
-    body.dark-mode .container { background-color: var(--container-bg) !important; border-color: #000000 !important; }
-
-    /* Títulos */
-    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 { color: var(--primary) !important; }
-    body.dark-mode .btn-settings { color: var(--text-main) !important; }
-
-    /* Tarjetas y Elementos de Interfaz (Gris Oscuro) */
-    body.dark-mode .name-card-user,
-    body.dark-mode .name-card-admin,
-    body.dark-mode .master-event-card,
-    body.dark-mode input:not([type="checkbox"]), 
-    body.dark-mode select,
-    body.dark-mode textarea,
-    body.dark-mode #profile-switcher,
-    body.dark-mode .btn-secondary,
-    body.dark-mode .btn-icon-action,
-    body.dark-mode .link-box {
-        background-color: var(--card-bg) !important;
-        border: 1px solid var(--border) !important;
-        color: var(--text-main) !important;
-    }
+    /* mix-blend-mode: screen hace que la parte negra (ahora fondo) 
+       se vuelva transparente, dejando solo el código QR blanco flotando.
+    */
+    mix-blend-mode: screen; 
     
-    /* Inputs específico para iOS */
-    body.dark-mode input:not([type="checkbox"]) { background-color: #2C2C2E !important; }
-    body.dark-mode .link-box { color: #0A84FF !important; border: 1px solid #38383A !important; }
+    opacity: 1;
+}
 
-    /* Botones Principales (Blanco Brillante en Modo Oscuro) */
-    body.dark-mode .btn-primary, 
-    body.dark-mode .btn-accent, 
-    body.dark-mode .btn-add-small {
-        background-color: #FFFFFF !important;
-        color: #000000 !important;
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-    }
-    body.dark-mode .btn-primary:hover, 
-    body.dark-mode .btn-accent:hover, 
-    body.dark-mode .btn-add-small:hover {
-        background-color: #f3f4f6 !important;
-    }
+/* Asegurar que el contenedor del QR no tenga fondo blanco forzado */
+/* Si el QR está dentro de un div, asegúrate de que ese div sea transparente en dark mode */
+body.dark-mode .qr-container {
+    background-color: transparent !important;
+    border: none !important;
+}
 
-    /* Iconos y Botones de Acción */
-    body.dark-mode .btn-icon-delete { color: rgba(239, 68, 68, 0.75); }
-    body.dark-mode .btn-icon-delete:hover { color: #ef4444; }
-    
-    body.dark-mode .btn-icon-danger {
-        color: #ef4444 !important;
-        border: 1px solid rgba(239, 68, 68, 0.3) !important; 
-        background-color: transparent !important;
-    }
-    body.dark-mode .btn-icon-danger:active {
-        background-color: rgba(239, 68, 68, 0.15) !important;
-        border-color: #ef4444 !important;
-    }
 
-    body.dark-mode .btn-icon-edit { color: rgba(142, 142, 147, 0.75); }
-    body.dark-mode .btn-icon-edit:hover { color: #ffffff; }
 
-    /* Modals & PIN UI (Fondo Negro Puro, Sin Bordes) */
-    body.dark-mode #auth-modal .modal-content,
-    body.dark-mode #admin-modal .modal-content,
-    body.dark-mode #confirm-modal .modal-content {
-        background-color: #000000 !important;
-        color: #FFFFFF !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
 
-    /* Teclado PIN */
-    body.dark-mode .pin-btn {
-        background-color: #1C1C1E !important; 
-        color: #FFFFFF !important;
-        border: none !important;
-    }
-    body.dark-mode .pin-btn:active { background-color: #333333 !important; }
-    
-    body.dark-mode .pin-btn.pin-btn-back, 
-    body.dark-mode .pin-btn.pin-btn-empty {
-        background-color: transparent !important; box-shadow: none !important;
-    }
-    
-    /* Puntos PIN */
-    body.dark-mode .pin-dot { background-color: #3A3A3C !important; border-color: #4A4A4C !important; }
-    body.dark-mode .pin-dot.filled { background-color: #FFFFFF !important; border-color: #FFFFFF !important; }
-    body.dark-mode .shake-error .pin-dot { background-color: var(--danger) !important; border-color: var(--danger) !important; }
 
-    /* Reveal Card (Gris Oscuro con texto blanco forzado) */
-    body.dark-mode .info-card {
-        background-color: #2C2C2E !important; 
-        border-color: #3A3A3C !important;
-        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
-    }
-    body.dark-mode .info-card h1, body.dark-mode .info-card h2, body.dark-mode .info-card h3, 
-    body.dark-mode .info-card p, body.dark-mode .info-card strong, body.dark-mode .info-card span {
-        color: #FFFFFF !important;
-    }
 
-    /* Reveal Overlay (Gris Oscuro) */
-    body.dark-mode #reveal-overlay { background-color: #2C2C2E !important; color: #FFFFFF !important; }
-    body.dark-mode #reveal-overlay .icon, body.dark-mode #reveal-overlay svg { color: #FFFFFF !important; stroke: #FFFFFF !important; }
-    body.dark-mode #reveal-overlay p, body.dark-mode #reveal-overlay span { color: #FFFFFF !important; }
 
-    /* QR Code Invertido */
-    body.dark-mode #qr-invite {
-        filter: invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5));
-        mix-blend-mode: screen; opacity: 1;
-    }
-    body.dark-mode .qr-container { background-color: transparent !important; border: none !important; }
+/* --- CORRECCIÓN: MANTENER TARJETA GRIS AL REVELAR (Modo Oscuro) --- */
 
-    /* Badge "Visto" (Glow) */
-    body.dark-mode .seen-badge {
-        background: #22ff88; border: none;
-        box-shadow: 0 0 16px rgba(34,255,136,0.55), 0 0 6px rgba(34,255,136,0.30);
-    }
-    
-    body.dark-mode .pill {
-        background: rgba(255,255,255,0.04) !important;
-        color: var(--text-main) !important;
-        border-color: rgba(255,255,255,0.06) !important;
-    }
-    
-    body.dark-mode .toast { backdrop-filter: blur(8px); }
-</style>
+/* 1. Cambiamos el fondo de la tarjeta para que coincida con la tapa (#2C2C2E) */
+body.dark-mode .info-card {
+    background-color: #2C2C2E !important; 
+    border-color: #3A3A3C !important; /* Borde más sutil para modo oscuro */
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); /* Sombra más oscura */
+}
 
+/* 2. Forzamos que TODO el texto dentro de la tarjeta sea blanco */
+/* (Es necesario usar !important porque tu CSS original fuerza el color negro) */
+body.dark-mode .info-card h1, 
+body.dark-mode .info-card h2, 
+body.dark-mode .info-card h3, 
+body.dark-mode .info-card p, 
+body.dark-mode .info-card strong, 
+body.dark-mode .info-card span {
+    color: #FFFFFF !important;
+}
+
+
+
+
+
+
+/* --- CORRECCIÓN: DOTS DEL PIN EN DARK MODE --- */
+body.dark-mode .pin-dot {
+    background-color: #3A3A3C !important; /* Gris oscuro para dots vacíos (fondo sutil) */
+    border-color: #4A4A4C !important;     /* Borde gris tenue para definición */
+}
+
+body.dark-mode .pin-dot.filled {
+    background-color: #FFFFFF !important; /* Blanco puro al llenarse */
+    border-color: #FFFFFF !important;     /* Borde blanco para consistencia */
+    transform: scale(1.1);                /* Mantiene el escalado para feedback */
+}
+/* --- CORRECCIÓN: RESTAURAR EFECTO DE ERROR EN DARK MODE --- */
+body.dark-mode .shake-error .pin-dot {
+    background-color: var(--danger) !important;
+    border-color: var(--danger) !important;
+}
+
+
+
+
+
+body.dark-mode .btn-icon-edit {
+  color: rgba(142, 142, 147, 0.75); /* Gris Apple tenue en dark mode */
+}
+
+body.dark-mode .btn-icon-edit:hover {
+  color: #ffffff; /* Blanco puro al hover */
+}
+    </style>
 </head>
 <body>
 
@@ -900,14 +1362,8 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 </div>
 
 <script type="module">
-    // ==========================================
-    // 1. IMPORTACIONES Y CONFIGURACIÓN
-    // ==========================================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { 
-        getFirestore, collection, addDoc, doc, getDoc, updateDoc, 
-        writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc, setDoc 
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAsVkuWgNhpC5cIyRem9ArT8QBNpWtSCX0",
@@ -920,117 +1376,39 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    // Constantes
     const MASTER_KEY = "admin123"; 
-    const MONTHS = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
+    const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 
-    // ==========================================
-    // 2. ESTADO GLOBAL Y ROUTER
-    // ==========================================
-    const state = {
-        eventId: new URLSearchParams(window.location.search).get('id'),
-        participants: [], // Lista temporal para creación/edición
-        linkedProfiles: [], // Perfiles logueados (usuario + hijos)
-        currentUser: null,
-        selectedUserDoc: null, // Usuario que intenta loguearse
-        isEditing: false,
-        editingEventId: null
-    };
+    let eventId = new URLSearchParams(window.location.search).get('id');
+    let participantsList = [];
+    let selectedUserDoc = null;
+    let currentUserId = null; 
+    let currentTargetId = null;
+    let currentGiftLabel = ""; 
+    let linkedProfiles = [];
+    let isEditingEvent = false;
+    let editingEventId = null;
 
-    // Router: Controla qué pantalla se ve
-    window.navigateTo = (screenId) => {
-        // Oculta todas las pantallas
-        ['screen-home', 'screen-master', 'screen-admin', 'screen-share', 'screen-login', 'screen-dashboard']
-            .forEach(id => document.getElementById(id)?.classList.add('hidden'));
-        
-        // Muestra la deseada
-        const target = document.getElementById(`screen-${screenId}`);
-        if(target) {
-            target.classList.remove('hidden');
-            window.scrollTo(0, 0);
-        }
-    };
-
-    // Inicialización
-    window.onload = () => {
-        populateDays();
-        setupDarkMode();
-        
-        if (state.eventId) {
-            loadEventData(state.eventId);
-        } else {
-            window.navigateTo('home');
-        }
-        
-        // Listeners globales
-        document.getElementById('input-new-name').addEventListener('keypress', (e) => { 
-            if(e.key === 'Enter') window.addNameToList(); 
-        });
-    };
-
-    // ==========================================
-    // 3. UTILIDADES (UI, HASH, PIN)
-    // ==========================================
-    const Utils = {
-        async hash(str) {
-            if(!str) return null;
-            const encoder = new TextEncoder();
-            const data = encoder.encode(str);
-            const hash = await crypto.subtle.digest('SHA-256', data);
-            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-        },
-        
-        showToast(message, duration = 3000) {
-            const container = document.getElementById('toast-container');
-            const el = document.createElement('div');
-            el.className = 'toast'; el.innerText = message;
-            container.appendChild(el);
-            requestAnimationFrame(() => el.classList.add('show'));
-            setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
-        },
-
-        makeLinksClickable(text) {
-            if (!text) return "";
-            return text.replace(/(https?:\/\/[^\s]+)/g, (url) => `<a href="${url}" target="_blank">${url}</a>`);
-        }
-    };
-
-    // Dark Mode Logic
-    function setupDarkMode() {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const applyTheme = (isDark) => {
-            document.body.classList.toggle('dark-mode', isDark);
-            const btn = document.getElementById('btn-dark-mode');
-            const metaTheme = document.getElementById('theme-color-meta');
-            
-            if(btn) {
-                // Actualizar icono (simplificado)
-                btn.innerHTML = isDark 
-                    ? '<svg class="icon"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>'
-                    : '<svg class="icon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-            }
-            if(metaTheme) metaTheme.setAttribute('content', isDark ? '#000000' : '#ffffff');
-        };
-        
-        applyTheme(mediaQuery.matches);
-        mediaQuery.addEventListener('change', e => applyTheme(e.matches));
-        window.toggleDarkMode = () => applyTheme(!document.body.classList.contains('dark-mode'));
-    }
-
-    // PIN Pad Logic
-    window.addPinDigit = (digit, type) => {
+    // --- PIN LOGIC WITH CUSTOM KEYPAD ---
+        window.addPinDigit = (digit, type) => {
         const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
         const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
         const input = document.getElementById(inputId);
+        let val = input.value;
         
-        if(input.value.length >= 6) return;
+        if(val.length >= 6) return;
         
-        input.value += digit;
-        updatePinDots(input.value.length, dotsId);
+        val += digit;
+        input.value = val;
+        updatePinDots(val.length, dotsId);
 
-        if(type === 'login' && input.value.length === 6) {
-            setTimeout(() => window.doLogin(), 100);
+        // --- VALIDACIÓN AUTOMÁTICA ---
+        // Solo para login, para registro es mejor esperar confirmación manual por seguridad
+        if(type === 'login' && val.length === 6) {
+            // Pequeña pausa de 100ms para ver el 6to punto llenarse
+            setTimeout(() => {
+                doLogin();
+            }, 100); 
         }
     };
 
@@ -1038,440 +1416,679 @@ document.addEventListener('contextmenu', event => event.preventDefault());
         const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
         const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
         const input = document.getElementById(inputId);
-        
-        if(input.value.length > 0) {
-            input.value = input.value.slice(0, -1);
-            updatePinDots(input.value.length, dotsId);
+        let val = input.value;
+        if(val.length > 0) {
+            val = val.slice(0, -1);
+            input.value = val;
+            updatePinDots(val.length, dotsId);
         }
     };
 
     function updatePinDots(count, containerId) {
-        const dots = document.getElementById(containerId).querySelectorAll('.pin-dot');
+        const container = document.getElementById(containerId);
+        const dots = container.querySelectorAll('.pin-dot');
         dots.forEach((dot, idx) => {
-            idx < count ? dot.classList.add('filled') : dot.classList.remove('filled');
+            if(idx < count) dot.classList.add('filled');
+            else dot.classList.remove('filled');
         });
     }
+    
+    // --- GENERIC VISIBILITY TOGGLE (FOR ADMIN PASS) ---
+    const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    const closedEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
+    
+    document.querySelectorAll('.btn-toggle-pass svg').forEach(svg => { svg.innerHTML = closedEyePaths; });
 
-    // ==========================================
-    // 4. LÓGICA DE ADMINISTRACIÓN (Setup Evento)
-    // ==========================================
+    window.toggleFieldVisibility = (inputId) => {
+        const input = document.getElementById(inputId);
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+        const svg = btn.querySelector('svg');
+        if (input.type === "password") {
+            input.type = "text";
+            btn.style.color = "var(--primary)";
+            svg.innerHTML = openEyePaths;
+        } else {
+            input.type = "password";
+            btn.style.color = "var(--text-sec)";
+            svg.innerHTML = closedEyePaths;
+        }
+    };
+
+    async function hashString(str) {
+        if(!str) return null;
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
+
+    window.showToast = (message, duration = 3000) => {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast'; el.innerText = message;
+        container.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
+    };
+
+    let pendingAdminCallback = null;
+    window.promptForAdmin = (callback) => {
+        pendingAdminCallback = callback;
+        const m = document.getElementById('admin-modal');
+        const input = document.getElementById('admin-input-pass');
+        input.value = ''; input.type = 'password'; 
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+        btn.style.color = 'var(--text-sec)';
+        m.classList.remove('hidden');
+        setTimeout(() => input.focus(), 100);
+    };
+    window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
     
-    // Panel Maestro
-    window.goToMasterPanel = () => { window.navigateTo('master'); loadAllEvents(); };
-    
+    window.submitAdminAuth = () => {
+        const val = document.getElementById('admin-input-pass').value; 
+        const callbackToRun = pendingAdminCallback;
+        if(val === MASTER_KEY) {
+            closeAdminModal(); 
+            if(callbackToRun) callbackToRun();
+        } else {
+            showToast("Contraseña incorrecta");
+            document.getElementById('admin-input-pass').value = '';
+        }
+    };
+
+    let pendingConfirmAction = null;
+    window.openConfirmModal = (title, message, callback) => {
+        document.getElementById('confirm-title').innerText = title;
+        document.getElementById('confirm-desc').innerText = message;
+        pendingConfirmAction = callback;
+        document.getElementById('confirm-modal').classList.remove('hidden');
+    };
+    window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
+    window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
+
+    window.revealName = () => {
+        const overlay = document.getElementById('reveal-overlay');
+        overlay.classList.add('faded');
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+        if(currentUserId) {
+            updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
+            const p = linkedProfiles.find(x => x.id === currentUserId);
+            if(p) p.revealed = true;
+        }
+    };
+
+
+
+
+
+
+// --- DARK MODE: SISTEMA + BOTÓN (reset al recargar) ---
+
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+const btn = document.getElementById('btn-dark-mode');
+const metaTheme = document.getElementById('theme-color-meta');
+
+const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+
+const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+function applyTheme(isDark) {
+  document.body.classList.toggle('dark-mode', isDark);
+
+  if (btn) {
+    btn.innerHTML = isDark ? sunIcon : moonIcon;
+    btn.style.color = getComputedStyle(document.documentElement)
+      .getPropertyValue(isDark ? '--text-main' : '--text-sec');
+
+    btn.classList.remove('spin-anim');
+    void btn.offsetWidth;
+    btn.classList.add('spin-anim');
+  }
+
+  if (metaTheme) {
+    metaTheme.setAttribute('content', isDark ? '#000000' : '#ffffff');
+  }
+}
+
+// BOTÓN (solo sesión actual)
+window.toggleDarkMode = () => {
+  const isDark = document.body.classList.contains('dark-mode');
+  applyTheme(!isDark);
+};
+
+// AL CARGAR → seguir sistema
+applyTheme(mediaQuery.matches);
+
+// SI CAMBIA EL SISTEMA → actualizar
+if (mediaQuery.addEventListener) {
+  mediaQuery.addEventListener('change', e => applyTheme(e.matches));
+} else {
+  mediaQuery.addListener(e => applyTheme(e.matches)); // Safari viejo
+}
+
+
+
+
+
+
+
+
+
+    window.onload = () => {
+        populateDays();
+        if (eventId) loadEventData(eventId);
+        else document.getElementById('screen-home').classList.remove('hidden');
+    };
+
+    function populateDays() {
+        const select = document.getElementById('setup-day');
+        for (let i = 1; i <= 31; i++) {
+            let val = i < 10 ? "0" + i : i;
+            let opt = document.createElement('option');
+            opt.value = val; opt.innerText = val; select.appendChild(opt);
+        }
+    }
+
+    window.goToMasterPanel = () => {
+        document.getElementById('screen-home').classList.add('hidden');
+        document.getElementById('screen-master').classList.remove('hidden');
+        loadAllEvents();
+    };
+    window.exitMasterPanel = () => {
+        document.getElementById('screen-master').classList.add('hidden');
+        document.getElementById('screen-home').classList.remove('hidden');
+    };
+
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
         listDiv.innerHTML = '<div class="spinner"></div>';
         try {
             const snap = await getDocs(collection(db, "events"));
             listDiv.innerHTML = "";
-            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center;'>No hay eventos.</p>"; return; }
-            
+            if(snap.empty) { listDiv.innerHTML = "<p style='text-align:center; color:#9ca3af; margin-top:20px;'>No hay eventos.</p>"; return; }
             snap.forEach(docSnap => {
-                const data = docSnap.data();
-                const div = document.createElement('div'); 
-                div.className = 'master-event-card';
-                // HTML simplificado para brevedad
+                const data = docSnap.data(); const id = docSnap.id;
+                const titleDisplay = data.title || "Evento sin título";
+                const budgetDisplay = data.budget ? data.budget.replace('$', '') : '---';
+                let prettyDate = "S/F";
+                if (data.date) { const parts = data.date.split('-'); if (parts.length === 3) prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`; }
+                const div = document.createElement('div'); div.className = 'master-event-card';
                 div.innerHTML = `
-                    <div class="master-event-info"><h4>${data.title}</h4></div>
+                    <div class="master-event-info">
+                        <h4>${titleDisplay}</h4>
+                        <div class="master-event-meta" style="margin-top:5px;">
+                            <span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}</span>
+                            <span style="display:flex; align-items:center; gap:4px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${budgetDisplay}</span>
+                        </div>
+                    </div>
                     <div class="master-actions">
-                        <button class="btn-icon-action" onclick="window.location.href='?id=${docSnap.id}'">🔗</button>
-                        <button class="btn-icon-action" onclick="editEvent('${docSnap.id}')">✏️</button>
-                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${docSnap.id}'))">🗑️</button>
+                        <button class="btn-icon-action" onclick="window.location.href='?id=${id}'"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></button>
+                        <button class="btn-icon-action" onclick="editEvent('${id}')"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+                        <button class="btn-icon-action btn-icon-danger" onclick="promptForAdmin(() => deleteGlobalEvent('${id}'))"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
                     </div>`;
                 listDiv.appendChild(div);
             });
-        } catch(e) { Utils.showToast("Error cargando eventos"); }
+        } catch(e) { listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; }
     }
 
-    // Crear / Editar Evento
-    window.showAdminSetup = () => { 
-        state.isEditing = false; state.participants = []; renderParticipantsList();
-        document.getElementById('setup-title').value = "";
-        document.getElementById('btn-create-event').innerText = "Generar Sorteo";
-        window.navigateTo('admin');
-    };
-
-    window.addNameToList = () => {
-        const input = document.getElementById('input-new-name'); 
-        const check = document.getElementById('check-is-child');
-        const name = input.value.trim(); 
-        if(!name) return;
-        
-        state.participants.push({ name: name, isChild: check.checked, id: null });
-        input.value = ""; check.checked = false; input.focus(); 
-        renderParticipantsList();
-    };
-
-    function renderParticipantsList() {
-        const container = document.getElementById('participants-container'); 
-        container.innerHTML = "";
-        if(state.participants.length === 0) { 
-            container.innerHTML = '<small style="text-align:center; padding:15px; display:block;">Agrega nombres arriba</small>'; 
-            return; 
-        }
-        
-        state.participants.forEach((p, index) => {
-            const div = document.createElement('div'); div.className = 'name-card-admin';
-            div.innerHTML = `
-                <span>${p.isChild ? '<span class="child-tag">NIÑO</span>' : ''} ${p.name}</span>
-                <button class="btn-icon-delete" onclick="removeName(${index})">❌</button>
-            `;
-            container.appendChild(div);
+    window.deleteGlobalEvent = (id) => {
+        openConfirmModal("¿Borrar evento?", "Se eliminarán todos los datos permanentemente.", async () => {
+            try {
+                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+                const batch = writeBatch(db); partsSnap.forEach(d => batch.delete(d.ref)); await batch.commit(); 
+                await deleteDoc(doc(db, "events", id)); showToast("Evento eliminado"); loadAllEvents();
+            } catch(e) { showToast("Error al borrar"); }
         });
     }
 
-    window.removeName = (index) => { state.participants.splice(index, 1); renderParticipantsList(); };
+    window.editEvent = async (id) => {
+        editingEventId = id; isEditingEvent = true;
+        const eventSnap = await getDoc(doc(db, "events", id));
+        if (!eventSnap.exists()) { showToast("Evento no encontrado"); return; }
+        const eventData = eventSnap.data();
+        document.getElementById('setup-title').value = eventData.title || "";
+        const dateParts = eventData.date ? eventData.date.split('-') : [];
+        document.getElementById('setup-day').value = dateParts[2] || "";
+        document.getElementById('setup-month').value = dateParts[1] || "";
+        document.getElementById('setup-budget').value = eventData.budget || "Libre";
+        document.getElementById('setup-gift-type').value = eventData.giftType || "";
+        participantsList = [];
+        const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+        partsSnap.forEach(docSnap => { const p = docSnap.data(); participantsList.push({ id: docSnap.id, name: p.name, isChild: p.isChild }); });
+        renderParticipantsList();
+        document.getElementById('btn-create-event').innerText = "Guardar Cambios";
+        document.getElementById('screen-master').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden');
+        let reshuffleBtn = document.getElementById('btn-reshuffle-event');
+        if (!reshuffleBtn) {
+            reshuffleBtn = document.createElement('button'); reshuffleBtn.id = 'btn-reshuffle-event';
+            reshuffleBtn.className = 'btn-secondary'; reshuffleBtn.style.marginTop = '10px';
+            reshuffleBtn.innerHTML = '<svg class="icon" viewBox="0 0 24 24"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg> Reasignar Sorteo';
+            reshuffleBtn.onclick = () => reshuffleParticipants(id);
+            document.getElementById('btn-create-event').parentNode.insertBefore(reshuffleBtn, document.getElementById('btn-create-event').nextSibling);
+        }
+    };
 
-    // Guardar Evento (Lógica Principal)
+    window.showAdminSetup = () => { 
+        isEditingEvent = false; editingEventId = null; participantsList = []; renderParticipantsList();
+        document.getElementById('setup-title').value = ""; document.getElementById('setup-day').value = "";
+        document.getElementById('setup-month').value = ""; document.getElementById('setup-budget').value = "Libre";
+        document.getElementById('setup-gift-type').value = ""; document.getElementById('btn-create-event').innerText = "Generar Sorteo";
+        const reshuffleBtn = document.getElementById('btn-reshuffle-event'); if (reshuffleBtn) reshuffleBtn.remove();
+        document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); 
+    };
+
+    document.getElementById('btn-add-name').addEventListener('click', addNameToList);
+    document.getElementById('input-new-name').addEventListener('keypress', (e) => { if(e.key === 'Enter') addNameToList(); });
+
+    function addNameToList() {
+        const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
+        const name = input.value.trim(); if(!name) return;
+        participantsList.push({ name: name, isChild: check.checked, id: null });
+        input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
+    }
+
+    function renderParticipantsList() {
+        const container = document.getElementById('participants-container'); container.innerHTML = "";
+        if(participantsList.length === 0) { container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return; }
+        participantsList.forEach((p, index) => {
+            const div = document.createElement('div'); div.className = 'name-card-admin';
+            const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
+            div.innerHTML = `
+    <span id="name-span-${index}">${childTag}${p.name}</span>
+    <div style="display:flex; gap:5px;">
+        <button class="btn-icon-edit" onclick="editName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+    </div>`;
+            container.appendChild(div);
+        });
+        window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
+        window.editName = (index) => {
+            const span = document.getElementById(`name-span-${index}`); const originalName = participantsList[index].name;
+            const input = document.createElement('input'); input.type = 'text'; input.value = originalName;
+            input.autocapitalize = 'sentences'; input.style.width = 'auto'; input.style.marginRight = '5px';
+            span.innerHTML = ''; span.appendChild(input); input.focus();
+            const save = () => { const newName = input.value.trim(); if (newName) participantsList[index].name = newName; renderParticipantsList(); };
+            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') save(); }); input.addEventListener('blur', save);
+        };
+    }
+
     document.getElementById('btn-create-event').addEventListener('click', async () => {
-        const title = document.getElementById('setup-title').value;
-        const day = document.getElementById('setup-day').value;
-        const month = document.getElementById('setup-month').value;
-        const budget = document.getElementById('setup-budget').value;
-        const giftType = document.getElementById('setup-gift-type').value;
-
-        if(state.participants.length < 2) return Utils.showToast("Mínimo 2 personas");
-        if(!title || !day || !month) return Utils.showToast("Completa los datos");
-
-        const btn = document.getElementById('btn-create-event'); btn.disabled = true;
+        const title = document.getElementById('setup-title').value; const day = document.getElementById('setup-day').value;
+        const month = document.getElementById('setup-month').value; const budget = document.getElementById('setup-budget').value;
+        const giftType = document.getElementById('setup-gift-type').value; 
+        if(participantsList.length < 2) return showToast("Mínimo 2 personas");
+        if(!title || !day || !month) return showToast("Completa los datos");
         const fullDate = `${new Date().getFullYear()}-${month}-${day}`;
+        const btn = document.getElementById('btn-create-event'); btn.disabled = true; btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; margin:0;"></div>';
 
         try {
-            if (state.isEditing) {
-                // Lógica de Actualización
-                await updateDoc(doc(db, "events", state.editingEventId), { title, date: fullDate, budget, giftType });
-                // (Aquí iría la lógica compleja de actualizar participantes existente en tu código original)
-                // Para simplificar este ejemplo, asumo actualización básica.
-                Utils.showToast("Evento actualizado");
-                window.goToMasterPanel();
-            } else {
-                // Lógica de Creación (Sorteo)
-                const eventRef = await addDoc(collection(db, "events"), { 
-                    title, date: fullDate, budget, giftType, createdAt: serverTimestamp() 
-                });
-                
-                // Shuffle y asignación
-                let shuffled = [...state.participants];
-                for (let i = shuffled.length - 1; i > 0; i--) { 
-                    const j = Math.floor(Math.random() * (i + 1)); 
-                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; 
+            if (isEditingEvent) {
+                await updateDoc(doc(db, "events", editingEventId), { title, date: fullDate, budget, giftType });
+                const existingPartsSnap = await getDocs(collection(db, `events/${editingEventId}/participants`));
+                const existingIds = existingPartsSnap.docs.map(d => d.id);
+                const batch = writeBatch(db);
+                for (let p of participantsList) {
+                    const participantData = { name: p.name, isChild: p.isChild || false };
+                    if (p.id) {
+                        batch.update(doc(db, `events/${editingEventId}/participants/${p.id}`), participantData);
+                        const index = existingIds.indexOf(p.id); if (index > -1) existingIds.splice(index, 1);
+                    } else {
+                        const newRef = doc(collection(db, `events/${editingEventId}/participants`));
+                        batch.set(newRef, { ...participantData, managedBy: null, targetId: null, targetName: "", wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false, revealed: false });
+                    }
                 }
-
-                const batch = writeBatch(db); 
-                let refs = [];
-                // Crear referencias
-                for(let p of shuffled) refs.push({ ...p, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
-                
-                // Asignar Targets
+                for (let removedId of existingIds) batch.delete(doc(db, `events/${editingEventId}/participants/${removedId}`));
+                await batch.commit(); showToast("Evento actualizado");
+                document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-master').classList.remove('hidden'); loadAllEvents();
+            } else {
+                const eventRef = await addDoc(collection(db, "events"), { title, date: fullDate, budget, giftType, createdAt: serverTimestamp() });
+                let shuffled = [...participantsList];
+                for (let i = shuffled.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
+                const batch = writeBatch(db); let refs = [];
+                for(let p of shuffled) refs.push({ name: p.name, isChild: p.isChild, ref: doc(collection(db, `events/${eventRef.id}/participants`)) });
                 for (let i = 0; i < refs.length; i++) {
-                    const curr = refs[i]; 
-                    const next = refs[(i + 1) % refs.length];
-                    batch.set(curr.ref, { 
-                        name: curr.name, isChild: curr.isChild || false, 
-                        targetId: next.ref.id, targetName: next.name, 
-                        managedBy: null, password: null, seen: false, revealed: false 
-                    });
+                    const curr = refs[i]; const next = refs[(i + 1) % refs.length];
+                    batch.set(curr.ref, { name: curr.name, isChild: curr.isChild || false, managedBy: null, targetId: next.ref.id, targetName: next.name, wish1: "", wish2: "", wish3: "", extra: "", password: null, secretKey: null, seen: false, revealed: false });
                 }
                 await batch.commit();
-                
-                // Ir a compartir
-                state.eventId = eventRef.id;
-                const link = window.location.origin + window.location.pathname + "?id=" + state.eventId;
+                eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
+                document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
                 document.getElementById('share-link-text').innerText = link;
-                renderShareInfo(link);
-                window.navigateTo('share');
+// QR
+renderShareInfo(link);
             }
-        } catch(e) { 
-            Utils.showToast("Error: " + e.message); 
-            console.error(e);
-        } finally {
-            btn.disabled = false;
-        }
+        } catch(e) { btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; showToast("Error: " + e.message); }
     });
 
-    // ==========================================
-    // 5. LÓGICA AUTH (Login / Registro / Evento)
-    // ==========================================
-    
+    async function reshuffleParticipants(id) {
+        openConfirmModal("¿Reasignar sorteo?", "Esto reseteará targets, visto y revelado.", async () => {
+            try {
+                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+                let parts = partsSnap.docs.map(d => ({ id: d.id, data: d.data() }));
+                for (let i = parts.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [parts[i], parts[j]] = [parts[j], parts[i]]; }
+                const batch = writeBatch(db);
+                for (let i = 0; i < parts.length; i++) {
+                    const curr = parts[i]; const next = parts[(i + 1) % parts.length];
+                    batch.update(doc(db, `events/${id}/participants/${curr.id}`), { targetId: next.id, targetName: next.data.name, seen: false, revealed: false });
+                }
+                await batch.commit(); showToast("Sorteo reasignado");
+            } catch (e) { showToast("Error al reasignar: " + e.message); }
+        });
+    }
+
+    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
+    window.goToEvent = () => { window.location.href = "?id=" + eventId; };
+
+    window.deleteEvent = () => {
+        openConfirmModal("¿Borrar este evento?", "Esta acción eliminará todo permanentemente.", async () => {
+            try {
+                const snapshot = await getDocs(collection(db, `events/${eventId}/participants`)); 
+                const batch = writeBatch(db); snapshot.forEach(doc => batch.delete(doc.ref)); await batch.commit(); 
+                await deleteDoc(doc(db, "events", eventId)); showToast("Evento eliminado"); 
+                setTimeout(() => window.location.href = window.location.pathname, 1500);
+            } catch(e) { showToast("Error al eliminar"); }
+        });
+    };
+
     async function loadEventData(id) {
-        const snap = await getDoc(doc(db, "events", id)); 
-        if(!snap.exists()) return Utils.showToast("Evento no encontrado");
-        
-        const data = snap.data();
-        // Renderizar datos del evento en pantalla Home
+        const snap = await getDoc(doc(db, "events", id)); if(!snap.exists()) return showToast("Evento no encontrado");
+        const data = snap.data(); currentGiftLabel = data.giftType || ""; 
+        const parts = data.date.split('-'); let prettyDate = `${parts[2]}/${MONTHS_SHORT[parseInt(parts[1]) - 1]}`;
         document.getElementById('event-title-display').innerText = data.title;
-        // ... Renderizar fecha y presupuesto ...
+        document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
+        document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
 
-        // Escuchar participantes para el Login
-        onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
-            const list = document.getElementById('names-list'); 
-            list.innerHTML = "";
-            
-            // Si ya estamos logueados, no redibujar lista de login innecesariamente
-            if(!document.getElementById('screen-dashboard').classList.contains('hidden')) return;
+        // NEW: Populate and show gift container if giftType exists
+    const giftContainer = document.getElementById('event-gift-container');
+    const giftDisplay = document.getElementById('event-gift-display');
+    if (data.giftType && data.giftType.trim() !== "") {
+        giftDisplay.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>${data.giftType}`;
+        giftContainer.classList.remove('hidden');  // Show it
+    } else {
+        giftContainer.classList.add('hidden');  // Hide if no giftType
+        giftDisplay.innerHTML = '';  // Clear if empty
+    }
 
-            window.navigateTo('login');
-            
+onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
+            const list = document.getElementById('names-list'); list.innerHTML = "";
+            const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
+            if(isDashboardVisible) return;
+            if(!currentUserId) { 
+                document.getElementById('screen-home').classList.add('hidden'); 
+                document.getElementById('screen-login').classList.remove('hidden'); 
+            }
             qs.forEach(d => {
-                const p = d.data(); 
-                if (p.isChild) return; 
+                const p = d.data(); if (p.isChild) return; 
                 const div = document.createElement('div'); div.className = 'name-card-user'; 
                 div.innerText = p.name;
-                if(p.seen) div.innerHTML += '<div class="seen-badge"></div>';
+                if(p.seen) { const badge = document.createElement('div'); badge.className='seen-badge'; div.appendChild(badge); }
                 div.onclick = () => prepareAuth(d.id, p);
                 list.appendChild(div);
             });
         });
     }
 
-    window.prepareAuth = async (id, data) => {
-        state.selectedUserDoc = { id, data };
-        const modal = document.getElementById('auth-modal');
+    async function prepareAuth(id, data) {
+        selectedUserDoc = { id, data };
+        const m = document.getElementById('auth-modal');
+        document.getElementById('form-register').classList.add('hidden'); 
+        document.getElementById('form-login').classList.add('hidden'); 
+        document.getElementById('admin-override-box').classList.add('hidden'); 
+        document.getElementById('claim-children-section').classList.add('hidden'); 
         
-        // Reset Inputs
+        // Reset Inputs and Displays
         ['reg-pin', 'login-pin'].forEach(pid => document.getElementById(pid).value = '');
         document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('filled'));
-        
-        document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
-        document.getElementById('form-register').classList.add('hidden');
-        document.getElementById('form-login').classList.add('hidden');
 
-        modal.classList.remove('hidden');
+        m.classList.remove('hidden'); 
+        document.getElementById('modal-title').innerText = `Hola, ${data.name}`;
 
         if(!data.password) {
-            // Modo Registro
             document.getElementById('form-register').classList.remove('hidden');
-            loadChildrenChecklist(id); // Cargar niños disponibles para reclamar
+            const listDiv = document.getElementById('children-list-check'); 
+            const section = document.getElementById('claim-children-section');
+            listDiv.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px;"></div>';
+            
+            const q = await getDocs(collection(db, `events/${eventId}/participants`));
+            listDiv.innerHTML = ""; let foundChild = false;
+            q.forEach(docSnap => {
+                const kid = docSnap.data();
+                if(kid.isChild && docSnap.id !== id && !kid.managedBy && !kid.password) {
+                    foundChild = true;
+                    const div = document.createElement('div');
+                    div.innerHTML = `<label style="display:flex; align-items:center; margin:0; text-transform:none; font-weight:500; cursor:pointer;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
+                    listDiv.appendChild(div);
+                }
+            });
+            if(foundChild && !data.isChild) section.classList.remove('hidden'); 
         } else {
-            // Modo Login
-            document.getElementById('form-login').classList.remove('hidden');
+            document.getElementById('form-login').classList.remove('hidden'); 
+            document.getElementById('admin-override-box').classList.remove('hidden');
         }
+    }
+
+            window.closeModal = () => {
+        const modal = document.getElementById('auth-modal');
+        
+        // 1. Activamos la animación de bajada
+        modal.classList.add('modal-closing');
+        
+        // 2. Esperamos 250ms (lo que dura la animación CSS)
+        setTimeout(() => {
+            modal.classList.add('hidden');       // Ocultamos realmente
+            modal.classList.remove('modal-closing'); // Limpiamos para la próxima
+        }, 250);
     };
 
     window.doRegister = async () => {
-        const pin = document.getElementById('reg-pin').value;
-        if(pin.length !== 6) return Utils.showToast("PIN incompleto");
-        
-        const hPin = await Utils.hash(pin);
-        const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
-        
-        const batch = writeBatch(db);
-        batch.update(doc(db, `events/${state.eventId}/participants/${state.selectedUserDoc.id}`), { password: hPin });
-        childrenIds.forEach(kidId => batch.update(doc(db, `events/${state.eventId}/participants/${kidId}`), { managedBy: state.selectedUserDoc.id }));
-        
-        await batch.commit();
-        window.closeModal();
-        
-        state.selectedUserDoc.data.password = hPin; // Actualizar local
-        enterDashboard(state.selectedUserDoc.id, state.selectedUserDoc.data);
+        const pin = document.getElementById('reg-pin').value; 
+        if(!isValidPIN(pin)) return showToast("El PIN debe ser de 6 números.");
+        const btn = document.querySelector('#form-register .btn-accent');
+        btn.disabled = true; btn.innerText = "Guardando...";
+
+        try {
+            const hPin = await hashString(pin);
+            const childrenIds = Array.from(document.querySelectorAll('.child-claim-checkbox:checked')).map(c => c.value);
+            const batch = writeBatch(db);
+            batch.update(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: hPin });
+            childrenIds.forEach(kidId => batch.update(doc(db, `events/${eventId}/participants/${kidId}`), { managedBy: selectedUserDoc.id }));
+            await batch.commit(); 
+            window.closeModal(); 
+            selectedUserDoc.data.password = hPin;
+            enterDashboard(selectedUserDoc.id, { ...selectedUserDoc.data });
+        } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
-    window.doLogin = async () => {
-        const pin = document.getElementById('login-pin').value;
-        if(pin.length < 6) return;
+        window.doLogin = async () => {
+        const pinInput = document.getElementById('login-pin').value;
+        const container = document.getElementById('dots-login'); // Referencia a los dots
 
-        const hPin = await Utils.hash(pin);
+        // Si por alguna razón se ejecuta con menos de 6, no hacemos nada
+        if (pinInput.length < 6) return;
+
+        const hInput = await hashString(pinInput);
         
-        if(hPin === state.selectedUserDoc.data.password) {
-            window.closeModal();
-            enterDashboard(state.selectedUserDoc.id, state.selectedUserDoc.data);
+        if(hInput === selectedUserDoc.data.password) {
+            // ÉXITO: Entramos
+            window.closeModal(); 
+            enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
-            document.getElementById('dots-login').classList.add('shake-error');
+            // ERROR: Animación de sacudida
+            if(navigator.vibrate) navigator.vibrate(200); // Vibrar celular si es posible
+            
+            // Agregamos clase de error
+            container.classList.add('shake-error');
+            
+            // Esperamos a que termine la animación (500ms) para limpiar
             setTimeout(() => {
-                document.getElementById('dots-login').classList.remove('shake-error');
-                document.getElementById('login-pin').value = '';
-                updatePinDots(0, 'dots-login');
+                container.classList.remove('shake-error');
+                document.getElementById('login-pin').value = ''; // Limpiar input
+                updatePinDots(0, 'dots-login'); // Limpiar puntos visuales
             }, 500);
+
+            // Opcional: mostrar Toast también, o dejar solo la animación
+            // showToast("PIN incorrecto"); 
         }
     };
 
-    window.closeModal = () => {
-        const m = document.getElementById('auth-modal');
-        m.classList.add('hidden');
+    window.adminOverride = async () => {
+        await updateDoc(doc(db, `events/${eventId}/participants/${selectedUserDoc.id}`), { password: null, secretKey: null, managedBy: null, seen: false, revealed: false });
+        showToast("Cuenta reseteada"); 
+        selectedUserDoc.data.password = null; 
+        prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
-    // ==========================================
-    // 6. DASHBOARD (Vistas de Usuario)
-    // ==========================================
-    
+    function makeLinksClickable(text) {
+        if (!text) return ""; const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
+    }
+
     async function enterDashboard(uid, userData) {
-        window.navigateTo('dashboard');
-        
-        if(!userData.seen) updateDoc(doc(db, `events/${state.eventId}/participants/${uid}`), { seen: true });
+        document.getElementById('screen-login').classList.add('hidden');
+        document.getElementById('screen-dashboard').classList.remove('hidden');
+        if(!userData.seen) updateDoc(doc(db, `events/${eventId}/participants/${uid}`), { seen: true });
 
-        // Cargar perfiles vinculados (Hijos + Usuario actual)
-        state.linkedProfiles = [{ id: uid, ...userData }];
-        const q = await getDocs(collection(db, `events/${state.eventId}/participants`));
-        q.forEach(d => { 
-            if(d.data().managedBy === uid) state.linkedProfiles.push({ id: d.id, ...d.data() }); 
-        });
+        linkedProfiles = [{ id: uid, ...userData }];
+        const q = await getDocs(collection(db, `events/${eventId}/participants`));
+        q.forEach(docSnap => { if(docSnap.data().managedBy === uid) linkedProfiles.push({ id: docSnap.id, ...docSnap.data() }); });
 
-        // Configurar Switcher si tiene hijos
-        const switcher = document.getElementById('profile-switcher');
+        const switcher = document.getElementById('profile-switcher'); 
         const select = document.getElementById('select-active-profile');
-        if(state.linkedProfiles.length > 1) {
-            switcher.classList.remove('hidden'); 
-            select.innerHTML = "";
-            state.linkedProfiles.forEach((p, idx) => { 
+        if(linkedProfiles.length > 1) {
+            switcher.classList.remove('hidden'); select.innerHTML = "";
+            linkedProfiles.forEach((p, idx) => { 
                 const opt = document.createElement('option'); opt.value = idx; 
-                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); 
-                select.appendChild(opt); 
+                opt.innerText = p.name + (idx === 0 ? " (Tú)" : " (Niño)"); select.appendChild(opt); 
             });
-        } else {
-            switcher.classList.add('hidden');
-        }
-
+        } else switcher.classList.add('hidden');
         loadProfileIndex(0);
     }
 
     window.switchProfileView = (idx) => loadProfileIndex(parseInt(idx));
 
     function loadProfileIndex(index) {
-        const profile = state.linkedProfiles[index]; 
-        state.currentUser = profile; // Actualizar usuario actual en contexto
-        
-        // Cargar Deseos propios
+        const profile = linkedProfiles[index]; currentUserId = profile.id; currentTargetId = profile.targetId;
+        const extraContainer = document.getElementById('input-container-extra');
+        if(currentGiftLabel && currentGiftLabel.trim() !== "") {
+            extraContainer.classList.remove('hidden'); 
+            document.getElementById('label-extra').innerText = "Tu " + currentGiftLabel; 
+            document.getElementById('my-extra').placeholder = `Detalles sobre ${currentGiftLabel}...`;
+        } else extraContainer.classList.add('hidden');
+
         document.getElementById('my-wish-1').value = profile.wish1 || "";
         document.getElementById('my-wish-2').value = profile.wish2 || "";
         document.getElementById('my-wish-3').value = profile.wish3 || "";
-        
-        // Cargar Target (A quién le regala)
-        document.getElementById('target-name').innerText = profile.targetName;
-        
-        // Manejar "Revelar nombre"
+        if(document.getElementById('my-extra')) document.getElementById('my-extra').value = profile.extra || "";
+
         const revealOverlay = document.getElementById('reveal-overlay');
         profile.revealed ? revealOverlay.classList.add('faded') : revealOverlay.classList.remove('faded');
-        
-        // Cargar deseos del Target
-        fetchTargetWishes(profile.targetId);
+
+        document.getElementById('target-name').innerText = profile.targetName;
+        document.getElementById('target-wishes-list').innerHTML = '<li><div class="spinner" style="border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div></li>';
+
+        getDoc(doc(db, `events/${eventId}/participants/${profile.targetId}`)).then(d => {
+            if(d.exists()) {
+                const data = d.data(); const list = document.getElementById('target-wishes-list'); list.innerHTML = ""; 
+                if(data.wish1) list.innerHTML += `<li>${makeLinksClickable(data.wish1)}</li>`;
+                if(data.wish2) list.innerHTML += `<li>${makeLinksClickable(data.wish2)}</li>`;
+                if(data.wish3) list.innerHTML += `<li>${makeLinksClickable(data.wish3)}</li>`;
+                if(!data.wish1 && !data.wish2 && !data.wish3) list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
+                const extraDiv = document.getElementById('target-extra-info');
+                extraDiv.innerHTML = (currentGiftLabel && data.extra) ? `${currentGiftLabel}: ${makeLinksClickable(data.extra)}` : "";
+            }
+        });
     }
 
-    async function fetchTargetWishes(targetId) {
-        const list = document.getElementById('target-wishes-list'); 
-        list.innerHTML = '<div class="spinner"></div>';
-        
-        const d = await getDoc(doc(db, `events/${state.eventId}/participants/${targetId}`));
-        if(d.exists()) {
-            const data = d.data(); 
-            list.innerHTML = ""; 
-            ['wish1', 'wish2', 'wish3'].forEach(w => {
-                if(data[w]) list.innerHTML += `<li>${Utils.makeLinksClickable(data[w])}</li>`;
-            });
-            if(list.innerHTML === "") list.innerHTML = "<li><em style='opacity:0.6'>Sin opciones aún.</em></li>";
-        }
-    }
-
-    window.revealName = () => {
-        document.getElementById('reveal-overlay').classList.add('faded');
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-        updateDoc(doc(db, `events/${state.eventId}/participants/${state.currentUser.id}`), { revealed: true });
-        // Actualizar estado local
-        const p = state.linkedProfiles.find(x => x.id === state.currentUser.id);
-        if(p) p.revealed = true;
-    };
-
-    // Guardar Deseos
     document.getElementById('btn-save-wishes').addEventListener('click', async () => {
         const w1 = document.getElementById('my-wish-1').value; 
         const w2 = document.getElementById('my-wish-2').value; 
         const w3 = document.getElementById('my-wish-3').value;
+        let extra = !document.getElementById('input-container-extra').classList.contains('hidden') ? document.getElementById('my-extra').value : "";
         const btn = document.getElementById('btn-save-wishes');
-        
-        btn.innerText = "Guardando..."; btn.disabled = true;
-        
+        btn.innerHTML = '<div class="spinner" style="width:20px; height:20px; border-width:2px; border-color:rgba(255,255,255,0.2); border-top-color:white; margin:0;"></div>'; 
+        btn.disabled = true;
         try {
-            await updateDoc(doc(db, `events/${state.eventId}/participants/${state.currentUser.id}`), { wish1: w1, wish2: w2, wish3: w3 });
-            
-            // Actualizar array local
-            const idx = state.linkedProfiles.findIndex(p => p.id === state.currentUser.id);
-            if(idx !== -1) { 
-                state.linkedProfiles[idx].wish1 = w1; 
-                state.linkedProfiles[idx].wish2 = w2; 
-                state.linkedProfiles[idx].wish3 = w3; 
-            }
-            
-            Utils.showToast("Preferencias guardadas");
-        } catch(e) { Utils.showToast("Error al guardar"); }
-        finally { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }
+            await updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { wish1: w1, wish2: w2, wish3: w3, extra: extra });
+            const idx = linkedProfiles.findIndex(p => p.id === currentUserId);
+            if(idx !== -1) { linkedProfiles[idx].wish1 = w1; linkedProfiles[idx].wish2 = w2; linkedProfiles[idx].wish3 = w3; linkedProfiles[idx].extra = extra; }
+            btn.innerText = "¡Guardado!"; showToast("Preferencias guardadas");
+            setTimeout(() => { btn.innerText = "Guardar Preferencias"; btn.disabled = false; }, 2000);
+        } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
     });
 
-    // ==========================================
-    // 7. SHARE
-    // ==========================================
-    window.shareEvent = async () => {
-        const link = document.getElementById('share-link-text').innerText;
-        if (navigator.share) {
-            try { await navigator.share({ title: 'Intercambio', text: 'Únete 🎁', url: link }); } catch(e){}
-        } else {
-            window.copyLink();
+
+
+
+window.shareEvent = async () => {
+    const link = document.getElementById('share-link-text').innerText;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Invitación al intercambio',
+                text: 'Únete a este intercambio 🎁',
+                url: link
+            });
+        } catch (err) {
+            // El usuario canceló, no pasa nada
         }
-    };
-    
-    window.copyLink = () => {
-        navigator.clipboard.writeText(document.getElementById('share-link-text').innerText);
-        Utils.showToast("Enlace copiado");
-    };
-
-    function renderShareInfo(link) {
-        const encodedLink = encodeURIComponent(link);
-        document.getElementById('qr-invite').src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
+    } else {
+        // Fallback por si no soporta share
+        navigator.clipboard.writeText(link);
+        showToast("Enlace copiado");
     }
+};
 
-    // Auxiliares Login (CheckBox niños)
-    async function loadChildrenChecklist(currentId) {
-        const listDiv = document.getElementById('children-list-check');
-        const section = document.getElementById('claim-children-section');
-        listDiv.innerHTML = '<div class="spinner"></div>';
-        
-        const q = await getDocs(collection(db, `events/${state.eventId}/participants`));
-        listDiv.innerHTML = ""; 
-        let found = false;
-        
-        q.forEach(docSnap => {
-            const kid = docSnap.data();
-            // Mostrar si es niño, no soy yo, no tiene dueño y no tiene password
-            if(kid.isChild && docSnap.id !== currentId && !kid.managedBy && !kid.password) {
-                found = true;
-                const div = document.createElement('div');
-                div.innerHTML = `<label style="display:flex;align-items:center;gap:10px;"><input type="checkbox" class="child-claim-checkbox" value="${docSnap.id}"> ${kid.name}</label>`;
-                listDiv.appendChild(div);
-            }
-        });
-        
-        if(found) section.classList.remove('hidden');
-        else section.classList.add('hidden');
-    }
 
-    function populateDays() {
-        const select = document.getElementById('setup-day');
-        if(!select) return;
-        for (let i = 1; i <= 31; i++) {
-            let val = i < 10 ? "0" + i : i;
-            select.appendChild(new Option(val, val));
-        }
-    }
 
-    // Funciones Admin Globales (borrar, password override)
-    window.deleteGlobalEvent = (id) => {
-        Utils.showToast("Borrando...");
-        // Implementar lógica de borrado aquí (ver tu código original deleteGlobalEvent)
-    };
+
+function renderShareInfo(link) {
+    // 1. Mostrar el link en texto
+    document.getElementById('share-link-text').innerText = link;
+
+    // 2. Generar el QR
+    const qrImg = document.getElementById('qr-invite');
+    const encodedLink = encodeURIComponent(link);
+
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
+}
+
+
+
+
+
+
+
+
+
+
+    function updateSafariTheme() {
+    const isDark = document.body.classList.contains('dark-mode');
+    const metaTheme = document.getElementById('theme-color-meta');
     
-    window.promptForAdmin = (cb) => {
-        document.getElementById('admin-modal').classList.remove('hidden');
-        window.pendingAdminCallback = cb;
-    };
-    
-    window.submitAdminAuth = () => {
-        if(document.getElementById('admin-input-pass').value === MASTER_KEY) {
-            document.getElementById('admin-modal').classList.add('hidden');
-            if(window.pendingAdminCallback) window.pendingAdminCallback();
-        } else Utils.showToast("Contraseña incorrecta");
-    };
+    // AHORA SÍ: TODO ES NEGRO PURO
+    // Las barras son negras y tu fondo (.container) también será negro.
+    const appleBlack = '#000000'; 
+    const appleWhite = '#ffffff'; 
+    const appleGray  = '#f3f4f6';
 
-    window.closeAdminModal = () => document.getElementById('admin-modal').classList.add('hidden');
+    const colorTop = isDark ? appleBlack : appleWhite;
+    const colorBottom = isDark ? appleBlack : appleGray;
 
+    if (metaTheme) metaTheme.setAttribute('content', colorTop);
+    document.documentElement.style.backgroundColor = colorBottom;
+}
+
+const observer = new MutationObserver(() => updateSafariTheme());
+observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
+updateSafariTheme();
+
+
+
+toast.classList.add('success');
 </script>
 
 </body>
