@@ -13,1046 +13,584 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root {
-    --bg-color: #ffffff;
-    --bg-color-secondary: #ffffff;
-    --primary: #111827; 
-    --accent: #111827; 
-    --text-main: #1f2937;
-    --text-sec: #6b7280;
-    --border: #e5e7eb;
-    --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-    --radius: 16px;
-    --danger: #FF453A;
-    --success: #10b981;
-    --toast-bg: #000000;
-    --toast-text: #ffffff;
-}
+    /* =========================================
+       1. VARIABLES & RESET
+       ========================================= */
+    :root {
+        --bg-color: #ffffff;
+        --bg-color-secondary: #ffffff;
+        --primary: #111827;
+        --accent: #111827;
+        --text-main: #1f2937;
+        --text-sec: #6b7280;
+        --border: #e5e7eb;
+        --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+        --radius: 16px;
+        --danger: #FF453A;
+        --success: #10b981;
+        --toast-bg: #000000;
+        --toast-text: #ffffff;
+        
+        /* Variables internas para Dark Mode logic */
+        --container-bg: #ffffff;
+        --card-bg: #ffffff;
+    }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-        input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+    
+    html {
+        background-color: var(--bg-color);
+        transition: background-color 0.5s ease;
+        height: 100%;
+    }
 
-        body {
-    font-family: 'Inter', sans-serif;
-background-color: var(--bg-color-secondary); 
-    color: var(--text-main); margin: 0; padding: 0;
-    height: 100dvh; width: 100vw; overflow: hidden; 
-    display: flex; justify-content: center; align-items: center;
-}
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-color-secondary);
+        color: var(--text-main);
+        margin: 0; padding: 0;
+        height: 100dvh; width: 100vw; overflow: hidden;
+        display: flex; justify-content: center; align-items: center;
+    }
 
+    /* =========================================
+       2. LAYOUT (Container)
+       ========================================= */
+    .container {
+        background: var(--container-bg); 
+        width: 100%; height: 100%; max-width: 500px;
+        overflow-y: auto; padding: 30px 25px 0 25px;
+        display: flex; flex-direction: column; position: relative;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE/Edge */
+    }
+    .container::-webkit-scrollbar { display: none; }
+
+    @media (min-width: 501px) {
         .container {
-            background: #ffffff; width: 100%; height: 100%; max-width: 500px;
-            overflow-y: auto; padding: 30px 25px 0 25px;
-            display: flex; flex-direction: column; position: relative;
+            height: auto; max-height: 90dvh; 
+            border-radius: var(--radius);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            padding-bottom: 30px; 
+            border: 1px solid rgba(0,0,0,0.02);
         }
+    }
 
-        @media (min-width: 501px) {
-            .container { 
-                height: auto; max-height: 90dvh; border-radius: var(--radius); 
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
-                padding-bottom: 30px; border: 1px solid rgba(0,0,0,0.02);
-            }
-        }
+    .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
+    .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
 
-        .screen-content { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-bottom: 20px; position: relative; }
-
-        .btn-settings {
-    position: absolute; top: 0; right: 0;
-    background: transparent; border: none; padding: 10px; cursor: pointer;
-    color: var(--text-sec); transition: color 0.3s; z-index: 50; width: auto; margin: 0;
-}
-.btn-settings:hover { color: var(--primary); }
-
-        h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
-        h1 { font-size: 2.2rem; font-weight: 800; }
-        p { color: var(--text-sec); line-height: 1.6; margin-bottom: 25px; text-align: center; font-size: 0.95rem; }
-
-        label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
-        
-        .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
-        .btn-toggle-pass {
-            position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-            background: none; border: none; padding: 10px; cursor: pointer;
-            color: var(--text-sec); display: flex; align-items: center; justify-content: center;
-            width: auto; margin: 0; z-index: 10; transition: color 0.2s;
-        }
-
-        input:not([type="checkbox"]), textarea, select {
-            width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px;
-            font-size: 1rem; background: #fff; color: var(--text-main); 
-            font-family: inherit; appearance: none; outline: none;
-            transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-        }
-        
-        input[type="password"] { padding-right: 48px !important; } 
-        
-        input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
-
-        input[type="checkbox"] {
-            appearance: auto !important; -webkit-appearance: checkbox !important;
-            width: 20px !important; height: 20px !important; accent-color: var(--primary);
-            margin: 0 8px 0 0 !important; vertical-align: middle; cursor: pointer;
-        }
-
-        select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
-        }
-
-        button {
-            width: 100%; padding: 16px; border: none; border-radius: 12px; 
-            font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 24px; 
-            transition: transform 0.1s, opacity 0.2s; touch-action: manipulation;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        button:active { transform: scale(0.98); }
-
-        /* --- NUEVOS BOTONES (ESTILO MINIMALISTA / iOS) --- */
-
-/* --- BOTONES PRINCIPALES: NEGRO PURO (Modo Claro) --- */
-.btn-primary, .btn-accent, .btn-add-small { 
-    background-color: #000000 !important; /* Ahora sí: Negro #000000 real */
-    color: white !important;
-    border: none !important;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-}
-
-/* Efecto Hover (Modo Claro) */
-.btn-primary:hover, .btn-accent:hover, .btn-add-small:hover { 
-    background-color: #333333 !important; /* Gris oscuro al pasar el mouse */
-    transform: translateY(-1px);
-}
-
-/* Efecto Active */
-.btn-primary:active, .btn-accent:active, .btn-add-small:active {
-    transform: scale(0.98);
-}
-
-/* --- MODO OSCURO: BLANCO PURO (Estilo iOS) --- */
-body.dark-mode .btn-primary, 
-body.dark-mode .btn-accent, 
-body.dark-mode .btn-add-small {
-    background-color: #FFFFFF !important; /* Blanco Brillante */
-    color: #000000 !important;            /* Texto/Icono Negro */
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); /* Resplandor blanco */
-}
-
-/* Hover en Dark Mode */
-body.dark-mode .btn-primary:hover, 
-body.dark-mode .btn-accent:hover, 
-body.dark-mode .btn-add-small:hover {
-    background-color: #f3f4f6 !important;
-}
-        
-        .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
-        .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
-        .btn-danger-text { 
-            background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em; 
-            border: 1px dashed var(--danger); padding: 10px; opacity: 0.8; 
-            display: flex; justify-content: center; align-items: center; gap: 6px;
-        }
-
-        .icon { width: 20px; height: 20px; stroke-width: 2; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-        .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
-        .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
-
-        .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
-
-        /* --- CORRECCIÓN: BOTÓN '+' (AGREGAR PARTICIPANTE) --- */
-
-/* Estilo Base (Modo Claro: Negro Sólido) */
-.btn-add-small { 
-    width: auto; 
-    margin-top: 0; 
-    padding: 0 16px; 
-    height: 52px; 
+    /* =========================================
+       3. TYPOGRAPHY
+       ========================================= */
+    h1, h2, h3 { margin-top: 0; color: var(--primary); text-align: center; letter-spacing: -0.03em; }
+    h1 { font-size: 2.2rem; font-weight: 800; }
+    p { color: var(--text-sec); line-height: 1.6; margin-bottom: 25px; text-align: center; font-size: 0.95rem; }
+    label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sec); margin-bottom: 6px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
     
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border: none;
-    transition: all 0.2s ease;
+    .link-box {
+        background: #f9fafb; padding: 20px; border-radius: 12px;
+        word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; 
+        color: var(--text-main); font-size: 0.85em; text-align: center; 
+        margin: 20px 0; border: 1px solid var(--border);
+        user-select: all !important; -webkit-user-select: all !important;
+    }
+
+    /* =========================================
+       4. FORMS & INPUTS
+       ========================================= */
+    input, textarea, select { user-select: text !important; -webkit-user-select: text !important; }
+
+    input:not([type="checkbox"]), textarea, select {
+        width: 100%; padding: 14px 16px; 
+        border: 1px solid var(--border); border-radius: 12px;
+        font-size: 1rem; background: #fff; color: var(--text-main);
+        font-family: inherit; appearance: none; outline: none;
+        transition: all 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    }
+
+    input:focus, textarea:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.05); }
     
-    /* Aseguramos que el icono esté centrado */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.btn-add-small:hover {
-    background: #000000; /* Negro puro al pasar mouse */
-    transform: translateY(-1px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.btn-add-small:active {
-    transform: scale(0.96);
-}
-
-/* --- ADAPTACIÓN DARK MODE (Blanco iOS) --- */
-body.dark-mode .btn-add-small {
-    background: #FFFFFF !important; /* Blanco puro */
-    color: #000000 !important;      /* Icono negro */
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-}
-
-body.dark-mode .btn-add-small:hover {
-    background: #f3f4f6 !important;
-}
-        
-        .participants-container { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .name-card-admin {
-            background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
-            display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
-        }
-        .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
-        .btn-icon-delete {
-  background: none;
-  border: none;
-  padding: 4px;
-  color: rgba(239, 68, 68, 0.6); /* rojo tenue */
-  margin-top: 0;
-  width: auto;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.1s ease;
-}
-        .btn-icon-delete:hover {
-  color: rgba(239, 68, 68, 0.9);
-}
-        .btn-icon-delete:active {
-  transform: scale(0.92);
-}
-
-
-
-
-.btn-icon-edit {
-  background: none;
-  border: none;
-  padding: 4px;
-  color: var(--text-sec); /* Gris tenue neutro */
-  margin-top: 0;
-  width: auto;
-  cursor: pointer;
-  transition: color 0.2s ease, transform 0.1s ease;
-}
-.btn-icon-edit:hover {
-  color: var(--primary); /* Color principal al hover, para feedback */
-}
-.btn-icon-edit:active {
-  transform: scale(0.92);
-}
-
-
-
-
-        .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
-        .name-card-user { 
-            background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px; 
-            text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
-            box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
-        }
-        .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
-        
-        .seen-badge {
-            position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; 
-            background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
-        }
-
-        #master-list-container { margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; }
-        .master-event-card {
-            background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
-        }
-        .master-event-card:hover { transform: translateX(2px); }
-        .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
-        .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
-        .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
-        .master-actions { display: flex; gap: 10px; }
-        .btn-icon-action { 
-            padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; 
-            background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
-        }
-        .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
-        .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
-        .btn-icon-danger:hover { background: #fef2f2; border-color: var(--danger); }
-
-        .date-picker-row { display: flex; gap: 10px; }
-        .date-picker-row select { flex: 1; }
-        .app-footer { margin-top: auto; padding: 25px 0; text-align: center; font-size: 0.7rem; color: #d1d5db; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
-
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
-            display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
-        }
-        @media (min-width: 501px) { .modal-overlay { align-items: center; } }
-        .modal-content {
-            background: white; padding: 35px 30px; 
-            border-top-left-radius: 24px; border-top-right-radius: 24px; 
-            width: 100%; max-width: 500px; max-height: 95dvh; overflow-y: auto;
-            box-shadow: 0 -20px 60px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @media (min-width: 501px) { .modal-content { border-radius: 24px; width: 90%; max-width: 400px; animation: fadeIn 0.2s ease-out; } }
-        
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .hidden { display: none !important; }
-
-/* --- TARJETA DE REVELACIÓN (ELEGANCIA PURA) --- */
-
-/* 1. La Tarjeta (Contenedor del resultado) */
-.info-card {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 18px; /* Un poco más redondeado estilo iPhone 15 */
-    padding: 40px 30px;  /* Más espacio para que respire */
-    margin-bottom: 25px;
-    position: relative;
-    overflow: hidden;
-    text-align: center;
-    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); /* Sombra difusa premium */
-}
-
-/* CORRECCIÓN DE TEXTO (MODO CLARO) */
-/* Forzamos que TODO el texto adentro sea negro oscuro */
-.info-card h1, .info-card h2, .info-card h3, 
-.info-card p, .info-card strong, .info-card span {
-    color: #111827 !important; 
-}
-
-/* --- TAPA DE REVELACIÓN (ICONO SVG CORRECTO) --- */
-
-#reveal-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    /* Password specific */
+    .password-wrapper { position: relative; width: 100%; display: flex; align-items: center; }
+    input[type="password"] { padding-right: 48px !important; }
     
-    /* MODO CLARO: Fondo Blanco y Texto Negro */
-    background-color: #ffffff !important; 
-    color: #000000 !important;
+    .btn-toggle-pass {
+        position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+        background: none; border: none; padding: 10px; cursor: pointer;
+        color: var(--text-sec); display: flex; align-items: center; justify-content: center;
+        width: auto; margin: 0; z-index: 10; transition: color 0.2s;
+    }
+
+    /* Checkbox & Select */
+    input[type="checkbox"] {
+        appearance: auto !important; -webkit-appearance: checkbox !important;
+        width: 20px !important; height: 20px !important; accent-color: var(--primary);
+        margin: 0 8px 0 0 !important; vertical-align: middle; cursor: pointer;
+    }
+
+    select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-position: right 1rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em; padding-right: 2.5rem;
+    }
     
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-    align-items: center;
-    gap: 15px;
-    z-index: 10; 
-    cursor: pointer; 
-    transition: opacity 0.5s ease;
-}
+    .date-picker-row { display: flex; gap: 10px; }
+    .date-picker-row select { flex: 1; }
 
-/* 1. MODO CLARO: El icono debe ser NEGRO PURO */
-#reveal-overlay .icon, 
-#reveal-overlay svg {
-    color: #000000 !important;
-    stroke: #000000 !important; /* Si es de líneas */
-    fill: none !important;      /* Normalmente los iconos de línea no tienen relleno */
-    opacity: 1 !important;
+    /* =========================================
+       5. BUTTONS & ICONS
+       ========================================= */
+    button {
+        width: 100%; padding: 16px; border: none; border-radius: 12px;
+        font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 24px;
+        transition: transform 0.1s, opacity 0.2s; touch-action: manipulation;
+        display: flex; justify-content: center; align-items: center; gap: 8px;
+    }
+    button:active { transform: scale(0.98); }
+
+    /* Settings Button (Top Right) */
+    .btn-settings {
+        position: absolute; top: 0; right: 0;
+        background: transparent; border: none; padding: 10px; cursor: pointer;
+        color: var(--text-sec); transition: color 0.3s; z-index: 50; width: auto; margin: 0;
+    }
+    .btn-settings:hover { color: var(--primary); }
+
+    /* Primary & Accent Buttons (Negro en Light, Blanco en Dark) */
+    .btn-primary, .btn-accent, .btn-add-small {
+        background-color: #000000 !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+    .btn-primary:hover, .btn-accent:hover {
+        background-color: #333333 !important;
+        transform: translateY(-1px);
+    }
+
+    /* Small Add Button (+) */
+    .btn-add-small {
+        width: auto; margin-top: 0; padding: 0 16px; height: 52px;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .btn-add-small:hover {
+        background: #000000; transform: translateY(-1px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .btn-add-small:active { transform: scale(0.96); }
+
+    /* Secondary & Text Buttons */
+    .btn-secondary { background-color: white; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .btn-secondary:hover { background-color: #f9fafb; border-color: #d1d5db; }
     
-    /* Aseguramos tamaño grande */
-    width: 48px; height: 48px;
-}
+    .btn-text { background: none; color: var(--text-sec); margin-top: 15px; font-size: 0.9em; text-decoration: underline; }
+    
+    .btn-danger-text {
+        background: none; color: var(--danger); margin-top: 30px; font-size: 0.8em;
+        border: 1px dashed var(--danger); padding: 10px; opacity: 0.8;
+        display: flex; justify-content: center; align-items: center; gap: 6px;
+    }
 
-/* Texto debajo del icono */
-#reveal-overlay p, 
-#reveal-overlay span,
-#reveal-overlay div {
-    color: #000000 !important;
-    font-weight: 600;
-    opacity: 1 !important;
-}
+    /* Icons */
+    .icon { width: 20px; height: 20px; stroke-width: 2; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-lg { width: 48px; height: 48px; stroke-width: 1.5; }
+    .icon-sm { width: 16px; height: 16px; stroke-width: 2; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+    
+    .btn-icon-delete, .btn-icon-edit { background: none; border: none; padding: 4px; width: auto; margin-top: 0; cursor: pointer; transition: all 0.2s ease; }
+    .btn-icon-delete { color: rgba(239, 68, 68, 0.6); }
+    .btn-icon-delete:hover { color: rgba(239, 68, 68, 0.9); }
+    .btn-icon-edit { color: var(--text-sec); }
+    .btn-icon-edit:hover { color: var(--primary); }
 
+    .btn-icon-action {
+        padding: 10px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer;
+        background: white; color: var(--primary); margin: 0; width: auto; transition: all 0.2s;
+    }
+    .btn-icon-action:hover { background: #f3f4f6; border-color: var(--text-sec); }
+    
+    .btn-icon-danger { color: var(--danger); border-color: #fee2e2; }
+    .btn-icon-danger:hover { background: #fef2f2; border-color: var(--danger); }
 
-/* --- MODO OSCURO (INVERTIDO) --- */
+    /* =========================================
+       6. SPECIFIC MODULES (Participants, Master, Reveal)
+       ========================================= */
+    /* Participants */
+    .participants-container { 
+        display: flex; flex-direction: column; gap: 8px; margin-top: 10px; 
+        scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .participants-container::-webkit-scrollbar { display: none; }
+    
+    .name-card-admin {
+        background: white; border: 1px solid var(--border); padding: 12px 16px; border-radius: 10px;
+        display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 0.95rem;
+    }
+    .add-row { display: flex; gap: 10px; margin-bottom: 15px; align-items: flex-start; }
+    .child-tag { background:#eff6ff; color:#1d4ed8; font-size:0.7em; padding:2px 6px; border-radius:4px; margin-right:5px; border:1px solid #bfdbfe; font-weight: 700; }
 
-body.dark-mode #reveal-overlay {
-    background-color: #2C2C2E !important; /* Gris oscuro elegante */
-    color: #FFFFFF !important;
-}
+    /* User Selection Grid */
+    .name-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; padding-bottom: 40px; }
+    .name-card-user {
+        background: white; border: 1px solid var(--border); padding: 20px 15px; border-radius: 14px;
+        text-align: center; font-weight: 600; cursor: pointer; user-select: none; position: relative;
+        box-shadow: var(--card-shadow); transition: all 0.2s; color: var(--primary);
+    }
+    .name-card-user:hover { border-color: var(--primary); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); transform: translateY(-2px); }
+    
+    .seen-badge {
+        position: absolute; top: 8px; right: 8px; width: 8px; height: 8px;
+        background: #10b981; border-radius: 50%; box-shadow: 0 0 0 2px white;
+    }
 
-/* 2. MODO OSCURO: El icono se vuelve BLANCO */
-body.dark-mode #reveal-overlay .icon, 
-body.dark-mode #reveal-overlay svg {
-    color: #FFFFFF !important;
-    stroke: #FFFFFF !important;
-}
+    /* Master List */
+    #master-list-container { 
+        margin-top: 10px; height: 50vh; overflow-y: auto; padding-right: 5px; 
+        scrollbar-width: none; -ms-overflow-style: none;
+    }
+    #master-list-container::-webkit-scrollbar { display: none; }
 
-body.dark-mode #reveal-overlay p, 
-body.dark-mode #reveal-overlay span {
-    color: #FFFFFF !important;
-}
+    .master-event-card {
+        background: white; border: 1px solid var(--border); padding: 15px; margin-bottom: 12px; border-radius: 12px;
+        display: flex; justify-content: space-between; align-items: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s;
+    }
+    .master-event-card:hover { transform: translateX(2px); }
+    .master-event-info { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+    .master-event-info h4 { margin: 0; font-size: 1rem; color: var(--primary); font-weight: 700; }
+    .master-event-meta { font-size: 0.75rem; color: var(--text-sec); display: flex; gap: 12px; align-items: center; }
+    .master-actions { display: flex; gap: 10px; }
 
-/* Ocultar al revelar */
-#reveal-overlay.faded { 
-    opacity: 0 !important; 
-    pointer-events: none; 
-}
-        
-        .pill { display: inline-flex; align-items: center; gap: 5px; background: #f3f4f6; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; margin: 0 5px; border: 1px solid #e5e7eb; }
-        
-        .link-box { 
-            background: #f9fafb; padding: 20px; border-radius: 12px; 
-            word-break: break-all; font-family: 'SF Mono', 'Roboto Mono', monospace; color: var(--text-main); 
-            font-size: 0.85em; text-align: center; margin: 20px 0; border: 1px solid var(--border); 
-            user-select: all !important; -webkit-user-select: all !important; 
-        }
-        
-        .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; }
-        .wishes-list li { 
-            margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3); 
-            overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
-        }
-        .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
-        .info-extra-link { overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal; display: block; width: 100%; }
+    /* Reveal Card (Info) */
+    .info-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb; border-radius: 18px;
+        padding: 40px 30px; margin-bottom: 25px;
+        position: relative; overflow: hidden; text-align: center;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08);
+    }
+    .info-card h1, .info-card h2, .info-card h3, .info-card p, .info-card strong, .info-card span { color: #111827 !important; }
 
-        #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
+    /* Reveal Overlay */
+    #reveal-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: #ffffff !important; color: #000000 !important;
+        display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px;
+        z-index: 10; cursor: pointer; transition: opacity 0.5s ease;
+    }
+    #reveal-overlay .icon, #reveal-overlay svg {
+        color: #000000 !important; stroke: #000000 !important; fill: none !important; opacity: 1 !important;
+        width: 48px; height: 48px;
+    }
+    #reveal-overlay.faded { opacity: 0 !important; pointer-events: none; }
 
-        #toast-container {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 2000; display: flex; flex-direction: column; gap: 10px;
-            pointer-events: none; width: 90%; max-width: 400px;
-        }
-        .toast {
-  background: var(--toast-bg);
-  color: var(--toast-text);
-  padding: 12px 20px;
-  border-radius: 999px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-.toast.success {
-  --toast-bg: rgba(16, 185, 129, 0.95);
-}
+    /* Pills & Wishes */
+    .pill { 
+        display: inline-flex; align-items: center; gap: 5px; 
+        background: #f3f4f6; color: var(--primary); padding: 6px 14px; 
+        border-radius: 20px; font-size: 0.85rem; font-weight: 700; 
+        margin: 0 5px; border: 1px solid #e5e7eb; 
+    }
+    .wishes-list { margin: 25px 0 0 0; padding: 0; list-style: none; font-size: 1.1rem; text-align: left; display: block; width: 100%; scrollbar-width: none; }
+    .wishes-list::-webkit-scrollbar { display: none; }
+    .wishes-list li { 
+        margin-bottom: 12px; padding-left: 10px; border-left: 2px solid rgba(255,255,255,0.3);
+        overflow-wrap: break-word; word-wrap: break-word; word-break: break-all; white-space: normal;
+    }
+    .wishes-list a, .info-extra-link a { color: #93c5fd; text-decoration: underline; font-weight: 500; }
 
-.toast.error {
-  --toast-bg: rgba(239, 68, 68, 0.95);
-}
-        .toast.show { opacity: 1; transform: translateY(0); }
+    /* Profile Switcher */
+    #profile-switcher { background: white; padding: 12px; border-radius: 12px; margin-bottom: 20px; box-shadow: var(--card-shadow); border: 1px solid var(--border); animation: fadeIn 0.3s ease; }
 
-        .spinner {
-            width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
-            border-radius: 50%; border-top-color: var(--primary);
-            animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+    /* QR Code */
+    #qr-invite { opacity: 0.9; transition: all 0.3s ease; mix-blend-mode: multiply; }
 
-        /* --- STYLES FOR CUSTOM PIN UI --- */
-        .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
-        .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
-        .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
-        .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
-        .pin-dot.success { background: var(--success); border-color: var(--success); }
-        
-        .pin-keyboard {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 15px; margin: 0 auto; max-width: 280px; padding-bottom: 10px;
-        }
-        .pin-btn {
-            background: #f9fafb; border: 1px solid var(--border); border-radius: 50%;
-            width: 65px; height: 65px; margin: 0 auto;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 600; color: var(--primary);
-            cursor: pointer; transition: background 0.15s, transform 0.1s;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05); -webkit-tap-highlight-color: transparent;
-        }
-        .pin-btn:active { background: #e5e7eb; transform: scale(0.95); }
-        .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
-        .pin-btn-back { background: transparent; border: none; box-shadow: none; }
-        .pin-btn-back:active { background: transparent; opacity: 0.5; }
-/* Ajustes para modal de PIN sin scroll, ocupando pantalla completa en móviles */
-@media (max-width: 500px) {
+    /* Toast */
+    #toast-container {
+        position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+        z-index: 2000; display: flex; flex-direction: column; gap: 10px;
+        pointer-events: none; width: 90%; max-width: 400px;
+    }
+    .toast {
+        background: var(--toast-bg); color: var(--toast-text);
+        padding: 12px 20px; border-radius: 999px; font-size: 0.9rem; font-weight: 500;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15); opacity: 0; transform: translateY(-20px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex; align-items: center; justify-content: center; text-align: center;
+    }
+    .toast.success { --toast-bg: rgba(16, 185, 129, 0.95); }
+    .toast.error { --toast-bg: rgba(239, 68, 68, 0.95); }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Spinner */
+    .spinner {
+        width: 24px; height: 24px; border: 3px solid rgba(17, 24, 39, 0.1);
+        border-radius: 50%; border-top-color: var(--primary);
+        animation: spin 0.8s linear infinite; margin: 20px auto; display: block;
+    }
+
+    /* =========================================
+       7. MODALS & OVERLAYS
+       ========================================= */
+    .hidden { display: none !important; }
+    
     .modal-overlay {
-        align-items: stretch; /* Cambia de flex-end a stretch para que el contenido ocupe toda la altura */
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+        display: flex; justify-content: center; align-items: flex-end; z-index: 1000;
     }
     .modal-content {
-        max-height: none; /* Elimina límite de altura para ocupar todo */
-        height: 100%; /* Ocupa toda la altura disponible */
-        border-radius: 0; /* Quita bordes redondeados en full-screen para mejor ajuste */
-        overflow-y: auto; /* Habilita scroll interno si el contenido excede la altura */
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; /* Distribuye el espacio para que el teclado quede abajo */
-        padding: 20px 20px 10px; /* Reduce padding ligeramente para ganar espacio vertical sin cambiar diseño */
+        background: white; padding: 35px 30px; 
+        border-top-left-radius: 24px; border-top-right-radius: 24px; 
+        width: 100%; max-width: 500px; max-height: 95dvh; overflow-y: auto;
+        box-shadow: 0 -20px 60px rgba(0,0,0,0.25); 
+        will-change: transform; scrollbar-width: none; -ms-overflow-style: none;
     }
+    .modal-content::-webkit-scrollbar { display: none; }
+
+    /* Modal Responsive Logic (Desktop Center, Mobile Bottom-Sheet) */
+    @media (min-width: 501px) {
+        .modal-overlay { align-items: center; }
+        .modal-content { 
+            border-radius: 24px; width: 90%; max-width: 400px; 
+            animation: fadeIn 0.2s ease-out; 
+        }
+    }
+    
+    @media (max-width: 500px) {
+        /* Generic Mobile Modal Fixes */
+        .modal-overlay { align-items: flex-end; background: transparent; backdrop-filter: none; }
+        .modal-content { 
+            height: auto; max-height: 100dvh; border-radius: 24px 24px 0 0;
+            display: block; padding: 35px 30px; box-shadow: none;
+        }
+        
+        /* PIN Modal specific full screen mobile */
+        #auth-modal.modal-overlay { align-items: stretch; }
+        #auth-modal .modal-content {
+            height: 100%; max-height: none; border-radius: 0;
+            display: flex; flex-direction: column; justify-content: space-between;
+            padding: 20px 20px 10px;
+        }
+        #auth-modal .modal-content > svg { margin-top: 10px; }
+    }
+
+    /* =========================================
+       8. PIN UI
+       ========================================= */
+    .pin-display-wrapper { margin-bottom: 20px; margin-top: 10px; }
+    .pin-dots { display: flex; justify-content: center; gap: 12px; padding: 10px; }
+    .pin-dot { width: 14px; height: 14px; border-radius: 50%; background: #e5e7eb; transition: background 0.2s; border: 1px solid #d1d5db; }
+    .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.1); }
+    .pin-dot.success { background: var(--success); border-color: var(--success); }
+    
     .pin-keyboard {
-        margin-top: auto; /* Empuja el teclado hacia abajo */
-        padding-bottom: 20px; /* Añade algo de espacio abajo para comodidad */
+        display: grid; grid-template-columns: repeat(3, 1fr);
+        gap: 15px; margin: 0 auto; max-width: 280px; padding-bottom: 10px;
     }
-    /* Reduce gaps y tamaños mínimamente para fitting en pantallas muy pequeñas */
-    .pin-dots {
-        gap: 8px; /* Reduce gap ligeramente */
+    @media (max-width: 500px) {
+        .pin-keyboard { margin-top: auto; padding-bottom: 20px; gap: 10px; }
+        .pin-dots { gap: 8px; }
     }
-    .pin-keyboard {
-        gap: 10px; /* Reduce gap para ahorrar altura */
-    }
+
     .pin-btn {
-        width: 55px; /* Reduce tamaño de botones ligeramente para fitting */
-        height: 55px;
-        font-size: 1.3rem; /* Ajusta fuente para mantener proporción */
+        background: #f9fafb; border: 1px solid var(--border); border-radius: 50%;
+        width: 65px; height: 65px; margin: 0 auto;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem; font-weight: 600; color: var(--primary);
+        cursor: pointer; transition: background 0.15s, transform 0.1s;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05); -webkit-tap-highlight-color: transparent;
     }
-}
-/*MODAL PIN*/
-@media (max-width: 500px) {
-    #auth-modal.modal-overlay {
-        align-items: flex-end; /* Hace que el modal aparezca desde abajo como un bottom sheet */
+    @media (max-width: 500px) {
+        .pin-btn { width: 55px; height: 55px; font-size: 1.3rem; }
     }
-    #auth-modal .modal-content {
-        height: auto; /* Altura basada en el contenido, no full-screen */
-        max-height: 100dvh; /* Límite para no exceder la pantalla */
-        /*border-radius: 24px 24px 0 0;  Bordes redondeados solo arriba, como un sheet */
-        overflow-y: auto; /* Scroll si el contenido excede */
-        display: block; /* Elimina flex para flujo normal, evita espacios grandes */
-        justify-content: initial; /* Resetea el space-between */
-        padding: 35px 30px; /* Padding consistente con otros modals */
-    }
-    /* Ajuste para el teclado: sin flex, usa margen fijo para separarlo un poco */
-    .pin-keyboard {
-        margin-top: 20px; /* Espacio arriba del teclado para que no quede pegado, ajusta si necesitas más */
-        padding-bottom: 20px;
-    }
-    /* Asegura que el ícono gris tenga algo de espacio superior en bottom sheet */
-    #auth-modal .modal-content > svg {
-        margin-top: 10px; /* Pequeño ajuste para no pegarse al borde superior */
-    }
-}
+    .pin-btn:active { background: #e5e7eb; transform: scale(0.95); }
+    .pin-btn-empty { background: transparent; border: none; box-shadow: none; pointer-events: none; }
+    .pin-btn-back { background: transparent; border: none; box-shadow: none; }
+    .pin-btn-back:active { background: transparent; opacity: 0.5; }
 
-/*MODAL ADMIN PASS*/
-@media (max-width: 500px) {
-    #admin-modal.modal-overlay {
-        align-items: flex-end; /* Aparece como bottom sheet desde abajo */
-    }
-    #admin-modal .modal-content {
-        height: auto; /* Altura basada en contenido, no full-screen */
-        max-height: 100dvh; /* No excede la pantalla */
-        border-radius: 24px 24px 0 0; /* Redondeado solo arriba para estilo sheet */
-        overflow-y: auto; /* Scroll si el contenido es largo */
-        display: block; /* Flujo normal, evita gaps en flex */
-        justify-content: initial; /* Resetea space-between */
-        padding: 35px 30px; /* Mantiene padding consistente */
-    }
-    /* Ajuste opcional para el ícono gris en el top */
-    #admin-modal .modal-content > svg {
-        margin-top: 10px; /* Espacio superior para no pegarse al borde */
-    }
-}
-
-/*MODAL CONFIRMACION confirm-modal*/
-@media (max-width: 500px) {
-    #confirm-modal.modal-overlay {
-        align-items: flex-end; /* Aparece como bottom sheet desde abajo */
-    }
-    #confirm-modal .modal-content {
-        height: auto; /* Altura basada en contenido, no full-screen */
-        max-height: 100dvh; /* No excede la pantalla */
-        border-radius: 24px 24px 0 0; /* Redondeado solo arriba para estilo sheet */
-        overflow-y: auto; /* Scroll si el contenido es largo */
-        display: block; /* Flujo normal, evita gaps en flex */
-        justify-content: initial; /* Resetea space-between */
-        padding: 35px 30px; /* Mantiene padding consistente */
-    }
-    /* Ajuste opcional para el ícono gris en el top */
-    #confirm-modal .modal-content > svg {
-        margin-top: 10px; /* Espacio superior para no pegarse al borde */
-    }
-}
-
-/*OCULTAR SCROLL*/
-.container {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-.container::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-}
-#master-list-container {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-#master-list-container::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-}
-.modal-content {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-.modal-content::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
-}
-.participants-container {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-.participants-container::-webkit-scrollbar {
-    display: none;
-}
-.wishes-list {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-.wishes-list::-webkit-scrollbar {
-    display: none;
-}
-/* --- ESTILOS PARA ERROR DE PIN --- */
-@keyframes shake-animation {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-    20%, 40%, 60%, 80% { transform: translateX(4px); }
-}
-
-.shake-error {
-    animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-.shake-error .pin-dot {
-    background-color: var(--danger) !important;
-    border-color: var(--danger) !important;
-}
-
-
-
-
-
-
-
-
-
-
-/* --- ANIMACIONES DE ENTRADA Y SALIDA --- */
-
-/* Definición de movimientos */
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-@keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
-
-/* A) ANIMACIÓN DE ENTRADA (Automática al quitar 'hidden') */
-/* Cuando el modal NO está oculto y NO se está cerrando */
-#auth-modal:not(.hidden):not(.modal-closing) {
-    animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-
-#auth-modal:not(.hidden):not(.modal-closing) .modal-content {
-    animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* B) ANIMACIÓN DE SALIDA (Se activa con JS) */
-/* SALIDA – más lenta y con peso */
-.modal-closing {
-    animation: fadeOut 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-    pointer-events: none;
-}
-
-.modal-closing .modal-content {
-    animation: slideDown 0.70s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
-}
-
-
-
-
-
-
-@media (max-width: 500px) {
-    #auth-modal.modal-overlay {
-        background: transparent;
-        backdrop-filter: none;
-    }
-}
-
-
-
-/*SOMBRA MODAL*/
-@media (max-width: 500px) {
-    #auth-modal .modal-content {
-        box-shadow: none;
-    }
-}
-
-
-
-
-@media (max-width: 500px) {
-    .modal-content {
-        will-change: transform;
-    }
-}
-
-
-.modal-content {
-    will-change: transform;
-}
-
-
-
-
-body.dark-mode {
-    /* --- FONDO NEGRO PURO (OLED) --- */
-    --bg-color: #000000 !important;
-    --bg-color-secondary: #000000 !important;
-    background-color: #000000 !important;
-
-    /* TEXTOS */
-    --primary: #FFFFFF !important;            
-    --text-main: #FFFFFF !important;
-    --text-sec: #8E8E93 !important;           /* Gris Apple */
-
-    /* --- LA MAGIA: EL CONTENEDOR ES NEGRO, LOS ELEMENTOS SON GRISES --- */
-    --container-bg: #000000 !important;       /* El fondo de la App es negro */
-    --card-bg: #1C1C1E !important;            /* Las tarjetas/inputs son gris oscuro */
+    /* =========================================
+       9. ANIMATIONS
+       ========================================= */
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin-once { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     
-    --border: #2C2C2E !important;             /* Borde muy sutil */
-    --accent: #0A84FF !important;
+    .spin-anim { animation: spin-once 0.5s ease-in-out; }
 
-/* APLICAR COLORES: FONDO NEGRO vs ELEMENTOS GRISES */
+    /* Error Shake */
+    @keyframes shake-animation {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+        20%, 40%, 60%, 80% { transform: translateX(4px); }
+    }
+    .shake-error { animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+    .shake-error .pin-dot { background-color: var(--danger) !important; border-color: var(--danger) !important; }
 
-/* 1. El contenedor principal se vuelve NEGRO para fundirse con los bordes */
-body.dark-mode .container {
-    background-color: var(--container-bg) !important; 
-    border-color: #000000 !important; /* Sin bordes visibles */
-}
-
-/* 2. Los elementos internos se vuelven GRISES para resaltar */
-body.dark-mode .name-card-user,
-body.dark-mode .name-card-admin,
-body.dark-mode .master-event-card,
-body.dark-mode input:not([type="checkbox"]), 
-body.dark-mode select,
-body.dark-mode textarea,
-body.dark-mode #profile-switcher,
-body.dark-mode .btn-secondary,
-body.dark-mode .btn-icon-action,
-body.dark-mode .modal-content {
-    background-color: var(--card-bg) !important; /* Gris #1C1C1E */
-    border: 1px solid var(--border) !important;
-    color: var(--text-main) !important;
-}
-
-/* 3. Ajuste especial para inputs en iOS Dark */
-body.dark-mode input:not([type="checkbox"]) {
-    background-color: #2C2C2E !important; /* Un gris un pelín más claro para escribir */
-}
-
-/* 4. Títulos brillantes */
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
-    color: var(--primary) !important;
-}
-
-    background-color: var(--card-bg) !important;
-    color: var(--text-main) !important;
-    border-color: var(--border) !important;
-}
-body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
-    color: var(--primary) !important;
-}
-body.dark-mode .btn-settings {
-    color: var(--text-main) !important;
-}
-body.dark-mode .toast {
-  backdrop-filter: blur(8px);
-}
-
-body.dark-mode .btn-icon-delete {
-  color: rgba(239, 68, 68, 0.75);
-}
-
-body.dark-mode .btn-icon-delete:hover {
-  color: #ef4444;
-}
-
-
-
-
-
-/* Animación de giro */
-.spin-anim {
-    animation: spin-once 0.5s ease-in-out;
-}
-@keyframes spin-once {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-
-
-
-
-/* Mejorar legibilidad de los "pill" en modo oscuro */
-body.dark-mode .pill {
-  background: rgba(255,255,255,0.04) !important; /* sutil contraste sobre el card-bg */
-  color: var(--text-main) !important;             /* texto claro */
-  border-color: rgba(255,255,255,0.06) !important;/* borde tenue en lugar del blanco sólido */
-}
-
-
-
-
-
-/* Nuevo estilo para el indicador 'visto' (sin borde blanco + destello tenue) */
-.seen-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 8px;
-  height: 8px;
-  background: #22ff88;
-  border-radius: 50%;
-  border: none;
-  box-shadow:
-    0 0 16px rgba(34,255,136,0.55), /* glow fosforescente */
-    0 0 6px  rgba(34,255,136,0.30); /* halo cercano */
-}
-
-
-
-
-
-/* --- CORRECCIONES DARK MODE (Pegar al final del CSS) --- */
-
-/* 1. Teclas del PIN en modo oscuro: Gris oscuro para que se vean */
-body.dark-mode .pin-btn {
-    background-color: #1f2937; /* Gris oscuro */
-    color: #ffffff;            /* Número blanco */
-    border-color: #374151;     /* Borde sutil */
-}
-body.dark-mode .pin-btn:active {
-    background-color: #374151; /* Color al presionar */
-}
-
-
-
-
-
-
-/* Agrega esto al final de tu style */
-html {
-    background-color: var(--bg-color);
-    transition: background-color 0.5s ease;
-}
-
-
-
-
-
-
-
-/* Esto pinta el fondo "detrás" de la página para el rebote de Safari */
-html {
-    background-color: var(--bg-color); 
-    height: 100%;
-}
-
-html:has(body.dark-mode) {
-    background-color: #000000 !important; /* Negro Puro */
-}
-
-
-
-
-
-
-
-
-
-/* --- ESTILO iOS FINAL (TODO NEGRO + BORRAR TRANSPARENTE) --- */
-
-/* 1. TEMA PRINCIPAL */
-body.dark-mode {
-    --bg-color: #000000 !important;
-    --bg-color-secondary: #000000 !important;
-    background-color: #000000 !important;
+    /* Modal States */
+    #auth-modal:not(.hidden):not(.modal-closing) { animation: fadeIn 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+    #auth-modal:not(.hidden):not(.modal-closing) .modal-content { animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     
-    /* Textos */
-    --primary: #FFFFFF !important;
-    --text-main: #FFFFFF !important;
-    --text-sec: #8E8E93 !important;
+    .modal-closing { animation: fadeOut 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards !important; pointer-events: none; }
+    .modal-closing .modal-content { animation: slideDown 0.70s cubic-bezier(0.16, 1, 0.3, 1) forwards !important; }
 
-    /* Capas */
-    --container-bg: #000000 !important;
-    --card-bg: #1C1C1E !important; /* Solo contenido resalta */
-    --border: #2C2C2E !important;
-    --accent: #0A84FF !important;
-    --toast-bg: rgba(0, 0, 0, 0.9);
-    --toast-text: #ffffff;
-}
-
-/* 2. BARRAS Y FONDO */
-html:has(body.dark-mode) { background-color: #000000 !important; }
-body.dark-mode .container { background-color: var(--container-bg) !important; border-color: #000000 !important; }
-
-/* 3. ELEMENTOS GRISES (Solo lo necesario) */
-body.dark-mode .name-card-user,
-body.dark-mode .name-card-admin,
-body.dark-mode .master-event-card,
-body.dark-mode input:not([type="checkbox"]), 
-body.dark-mode select,
-body.dark-mode textarea,
-body.dark-mode #profile-switcher,
-body.dark-mode .btn-secondary,
-body.dark-mode .btn-icon-action {
-    background-color: var(--card-bg) !important;
-    border: 1px solid var(--border) !important;
-    color: var(--text-main) !important;
-}
-
-/* 4. MODAL Y PIN (SOLO CONTENIDO, SIN BORDES) */
-body.dark-mode #auth-modal .modal-content,
-body.dark-mode #admin-modal .modal-content,
-body.dark-mode #confirm-modal .modal-content {
-    background-color: #000000 !important;
-    color: #FFFFFF !important;
-    border: none !important;      /* <--- ESTO QUITA EL BORDE */
-    box-shadow: none !important;  /* Quita sombras para que sea plano total */
-}
-
-/* Botones Numéricos (Gris Oscuro) */
-body.dark-mode .pin-btn {
-    background-color: #1C1C1E !important; 
-    color: #FFFFFF !important;
-    border: none !important;
-}
-body.dark-mode .pin-btn:active {
-    background-color: #333333 !important;
-}
-
-/* Botón Borrar (Transparente) */
-body.dark-mode .pin-btn.pin-btn-back, 
-body.dark-mode .pin-btn.pin-btn-empty {
-    background-color: transparent !important;
-    box-shadow: none !important;
-    color: #FFFFFF !important;
-}
-
-
-
-
-
-/* --- ICONOS DE BASURA: ESTILO EXACTO (Ícono Fuerte + Borde Tenue) --- */
-body.dark-mode .btn-icon-danger {
-    color: #ef4444 !important;       /* Rojo Fuerte (Igual que en Light) */
-    
-    /* Aquí está el truco: Borde rojo al 30% de opacidad para que se vea "tenue" */
-    border: 1px solid rgba(239, 68, 68, 0.3) !important; 
-    
-    background-color: transparent !important;
-}
-
-/* Al tocar, subimos un poco la intensidad del fondo */
-body.dark-mode .btn-icon-danger:active {
-    background-color: rgba(239, 68, 68, 0.15) !important;
-    border-color: #ef4444 !important; /* El borde se marca más al presionar */
-}
-
-
-
-
-/* --- CORRECCIÓN: CAJA DEL LINK EN DARK MODE --- */
-body.dark-mode .link-box {
-    background-color: #1C1C1E !important; /* Gris oscuro (tarjeta iOS) */
-    border: 1px solid #38383A !important; /* Borde sutil */
-    color: #0A84FF !important;            /* Texto Azul iOS (para indicar que es un link) */
-}
-
-
-
-
-/* --- ESTILO QR INTEGRADO --- */
-#qr-invite {
-    /* En modo claro: normal, quizás un poco de opacidad para que no sea negro puro 'duro' */
-    opacity: 0.9; 
-    transition: all 0.3s ease;
-    mix-blend-mode: multiply; /* Se funde mejor con el blanco */
-}
-
-/* EN MODO OSCURO: INVERTIR COLORES */
-body.dark-mode #qr-invite {
-    /* filter: invert(1) invierte los colores:
-       - Lo negro se vuelve blanco.
-       - Lo blanco se vuelve negro.
+    /* =========================================
+       10. DARK MODE (CONSOLIDADO - ESTILO iOS)
+       ========================================= */
+    /* ESTRATEGIA: 
+       Fondo de página = Negro Puro (#000000)
+       Tarjetas / Inputs = Gris Oscuro (#1C1C1E)
+       Textos = Blanco (#FFFFFF)
+       Bordes = Eliminados o muy tenues
     */
-    filter: invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5)); 
+
+    body.dark-mode {
+        /* Variables Re-mapeadas */
+        --bg-color: #000000 !important;
+        --bg-color-secondary: #000000 !important;
+        --container-bg: #000000 !important;
+        --card-bg: #1C1C1E !important;
+        
+        --primary: #FFFFFF !important;
+        --text-main: #FFFFFF !important;
+        --text-sec: #8E8E93 !important; /* Gris Apple */
+        --border: #2C2C2E !important;
+        --accent: #0A84FF !important;
+        --toast-bg: rgba(0, 0, 0, 0.9);
+        --toast-text: #ffffff;
+        
+        background-color: #000000 !important;
+    }
+
+    /* Fondo Global */
+    html:has(body.dark-mode) { background-color: #000000 !important; }
     
-    /* mix-blend-mode: screen hace que la parte negra (ahora fondo) 
-       se vuelva transparente, dejando solo el código QR blanco flotando.
-    */
-    mix-blend-mode: screen; 
+    /* Contenedor Principal */
+    body.dark-mode .container { background-color: var(--container-bg) !important; border-color: #000000 !important; }
+
+    /* Títulos */
+    body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 { color: var(--primary) !important; }
+    body.dark-mode .btn-settings { color: var(--text-main) !important; }
+
+    /* Tarjetas y Elementos de Interfaz (Gris Oscuro) */
+    body.dark-mode .name-card-user,
+    body.dark-mode .name-card-admin,
+    body.dark-mode .master-event-card,
+    body.dark-mode input:not([type="checkbox"]), 
+    body.dark-mode select,
+    body.dark-mode textarea,
+    body.dark-mode #profile-switcher,
+    body.dark-mode .btn-secondary,
+    body.dark-mode .btn-icon-action,
+    body.dark-mode .link-box {
+        background-color: var(--card-bg) !important;
+        border: 1px solid var(--border) !important;
+        color: var(--text-main) !important;
+    }
     
-    opacity: 1;
-}
+    /* Inputs específico para iOS */
+    body.dark-mode input:not([type="checkbox"]) { background-color: #2C2C2E !important; }
+    body.dark-mode .link-box { color: #0A84FF !important; border: 1px solid #38383A !important; }
 
-/* Asegurar que el contenedor del QR no tenga fondo blanco forzado */
-/* Si el QR está dentro de un div, asegúrate de que ese div sea transparente en dark mode */
-body.dark-mode .qr-container {
-    background-color: transparent !important;
-    border: none !important;
-}
+    /* Botones Principales (Blanco Brillante en Modo Oscuro) */
+    body.dark-mode .btn-primary, 
+    body.dark-mode .btn-accent, 
+    body.dark-mode .btn-add-small {
+        background-color: #FFFFFF !important;
+        color: #000000 !important;
+        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+    }
+    body.dark-mode .btn-primary:hover, 
+    body.dark-mode .btn-accent:hover, 
+    body.dark-mode .btn-add-small:hover {
+        background-color: #f3f4f6 !important;
+    }
 
+    /* Iconos y Botones de Acción */
+    body.dark-mode .btn-icon-delete { color: rgba(239, 68, 68, 0.75); }
+    body.dark-mode .btn-icon-delete:hover { color: #ef4444; }
+    
+    body.dark-mode .btn-icon-danger {
+        color: #ef4444 !important;
+        border: 1px solid rgba(239, 68, 68, 0.3) !important; 
+        background-color: transparent !important;
+    }
+    body.dark-mode .btn-icon-danger:active {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+        border-color: #ef4444 !important;
+    }
 
+    body.dark-mode .btn-icon-edit { color: rgba(142, 142, 147, 0.75); }
+    body.dark-mode .btn-icon-edit:hover { color: #ffffff; }
 
+    /* Modals & PIN UI (Fondo Negro Puro, Sin Bordes) */
+    body.dark-mode #auth-modal .modal-content,
+    body.dark-mode #admin-modal .modal-content,
+    body.dark-mode #confirm-modal .modal-content {
+        background-color: #000000 !important;
+        color: #FFFFFF !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
 
+    /* Teclado PIN */
+    body.dark-mode .pin-btn {
+        background-color: #1C1C1E !important; 
+        color: #FFFFFF !important;
+        border: none !important;
+    }
+    body.dark-mode .pin-btn:active { background-color: #333333 !important; }
+    
+    body.dark-mode .pin-btn.pin-btn-back, 
+    body.dark-mode .pin-btn.pin-btn-empty {
+        background-color: transparent !important; box-shadow: none !important;
+    }
+    
+    /* Puntos PIN */
+    body.dark-mode .pin-dot { background-color: #3A3A3C !important; border-color: #4A4A4C !important; }
+    body.dark-mode .pin-dot.filled { background-color: #FFFFFF !important; border-color: #FFFFFF !important; }
+    body.dark-mode .shake-error .pin-dot { background-color: var(--danger) !important; border-color: var(--danger) !important; }
 
+    /* Reveal Card (Gris Oscuro con texto blanco forzado) */
+    body.dark-mode .info-card {
+        background-color: #2C2C2E !important; 
+        border-color: #3A3A3C !important;
+        box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5);
+    }
+    body.dark-mode .info-card h1, body.dark-mode .info-card h2, body.dark-mode .info-card h3, 
+    body.dark-mode .info-card p, body.dark-mode .info-card strong, body.dark-mode .info-card span {
+        color: #FFFFFF !important;
+    }
 
+    /* Reveal Overlay (Gris Oscuro) */
+    body.dark-mode #reveal-overlay { background-color: #2C2C2E !important; color: #FFFFFF !important; }
+    body.dark-mode #reveal-overlay .icon, body.dark-mode #reveal-overlay svg { color: #FFFFFF !important; stroke: #FFFFFF !important; }
+    body.dark-mode #reveal-overlay p, body.dark-mode #reveal-overlay span { color: #FFFFFF !important; }
 
-/* --- CORRECCIÓN: MANTENER TARJETA GRIS AL REVELAR (Modo Oscuro) --- */
+    /* QR Code Invertido */
+    body.dark-mode #qr-invite {
+        filter: invert(1) drop-shadow(0 0 4px rgba(255,255,255,0.5));
+        mix-blend-mode: screen; opacity: 1;
+    }
+    body.dark-mode .qr-container { background-color: transparent !important; border: none !important; }
 
-/* 1. Cambiamos el fondo de la tarjeta para que coincida con la tapa (#2C2C2E) */
-body.dark-mode .info-card {
-    background-color: #2C2C2E !important; 
-    border-color: #3A3A3C !important; /* Borde más sutil para modo oscuro */
-    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); /* Sombra más oscura */
-}
+    /* Badge "Visto" (Glow) */
+    body.dark-mode .seen-badge {
+        background: #22ff88; border: none;
+        box-shadow: 0 0 16px rgba(34,255,136,0.55), 0 0 6px rgba(34,255,136,0.30);
+    }
+    
+    body.dark-mode .pill {
+        background: rgba(255,255,255,0.04) !important;
+        color: var(--text-main) !important;
+        border-color: rgba(255,255,255,0.06) !important;
+    }
+    
+    body.dark-mode .toast { backdrop-filter: blur(8px); }
+</style>
 
-/* 2. Forzamos que TODO el texto dentro de la tarjeta sea blanco */
-/* (Es necesario usar !important porque tu CSS original fuerza el color negro) */
-body.dark-mode .info-card h1, 
-body.dark-mode .info-card h2, 
-body.dark-mode .info-card h3, 
-body.dark-mode .info-card p, 
-body.dark-mode .info-card strong, 
-body.dark-mode .info-card span {
-    color: #FFFFFF !important;
-}
-
-
-
-
-
-
-/* --- CORRECCIÓN: DOTS DEL PIN EN DARK MODE --- */
-body.dark-mode .pin-dot {
-    background-color: #3A3A3C !important; /* Gris oscuro para dots vacíos (fondo sutil) */
-    border-color: #4A4A4C !important;     /* Borde gris tenue para definición */
-}
-
-body.dark-mode .pin-dot.filled {
-    background-color: #FFFFFF !important; /* Blanco puro al llenarse */
-    border-color: #FFFFFF !important;     /* Borde blanco para consistencia */
-    transform: scale(1.1);                /* Mantiene el escalado para feedback */
-}
-/* --- CORRECCIÓN: RESTAURAR EFECTO DE ERROR EN DARK MODE --- */
-body.dark-mode .shake-error .pin-dot {
-    background-color: var(--danger) !important;
-    border-color: var(--danger) !important;
-}
-
-
-
-
-
-body.dark-mode .btn-icon-edit {
-  color: rgba(142, 142, 147, 0.75); /* Gris Apple tenue en dark mode */
-}
-
-body.dark-mode .btn-icon-edit:hover {
-  color: #ffffff; /* Blanco puro al hover */
-}
-    </style>
 </head>
 <body>
 
