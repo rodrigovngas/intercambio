@@ -1599,6 +1599,9 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 </div>
 
 <script type="module">
+    // ==========================================
+    // 1. IMPORTS & CONFIGURACIÓN FIREBASE
+    // ==========================================
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getFirestore, collection, addDoc, doc, getDoc, updateDoc, writeBatch, serverTimestamp, onSnapshot, getDocs, deleteDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -1613,9 +1616,20 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+
+    // ==========================================
+    // 2. CONSTANTES Y VARIABLES GLOBALES
+    // ==========================================
     const MASTER_KEY = "admin123"; 
     const MONTHS_SHORT = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 
+    // Iconos SVG reutilizables
+    const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+    const closedEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
+    const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+    const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+    // Estado de la aplicación
     let eventId = new URLSearchParams(window.location.search).get('id');
     let participantsList = [];
     let selectedUserDoc = null;
@@ -1625,198 +1639,23 @@ document.addEventListener('contextmenu', event => event.preventDefault());
     let linkedProfiles = [];
     let isEditingEvent = false;
     let editingEventId = null;
-
-    // --- PIN LOGIC WITH CUSTOM KEYPAD ---
-        window.addPinDigit = (digit, type) => {
-        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-        const input = document.getElementById(inputId);
-        let val = input.value;
-        
-        if(val.length >= 6) return;
-        
-        val += digit;
-        input.value = val;
-        updatePinDots(val.length, dotsId);
-
-        // --- VALIDACIÓN AUTOMÁTICA ---
-        // Solo para login, para registro es mejor esperar confirmación manual por seguridad
-        if(type === 'login' && val.length === 6) {
-            // Pequeña pausa de 100ms para ver el 6to punto llenarse
-            setTimeout(() => {
-                doLogin();
-            }, 100); 
-        }
-    };
-
-    window.backspacePin = (type) => {
-        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
-        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
-        const input = document.getElementById(inputId);
-        let val = input.value;
-        if(val.length > 0) {
-            val = val.slice(0, -1);
-            input.value = val;
-            updatePinDots(val.length, dotsId);
-        }
-    };
-
-    function updatePinDots(count, containerId) {
-        const container = document.getElementById(containerId);
-        const dots = container.querySelectorAll('.pin-dot');
-        dots.forEach((dot, idx) => {
-            if(idx < count) dot.classList.add('filled');
-            else dot.classList.remove('filled');
-        });
-    }
-    
-    // --- GENERIC VISIBILITY TOGGLE (FOR ADMIN PASS) ---
-    const openEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
-    const closedEyePaths = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line x1="1" y1="1" x2="23" y2="23"></line>';
-    
-    document.querySelectorAll('.btn-toggle-pass svg').forEach(svg => { svg.innerHTML = closedEyePaths; });
-
-    window.toggleFieldVisibility = (inputId) => {
-        const input = document.getElementById(inputId);
-        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
-        const svg = btn.querySelector('svg');
-        if (input.type === "password") {
-            input.type = "text";
-            btn.style.color = "var(--primary)";
-            svg.innerHTML = openEyePaths;
-        } else {
-            input.type = "password";
-            btn.style.color = "var(--text-sec)";
-            svg.innerHTML = closedEyePaths;
-        }
-    };
-
-    async function hashString(str) {
-        if(!str) return null;
-        const encoder = new TextEncoder();
-        const data = encoder.encode(str);
-        const hash = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-    }
-
-    function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
-
-    window.showToast = (message, duration = 3000) => {
-        const container = document.getElementById('toast-container');
-        const el = document.createElement('div');
-        el.className = 'toast'; el.innerText = message;
-        container.appendChild(el);
-        requestAnimationFrame(() => el.classList.add('show'));
-        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
-    };
-
     let pendingAdminCallback = null;
-    window.promptForAdmin = (callback) => {
-        pendingAdminCallback = callback;
-        const m = document.getElementById('admin-modal');
-        const input = document.getElementById('admin-input-pass');
-        input.value = ''; input.type = 'password'; 
-        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
-        btn.style.color = 'var(--text-sec)';
-        m.classList.remove('hidden');
-        setTimeout(() => input.focus(), 100);
-    };
-    window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
-    
-    window.submitAdminAuth = () => {
-        const val = document.getElementById('admin-input-pass').value; 
-        const callbackToRun = pendingAdminCallback;
-        if(val === MASTER_KEY) {
-            closeAdminModal(); 
-            if(callbackToRun) callbackToRun();
-        } else {
-            showToast("Contraseña incorrecta");
-            document.getElementById('admin-input-pass').value = '';
-        }
-    };
-
     let pendingConfirmAction = null;
-    window.openConfirmModal = (title, message, callback) => {
-        document.getElementById('confirm-title').innerText = title;
-        document.getElementById('confirm-desc').innerText = message;
-        pendingConfirmAction = callback;
-        document.getElementById('confirm-modal').classList.remove('hidden');
-    };
-    window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
-    window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
 
-    window.revealName = () => {
-        const overlay = document.getElementById('reveal-overlay');
-        overlay.classList.add('faded');
-        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
-        if(currentUserId) {
-            updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
-            const p = linkedProfiles.find(x => x.id === currentUserId);
-            if(p) p.revealed = true;
-        }
-    };
-
-
-
-
-
-
-// --- DARK MODE: SISTEMA + BOTÓN (reset al recargar) ---
-
-const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-const btn = document.getElementById('btn-dark-mode');
-const metaTheme = document.getElementById('theme-color-meta');
-
-const sunIcon = '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
-
-const moonIcon = '<svg class="icon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
-
-function applyTheme(isDark) {
-  document.body.classList.toggle('dark-mode', isDark);
-
-  if (btn) {
-    btn.innerHTML = isDark ? sunIcon : moonIcon;
-    btn.style.color = getComputedStyle(document.documentElement)
-      .getPropertyValue(isDark ? '--text-main' : '--text-sec');
-
-    btn.classList.remove('spin-anim');
-    void btn.offsetWidth;
-    btn.classList.add('spin-anim');
-  }
-
-  if (metaTheme) {
-    metaTheme.setAttribute('content', isDark ? '#000000' : '#ffffff');
-  }
-}
-
-// BOTÓN (solo sesión actual)
-window.toggleDarkMode = () => {
-  const isDark = document.body.classList.contains('dark-mode');
-  applyTheme(!isDark);
-};
-
-// AL CARGAR → seguir sistema
-applyTheme(mediaQuery.matches);
-
-// SI CAMBIA EL SISTEMA → actualizar
-if (mediaQuery.addEventListener) {
-  mediaQuery.addEventListener('change', e => applyTheme(e.matches));
-} else {
-  mediaQuery.addListener(e => applyTheme(e.matches)); // Safari viejo
-}
-
-
-
-
-
-
-
-
-
+    // ==========================================
+    // 3. INICIALIZACIÓN (ONLOAD)
+    // ==========================================
     window.onload = () => {
         populateDays();
+        // Inicializar iconos de contraseña
+        document.querySelectorAll('.btn-toggle-pass svg').forEach(svg => { svg.innerHTML = closedEyePaths; });
+        
+        // Carga inicial
         if (eventId) loadEventData(eventId);
         else document.getElementById('screen-home').classList.remove('hidden');
+
+        // Dark Mode al cargar
+        applyTheme(mediaQuery.matches);
     };
 
     function populateDays() {
@@ -1828,16 +1667,104 @@ if (mediaQuery.addEventListener) {
         }
     }
 
+    // ==========================================
+    // 4. UTILIDADES GENERALES
+    // ==========================================
+    async function hashString(str) {
+        if(!str) return null;
+        const encoder = new TextEncoder();
+        const data = encoder.encode(str);
+        const hash = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function makeLinksClickable(text) {
+        if (!text) return ""; const urlRegex = /(https?:\/\/[^\s]+)/g;
+        return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
+    }
+
+    window.showToast = (message, duration = 3000) => {
+        const container = document.getElementById('toast-container');
+        const el = document.createElement('div');
+        el.className = 'toast'; el.innerText = message;
+        container.appendChild(el);
+        requestAnimationFrame(() => el.classList.add('show'));
+        setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 300); }, duration);
+    };
+
+    // ==========================================
+    // 5. TEMA (DARK MODE & SAFARI)
+    // ==========================================
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const btn = document.getElementById('btn-dark-mode');
+    const metaTheme = document.getElementById('theme-color-meta');
+
+    function applyTheme(isDark) {
+        document.body.classList.toggle('dark-mode', isDark);
+
+        if (btn) {
+            btn.innerHTML = isDark ? sunIcon : moonIcon;
+            btn.style.color = getComputedStyle(document.documentElement)
+            .getPropertyValue(isDark ? '--text-main' : '--text-sec');
+
+            btn.classList.remove('spin-anim');
+            void btn.offsetWidth;
+            btn.classList.add('spin-anim');
+        }
+
+        if (metaTheme) {
+            metaTheme.setAttribute('content', isDark ? '#000000' : '#ffffff');
+        }
+    }
+
+    window.toggleDarkMode = () => {
+        const isDark = document.body.classList.contains('dark-mode');
+        applyTheme(!isDark);
+    };
+
+    if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', e => applyTheme(e.matches));
+    } else {
+        mediaQuery.addListener(e => applyTheme(e.matches)); 
+    }
+
+    function updateSafariTheme() {
+        const isDark = document.body.classList.contains('dark-mode');
+        const metaTheme = document.getElementById('theme-color-meta');
+        const appleBlack = '#000000'; 
+        const appleWhite = '#ffffff'; 
+        const appleGray  = '#f3f4f6';
+
+        const colorTop = isDark ? appleBlack : appleWhite;
+        const colorBottom = isDark ? appleBlack : appleGray;
+
+        if (metaTheme) metaTheme.setAttribute('content', colorTop);
+        document.documentElement.style.backgroundColor = colorBottom;
+    }
+
+    const observer = new MutationObserver(() => updateSafariTheme());
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    updateSafariTheme();
+
+    // ==========================================
+    // 6. NAVEGACIÓN Y PANELES MAESTROS
+    // ==========================================
     window.goToMasterPanel = () => {
         document.getElementById('screen-home').classList.add('hidden');
         document.getElementById('screen-master').classList.remove('hidden');
         loadAllEvents();
     };
+
     window.exitMasterPanel = () => {
         document.getElementById('screen-master').classList.add('hidden');
         document.getElementById('screen-home').classList.remove('hidden');
     };
 
+    window.goToEvent = () => { window.location.href = "?id=" + eventId; };
+
+    // ==========================================
+    // 7. GESTIÓN DE EVENTOS (CRUD)
+    // ==========================================
     async function loadAllEvents() {
         const listDiv = document.getElementById('master-list-container');
         listDiv.innerHTML = '<div class="spinner"></div>';
@@ -1870,15 +1797,14 @@ if (mediaQuery.addEventListener) {
         } catch(e) { listDiv.innerHTML = `<p style='text-align:center; color:red; font-size:0.8em; padding:20px;'>Error: ${e.message}</p>`; }
     }
 
-    window.deleteGlobalEvent = (id) => {
-        openConfirmModal("¿Borrar evento?", "Se eliminarán todos los datos permanentemente.", async () => {
-            try {
-                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
-                const batch = writeBatch(db); partsSnap.forEach(d => batch.delete(d.ref)); await batch.commit(); 
-                await deleteDoc(doc(db, "events", id)); showToast("Evento eliminado"); loadAllEvents();
-            } catch(e) { showToast("Error al borrar"); }
-        });
-    }
+    window.showAdminSetup = () => { 
+        isEditingEvent = false; editingEventId = null; participantsList = []; renderParticipantsList();
+        document.getElementById('setup-title').value = ""; document.getElementById('setup-day').value = "";
+        document.getElementById('setup-month').value = ""; document.getElementById('setup-budget').value = "Libre";
+        document.getElementById('setup-gift-type').value = ""; document.getElementById('btn-create-event').innerText = "Generar Sorteo";
+        const reshuffleBtn = document.getElementById('btn-reshuffle-event'); if (reshuffleBtn) reshuffleBtn.remove();
+        document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); 
+    };
 
     window.editEvent = async (id) => {
         editingEventId = id; isEditingEvent = true;
@@ -1907,50 +1833,7 @@ if (mediaQuery.addEventListener) {
         }
     };
 
-    window.showAdminSetup = () => { 
-        isEditingEvent = false; editingEventId = null; participantsList = []; renderParticipantsList();
-        document.getElementById('setup-title').value = ""; document.getElementById('setup-day').value = "";
-        document.getElementById('setup-month').value = ""; document.getElementById('setup-budget').value = "Libre";
-        document.getElementById('setup-gift-type').value = ""; document.getElementById('btn-create-event').innerText = "Generar Sorteo";
-        const reshuffleBtn = document.getElementById('btn-reshuffle-event'); if (reshuffleBtn) reshuffleBtn.remove();
-        document.getElementById('screen-home').classList.add('hidden'); document.getElementById('screen-admin').classList.remove('hidden'); 
-    };
-
-    document.getElementById('btn-add-name').addEventListener('click', addNameToList);
-    document.getElementById('input-new-name').addEventListener('keypress', (e) => { if(e.key === 'Enter') addNameToList(); });
-
-    function addNameToList() {
-        const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
-        const name = input.value.trim(); if(!name) return;
-        participantsList.push({ name: name, isChild: check.checked, id: null });
-        input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
-    }
-
-    function renderParticipantsList() {
-        const container = document.getElementById('participants-container'); container.innerHTML = "";
-        if(participantsList.length === 0) { container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return; }
-        participantsList.forEach((p, index) => {
-            const div = document.createElement('div'); div.className = 'name-card-admin';
-            const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
-            div.innerHTML = `
-    <span id="name-span-${index}">${childTag}${p.name}</span>
-    <div style="display:flex; gap:5px;">
-        <button class="btn-icon-edit" onclick="editName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-        <button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
-    </div>`;
-            container.appendChild(div);
-        });
-        window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
-        window.editName = (index) => {
-            const span = document.getElementById(`name-span-${index}`); const originalName = participantsList[index].name;
-            const input = document.createElement('input'); input.type = 'text'; input.value = originalName;
-            input.autocapitalize = 'sentences'; input.style.width = 'auto'; input.style.marginRight = '5px';
-            span.innerHTML = ''; span.appendChild(input); input.focus();
-            const save = () => { const newName = input.value.trim(); if (newName) participantsList[index].name = newName; renderParticipantsList(); };
-            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') save(); }); input.addEventListener('blur', save);
-        };
-    }
-
+    // Crear o Actualizar Evento
     document.getElementById('btn-create-event').addEventListener('click', async () => {
         const title = document.getElementById('setup-title').value; const day = document.getElementById('setup-day').value;
         const month = document.getElementById('setup-month').value; const budget = document.getElementById('setup-budget').value;
@@ -1993,8 +1876,7 @@ if (mediaQuery.addEventListener) {
                 eventId = eventRef.id; const link = window.location.origin + window.location.pathname + "?id=" + eventId;
                 document.getElementById('screen-admin').classList.add('hidden'); document.getElementById('screen-share').classList.remove('hidden');
                 document.getElementById('share-link-text').innerText = link;
-// QR
-renderShareInfo(link);
+                renderShareInfo(link);
             }
         } catch(e) { btn.disabled = false; btn.innerText = isEditingEvent ? "Guardar Cambios" : "Generar Sorteo"; showToast("Error: " + e.message); }
     });
@@ -2015,8 +1897,15 @@ renderShareInfo(link);
         });
     }
 
-    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
-    window.goToEvent = () => { window.location.href = "?id=" + eventId; };
+    window.deleteGlobalEvent = (id) => {
+        openConfirmModal("¿Borrar evento?", "Se eliminarán todos los datos permanentemente.", async () => {
+            try {
+                const partsSnap = await getDocs(collection(db, `events/${id}/participants`));
+                const batch = writeBatch(db); partsSnap.forEach(d => batch.delete(d.ref)); await batch.commit(); 
+                await deleteDoc(doc(db, "events", id)); showToast("Evento eliminado"); loadAllEvents();
+            } catch(e) { showToast("Error al borrar"); }
+        });
+    }
 
     window.deleteEvent = () => {
         openConfirmModal("¿Borrar este evento?", "Esta acción eliminará todo permanentemente.", async () => {
@@ -2037,18 +1926,17 @@ renderShareInfo(link);
         document.getElementById('event-date-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>${prettyDate}`;
         document.getElementById('event-budget-display').innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>${data.budget.replace('$', '')}`;
 
-        // NEW: Populate and show gift container if giftType exists
-    const giftContainer = document.getElementById('event-gift-container');
-    const giftDisplay = document.getElementById('event-gift-display');
-    if (data.giftType && data.giftType.trim() !== "") {
-        giftDisplay.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>${data.giftType}`;
-        giftContainer.classList.remove('hidden');  // Show it
-    } else {
-        giftContainer.classList.add('hidden');  // Hide if no giftType
-        giftDisplay.innerHTML = '';  // Clear if empty
-    }
+        const giftContainer = document.getElementById('event-gift-container');
+        const giftDisplay = document.getElementById('event-gift-display');
+        if (data.giftType && data.giftType.trim() !== "") {
+            giftDisplay.innerHTML = `<svg class="icon icon-sm" viewBox="0 0 24 24" style="margin-right:5px"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>${data.giftType}`;
+            giftContainer.classList.remove('hidden');  
+        } else {
+            giftContainer.classList.add('hidden');  
+            giftDisplay.innerHTML = '';  
+        }
 
-onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
+        onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
             const list = document.getElementById('names-list'); list.innerHTML = "";
             const isDashboardVisible = !document.getElementById('screen-dashboard').classList.contains('hidden');
             if(isDashboardVisible) return;
@@ -2067,6 +1955,89 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         });
     }
 
+    // ==========================================
+    // 8. GESTIÓN DE PARTICIPANTES (UI)
+    // ==========================================
+    document.getElementById('btn-add-name').addEventListener('click', addNameToList);
+    document.getElementById('input-new-name').addEventListener('keypress', (e) => { if(e.key === 'Enter') addNameToList(); });
+
+    function addNameToList() {
+        const input = document.getElementById('input-new-name'); const check = document.getElementById('check-is-child');
+        const name = input.value.trim(); if(!name) return;
+        participantsList.push({ name: name, isChild: check.checked, id: null });
+        input.value = ""; check.checked = false; input.focus(); renderParticipantsList();
+    }
+
+    function renderParticipantsList() {
+        const container = document.getElementById('participants-container'); container.innerHTML = "";
+        if(participantsList.length === 0) { container.innerHTML = '<small style="text-align:center; padding:15px; color:#9ca3af;">Agrega nombres arriba</small>'; return; }
+        participantsList.forEach((p, index) => {
+            const div = document.createElement('div'); div.className = 'name-card-admin';
+            const childTag = p.isChild ? `<span class="child-tag">NIÑO</span>` : ``;
+            div.innerHTML = `
+    <span id="name-span-${index}">${childTag}${p.name}</span>
+    <div style="display:flex; gap:5px;">
+        <button class="btn-icon-edit" onclick="editName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="btn-icon-delete" onclick="removeName(${index})"><svg class="icon icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+    </div>`;
+            container.appendChild(div);
+        });
+        window.removeName = (index) => { participantsList.splice(index, 1); renderParticipantsList(); };
+        window.editName = (index) => {
+            const span = document.getElementById(`name-span-${index}`); const originalName = participantsList[index].name;
+            const input = document.createElement('input'); input.type = 'text'; input.value = originalName;
+            input.autocapitalize = 'sentences'; input.style.width = 'auto'; input.style.marginRight = '5px';
+            span.innerHTML = ''; span.appendChild(input); input.focus();
+            const save = () => { const newName = input.value.trim(); if (newName) participantsList[index].name = newName; renderParticipantsList(); };
+            input.addEventListener('keypress', (e) => { if (e.key === 'Enter') save(); }); input.addEventListener('blur', save);
+        };
+    }
+
+    // ==========================================
+    // 9. AUTENTICACIÓN Y PIN
+    // ==========================================
+    window.addPinDigit = (digit, type) => {
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const input = document.getElementById(inputId);
+        let val = input.value;
+        
+        if(val.length >= 6) return;
+        
+        val += digit;
+        input.value = val;
+        updatePinDots(val.length, dotsId);
+
+        if(type === 'login' && val.length === 6) {
+            setTimeout(() => {
+                doLogin();
+            }, 100); 
+        }
+    };
+
+    window.backspacePin = (type) => {
+        const inputId = type === 'reg' ? 'reg-pin' : 'login-pin';
+        const dotsId = type === 'reg' ? 'dots-reg' : 'dots-login';
+        const input = document.getElementById(inputId);
+        let val = input.value;
+        if(val.length > 0) {
+            val = val.slice(0, -1);
+            input.value = val;
+            updatePinDots(val.length, dotsId);
+        }
+    };
+
+    function updatePinDots(count, containerId) {
+        const container = document.getElementById(containerId);
+        const dots = container.querySelectorAll('.pin-dot');
+        dots.forEach((dot, idx) => {
+            if(idx < count) dot.classList.add('filled');
+            else dot.classList.remove('filled');
+        });
+    }
+
+    function isValidPIN(pin) { return /^\d{6}$/.test(pin); }
+
     async function prepareAuth(id, data) {
         selectedUserDoc = { id, data };
         const m = document.getElementById('auth-modal');
@@ -2075,7 +2046,6 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         document.getElementById('admin-override-box').classList.add('hidden'); 
         document.getElementById('claim-children-section').classList.add('hidden'); 
         
-        // Reset Inputs and Displays
         ['reg-pin', 'login-pin'].forEach(pid => document.getElementById(pid).value = '');
         document.querySelectorAll('.pin-dot').forEach(d => d.classList.remove('filled'));
 
@@ -2106,19 +2076,6 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         }
     }
 
-            window.closeModal = () => {
-        const modal = document.getElementById('auth-modal');
-        
-        // 1. Activamos la animación de bajada
-        modal.classList.add('modal-closing');
-        
-        // 2. Esperamos 250ms (lo que dura la animación CSS)
-        setTimeout(() => {
-            modal.classList.add('hidden');       // Ocultamos realmente
-            modal.classList.remove('modal-closing'); // Limpiamos para la próxima
-        }, 250);
-    };
-
     window.doRegister = async () => {
         const pin = document.getElementById('reg-pin').value; 
         if(!isValidPIN(pin)) return showToast("El PIN debe ser de 6 números.");
@@ -2138,35 +2095,26 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         } catch(e) { showToast("Error al registrar"); } finally { btn.disabled = false; btn.innerText = "Guardar y Entrar"; }
     };
 
-        window.doLogin = async () => {
+    window.doLogin = async () => {
         const pinInput = document.getElementById('login-pin').value;
-        const container = document.getElementById('dots-login'); // Referencia a los dots
+        const container = document.getElementById('dots-login');
 
-        // Si por alguna razón se ejecuta con menos de 6, no hacemos nada
         if (pinInput.length < 6) return;
 
         const hInput = await hashString(pinInput);
         
         if(hInput === selectedUserDoc.data.password) {
-            // ÉXITO: Entramos
             window.closeModal(); 
             enterDashboard(selectedUserDoc.id, selectedUserDoc.data);
         } else {
-            // ERROR: Animación de sacudida
-            if(navigator.vibrate) navigator.vibrate(200); // Vibrar celular si es posible
+            if(navigator.vibrate) navigator.vibrate(200);
             
-            // Agregamos clase de error
             container.classList.add('shake-error');
-            
-            // Esperamos a que termine la animación (500ms) para limpiar
             setTimeout(() => {
                 container.classList.remove('shake-error');
-                document.getElementById('login-pin').value = ''; // Limpiar input
-                updatePinDots(0, 'dots-login'); // Limpiar puntos visuales
+                document.getElementById('login-pin').value = ''; 
+                updatePinDots(0, 'dots-login');
             }, 500);
-
-            // Opcional: mostrar Toast también, o dejar solo la animación
-            // showToast("PIN incorrecto"); 
         }
     };
 
@@ -2177,11 +2125,18 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         prepareAuth(selectedUserDoc.id, selectedUserDoc.data);
     };
 
-    function makeLinksClickable(text) {
-        if (!text) return ""; const urlRegex = /(https?:\/\/[^\s]+)/g;
-        return text.replace(urlRegex, (url) => `<a href="${url}" target="_blank">${url}</a>`);
-    }
+    window.closeModal = () => {
+        const modal = document.getElementById('auth-modal');
+        modal.classList.add('modal-closing');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('modal-closing');
+        }, 250);
+    };
 
+    // ==========================================
+    // 10. DASHBOARD Y PERFIL DE USUARIO
+    // ==========================================
     async function enterDashboard(uid, userData) {
         document.getElementById('screen-login').classList.add('hidden');
         document.getElementById('screen-dashboard').classList.remove('hidden');
@@ -2255,78 +2210,102 @@ onSnapshot(collection(db, `events/${id}/participants`), (qs) => {
         } catch(e) { btn.innerText = "Guardar Preferencias"; btn.disabled = false; showToast("Error al guardar"); }
     });
 
-
-
-
-window.shareEvent = async () => {
-    const link = document.getElementById('share-link-text').innerText;
-
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: 'Invitación al intercambio',
-                text: 'Únete a este intercambio 🎁',
-                url: link
-            });
-        } catch (err) {
-            // El usuario canceló, no pasa nada
+    // ==========================================
+    // 11. UTILIDADES DE ADMIN Y MODALES
+    // ==========================================
+    window.toggleFieldVisibility = (inputId) => {
+        const input = document.getElementById(inputId);
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+        const svg = btn.querySelector('svg');
+        if (input.type === "password") {
+            input.type = "text";
+            btn.style.color = "var(--primary)";
+            svg.innerHTML = openEyePaths;
+        } else {
+            input.type = "password";
+            btn.style.color = "var(--text-sec)";
+            svg.innerHTML = closedEyePaths;
         }
-    } else {
-        // Fallback por si no soporta share
-        navigator.clipboard.writeText(link);
-        showToast("Enlace copiado");
-    }
-};
+    };
 
+    window.promptForAdmin = (callback) => {
+        pendingAdminCallback = callback;
+        const m = document.getElementById('admin-modal');
+        const input = document.getElementById('admin-input-pass');
+        input.value = ''; input.type = 'password'; 
+        const btn = input.closest('.password-wrapper').querySelector('.btn-toggle-pass');
+        btn.style.color = 'var(--text-sec)';
+        m.classList.remove('hidden');
+        setTimeout(() => input.focus(), 100);
+    };
 
-
-
-function renderShareInfo(link) {
-    // 1. Mostrar el link en texto
-    document.getElementById('share-link-text').innerText = link;
-
-    // 2. Generar el QR
-    const qrImg = document.getElementById('qr-invite');
-    const encodedLink = encodeURIComponent(link);
-
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
-}
-
-
-
-
-
-
-
-
-
-
-    function updateSafariTheme() {
-    const isDark = document.body.classList.contains('dark-mode');
-    const metaTheme = document.getElementById('theme-color-meta');
+    window.closeAdminModal = () => { document.getElementById('admin-modal').classList.add('hidden'); pendingAdminCallback = null; };
     
-    // AHORA SÍ: TODO ES NEGRO PURO
-    // Las barras son negras y tu fondo (.container) también será negro.
-    const appleBlack = '#000000'; 
-    const appleWhite = '#ffffff'; 
-    const appleGray  = '#f3f4f6';
+    window.submitAdminAuth = () => {
+        const val = document.getElementById('admin-input-pass').value; 
+        const callbackToRun = pendingAdminCallback;
+        if(val === MASTER_KEY) {
+            closeAdminModal(); 
+            if(callbackToRun) callbackToRun();
+        } else {
+            showToast("Contraseña incorrecta");
+            document.getElementById('admin-input-pass').value = '';
+        }
+    };
 
-    const colorTop = isDark ? appleBlack : appleWhite;
-    const colorBottom = isDark ? appleBlack : appleGray;
+    window.openConfirmModal = (title, message, callback) => {
+        document.getElementById('confirm-title').innerText = title;
+        document.getElementById('confirm-desc').innerText = message;
+        pendingConfirmAction = callback;
+        document.getElementById('confirm-modal').classList.remove('hidden');
+    };
+    window.closeConfirmModal = () => { document.getElementById('confirm-modal').classList.add('hidden'); pendingConfirmAction = null; };
+    window.executeConfirm = () => { if (pendingConfirmAction) pendingConfirmAction(); closeConfirmModal(); };
 
-    if (metaTheme) metaTheme.setAttribute('content', colorTop);
-    document.documentElement.style.backgroundColor = colorBottom;
-}
+    window.revealName = () => {
+        const overlay = document.getElementById('reveal-overlay');
+        overlay.classList.add('faded');
+        confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+        if(currentUserId) {
+            updateDoc(doc(db, `events/${eventId}/participants/${currentUserId}`), { revealed: true });
+            const p = linkedProfiles.find(x => x.id === currentUserId);
+            if(p) p.revealed = true;
+        }
+    };
 
-const observer = new MutationObserver(() => updateSafariTheme());
-observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    // ==========================================
+    // 12. COMPARTIR Y QR
+    // ==========================================
+    window.shareEvent = async () => {
+        const link = document.getElementById('share-link-text').innerText;
 
-updateSafariTheme();
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'Invitación al intercambio',
+                    text: 'Únete a este intercambio 🎁',
+                    url: link
+                });
+            } catch (err) {
+            }
+        } else {
+            navigator.clipboard.writeText(link);
+            showToast("Enlace copiado");
+        }
+    };
 
+    window.copyLink = () => { navigator.clipboard.writeText(document.getElementById('share-link-text').innerText).then(()=>showToast("Enlace copiado")); };
 
+    function renderShareInfo(link) {
+        document.getElementById('share-link-text').innerText = link;
+        const qrImg = document.getElementById('qr-invite');
+        const encodedLink = encodeURIComponent(link);
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedLink}`;
+    }
 
-toast.classList.add('success');
+    toast.classList.add('success');
 </script>
+
 
 </body>
 </html>
