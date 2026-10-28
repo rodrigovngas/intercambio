@@ -1,5 +1,5 @@
 import {lazy,Suspense,useEffect,useState} from 'react'
-import {Moon,Sun,UserRound,Plus,ArrowLeft,LogOut,ChevronRight,CalendarDays,Gift,LoaderCircle,Archive,Check,RefreshCw} from 'lucide-react'
+import {UserRound,Plus,ArrowLeft,LogOut,ChevronRight,CalendarDays,Gift,LoaderCircle,Archive,Check,RefreshCw} from 'lucide-react'
 import {Auth} from './components/Auth'
 import type {AuthMode} from './components/Auth'
 import {useAuth} from './hooks/useAuth'
@@ -28,8 +28,6 @@ export default function App(){
   const [token,setToken]=useState(sessionStorage.getItem('intercambio_invite'))
   const [preview,setPreview]=useState<InvitePreview|null>(null)
   const [claiming,setClaiming]=useState(false)
-  const [dark,setDark]=useState(()=>{const saved=localStorage.getItem('intercambio_theme');return saved?saved==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches})
-  useEffect(()=>{document.documentElement.classList.toggle('dark',dark);localStorage.setItem('intercambio_theme',dark?'dark':'light');document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#000000':'#ffffff')},[dark])
   useEffect(()=>{if(!toast)return;const timer=setTimeout(()=>setToast(''),3500);return()=>clearTimeout(timer)},[toast])
   useEffect(()=>{if(!user){setEvents([]);setPreview(null);return}if(screen!=='events')return;let stopped=false;setEvents([]);setEventsLoading(true);setError('');listEvents().then(data=>{if(!stopped)setEvents(data)}).catch(e=>{if(!stopped)setError(friendlyError(e))}).finally(()=>{if(!stopped)setEventsLoading(false)});return()=>{stopped=true}},[screen,user?.id])
   useEffect(()=>{if(!user||!token)return;let cancelled=false;setError('');rpc<InvitePreview>('preview_invite',{p_token:token}).then(data=>{if(!cancelled)setPreview(data)}).catch(e=>{if(!cancelled)setError(friendlyError(e))});return()=>{cancelled=true}},[token,user?.id])
@@ -46,7 +44,7 @@ export default function App(){
   return <div className="flex min-h-dvh items-center justify-center bg-white py-0 dark:bg-black min-[501px]:px-5 min-[501px]:py-10">
     {toast&&<div role="status" className="fixed left-1/2 top-5 z-50 flex max-w-[90vw] -translate-x-1/2 items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white shadow-xl dark:bg-white dark:text-black"><Check size={16}/>{toast}</div>}
     <main className="relative flex min-h-dvh w-full max-w-[500px] flex-col bg-white px-[25px] pt-[30px] pb-2 dark:bg-black min-[501px]:min-h-0 min-[501px]:rounded-2xl min-[501px]:border min-[501px]:border-black/[.02] min-[501px]:pb-7 min-[501px]:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.15)] dark:min-[501px]:border-gray-900 dark:min-[501px]:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.9)]">
-      <div className="absolute right-5 top-7 z-10 flex gap-0.5"><button className="icon-button" aria-label={dark?'Activar modo claro':'Activar modo oscuro'} onClick={()=>setDark(!dark)}>{dark?<Sun size={20}/>:<Moon size={20}/>}</button>{screen==='home'&&!token&&<button className="icon-button" aria-label="Mi cuenta y mis eventos" onClick={()=>requireUser('events')}><UserRound size={20}/></button>}</div>
+      {screen==='home'&&!token&&<button className="icon-button absolute right-5 top-7 z-10" aria-label="Mi cuenta y mis eventos" onClick={()=>requireUser('events')}><UserRound size={20}/></button>}
       {loading?<div className="flex min-h-64 items-center justify-center" aria-label="Cargando sesión" role="status"><LoaderCircle className="animate-spin text-gray-400"/></div>:<>
         {authError&&<p role="alert" className="mt-12 mb-4 text-sm text-red-500">{authError}</p>}
         {token&&!recovering&&!isAuth?<section className="screen py-12"><div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-900"><Gift size={27}/></div><h1 className="heading">{preview?.title??'Tienes una invitación'}</h1><p className="subheading">{user?(preview?(inviteUnavailable?'Esta invitación ya está vinculada a otra cuenta. Pide al organizador tu enlace personal.':`${preview.participant_name??'Tu perfil'} te está esperando en este intercambio.`):'Consultando tu invitación…'):'Inicia sesión o crea una cuenta para unirte al intercambio.'}</p>{preview&&<div className="mt-5 flex flex-wrap justify-center gap-2">{preview.event_date&&<span className="pill">{formatDate(preview.event_date)}</span>}{preview.budget&&<span className="pill">{preview.budget}</span>}</div>}{error&&<p className="mt-5 text-sm text-red-600" role="alert">{error}</p>}<button className="btn-primary mt-7" disabled={claiming||inviteUnavailable||(!!user&&!preview)} onClick={()=>{if(user)void claim();else{setAuthMode('login');setIntent('home');setScreen('auth')}}}>{claiming&&<LoaderCircle size={18} className="animate-spin"/>}{user?(preview?.is_mine?'Ir a mi intercambio':'Unirme al intercambio'):'Continuar'}</button><button className="btn-text mx-auto mt-3" onClick={clearInvite}>Volver al inicio</button></section>:

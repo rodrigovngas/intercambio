@@ -1,9 +1,13 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
 @theme { --font-sans: 'Inter', sans-serif; }
 @layer base {
-  html { background: #fff; color: #1f2937; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
-  html.dark { background: #000; color-scheme: dark; }
+  html { background: #fff; color: #1f2937; color-scheme: light dark; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+  @media (prefers-color-scheme: dark) {
+    html { background: #000; color: #f3f4f6; }
+  }
+  /* Keep native scrolling in the document, dialogs and nested lists. */
+  * { scrollbar-width: none; -ms-overflow-style: none; }
+  *::-webkit-scrollbar { display: none; width: 0; height: 0; }
   body { margin: 0; min-width: 320px; }
   button, a, input, select, textarea { touch-action: manipulation; }
   button { cursor: pointer; }
