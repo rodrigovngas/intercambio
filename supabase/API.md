@@ -2,7 +2,7 @@
 
 La migración añade solamente `public.intercambio_events`, `public.intercambio_participants`, las RPC `public.intercambio_*` y el esquema no expuesto `intercambio_private`. No modifica tablas de otras aplicaciones del proyecto.
 
-Todas las llamadas requieren una sesión de Supabase Auth. Usar la clave **publishable** en React; nunca claves secretas o `service_role`. Conservar `intercambio_private` fuera de **Data API > Exposed schemas**. No hay escrituras directas a tablas desde el navegador.
+Las operaciones iniciales de esta referencia requieren una sesión de Supabase Auth. El acceso actual de invitados usa NIP sin cuenta y se documenta en [PIN_API.md](PIN_API.md). Sólo el organizador verificado configurado en el servidor puede administrar eventos; `claim_participant` ya no admite llamadas desde el navegador. Usar la clave **publishable** en React; nunca claves secretas o `service_role`. Conservar `intercambio_private` fuera de **Data API > Exposed schemas**. No hay escrituras directas a tablas desde el navegador.
 
 ## Tablas para SELECT
 
@@ -48,9 +48,9 @@ await supabase.rpc('intercambio_create_event', {
 
 ### Invitaciones
 
-`get_participant_invites` es exclusivo del organizador y devuelve `[{participant_id,name,token,claimed,revealed}]`. Para un perfil reclamado devuelve `token: null`. Los tokens se generan con dos UUID aleatorios seguros de PostgreSQL (244 bits aleatorios) y tienen 64 caracteres hexadecimales. Compartir mediante fragmento de URL, por ejemplo `/#invite=TOKEN`, para evitar enviarlos a registros HTTP o al encabezado Referer. Son credenciales de invitación: compartir cada uno solamente con su destinatario.
+`get_participant_invites` es exclusivo del organizador y devuelve `[{participant_id,name,token,claimed,revealed}]`. La ampliación de NIP conserva el token para volver a compartirlo y añade `has_pin` y `account_linked`; `claimed` indica ahora que ya se creó un NIP. Los tokens se generan con dos UUID aleatorios seguros de PostgreSQL (244 bits aleatorios) y tienen 64 caracteres hexadecimales. Compartir mediante fragmento de URL, por ejemplo `/#invite=TOKEN`, para evitar enviarlos a registros HTTP o al encabezado Referer. Son credenciales de invitación: compartir cada uno solamente con su destinatario.
 
-`preview_invite` devuelve `{event_id,title,event_date,budget,gift_type,participant_id,participant_name,claimed,is_mine}`. No devuelve otras identidades, deseos ni asignaciones. `claim_participant` vincula el perfil a `auth.uid()` bajo bloqueo transaccional. Una segunda cuenta no puede reutilizar el token. Un reintento de la misma cuenta es idempotente.
+`preview_invite` devuelve `{event_id,title,event_date,budget,gift_type,participant_id,participant_name,claimed,is_mine}`. No devuelve otras identidades, deseos ni asignaciones. `claim_participant` correspondía a la vinculación por cuenta inicial y ahora está revocada. Los perfiles vinculados antes del cambio se conservan. Las invitaciones nuevas abren directamente el acceso por NIP, sin registro de cuentas.
 
 `get_event_preview` devuelve `{event_id,title,event_date,budget,gift_type,status}` para `invite_code`. El enlace general permite conocer el evento después de iniciar sesión, pero el acceso al perfil requiere la invitación individual del organizador.
 

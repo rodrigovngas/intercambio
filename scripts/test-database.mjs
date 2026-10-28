@@ -1,24 +1,21 @@
-import {PGlite} from '@electric-sql/pglite'
-import {readFile,readdir} from 'node:fs/promises'
-const db=new PGlite()
+import { readFile } from 'node:fs/promises'
+import { createTestDatabase, migrationFiles, applyMigration, seedOrganizer, runPinSqlSuite } from './test-pin-database.mjs'
+
+const db = await createTestDatabase()
 try {
-  await db.exec(`
-    create role anon;
-    create role authenticated;
-    create role service_role bypassrls;
-    create schema auth;
-    create table auth.users(id uuid primary key,email text);
-    create function auth.uid() returns uuid language sql stable as $$
-      select nullif(current_setting('request.jwt.claim.sub',true),'')::uuid;
-    $$;
-    grant usage on schema auth to authenticated,anon;
-    grant execute on function auth.uid() to authenticated,anon;
-  `)
-  for(const file of (await readdir(new URL('../supabase/migrations/',import.meta.url))).filter(f=>f.endsWith('.sql')).sort()) {
-    await db.exec(await readFile(new URL(`../supabase/migrations/${file}`,import.meta.url),'utf8'))
-  }
-  await db.exec(await readFile(new URL('../tests/db/backend.sql',import.meta.url),'utf8'))
-  const {rows}=await db.query('select count(*)::int as users from auth.users')
-  if(rows[0].users!==0)throw new Error('Test fixtures were not rolled back')
-  console.log('PASS: database permissions, private results, invitations, dependents, draw invariants, redraw and rollback.')
-} finally { await db.close() }
+  const files = await migrationFiles()
+  const baseIndex = files.findIndex((file) => file.endsWith('_intercambio_backend.sql'))
+  if (baseIndex < 0) throw new Error('The original backend migration is missing')
+  for (const file of files.slice(0, baseIndex + 1)) await applyMigration(db, file)
+  await db.exec(await readFile(new URL('../tests/db/backend.sql', import.meta.url), 'utf8'))
+  const { rows } = await db.query('select count(*)::int as users from auth.users')
+  if (rows[0].users !== 0) throw new Error('Original test fixtures were not rolled back')
+  console.log('PASS: original database permissions, invitations, dependents, draw invariants and rollback.')
+
+  await seedOrganizer(db)
+  for (const file of files.slice(baseIndex + 1)) await applyMigration(db, file)
+  await runPinSqlSuite(db)
+  console.log('PASS: real bcrypt, guest privacy, lockout, sessions, dependents, reset and scoped deletions verified.')
+} finally {
+  await db.close()
+}
