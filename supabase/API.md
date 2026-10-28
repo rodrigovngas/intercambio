@@ -2,7 +2,7 @@
 
 La migración añade solamente `public.intercambio_events`, `public.intercambio_participants`, las RPC `public.intercambio_*` y el esquema no expuesto `intercambio_private`. No modifica tablas de otras aplicaciones del proyecto.
 
-Las operaciones iniciales de esta referencia requieren una sesión de Supabase Auth. El acceso actual de invitados usa NIP sin cuenta y se documenta en [PIN_API.md](PIN_API.md). Cada usuario registrado puede administrar sus propios eventos. `claim_participant` vincula invitados con cuenta en eventos de ese modo; los invitados de eventos NIP usan las funciones de NIP. Las reglas actuales están en [MIXED_ACCESS_API.md](MIXED_ACCESS_API.md). Usar la clave **publishable** en React; nunca claves secretas o `service_role`. Conservar `intercambio_private` fuera de **Data API > Exposed schemas**. No hay escrituras directas a tablas desde el navegador.
+Las operaciones iniciales de esta referencia requieren una sesión de Supabase Auth. Cada usuario registrado puede administrar sus propios eventos. `claim_participant` vincula invitados con cuenta en eventos de ese modo; los invitados de eventos NIP usan las funciones descritas en [PIN_API.md](PIN_API.md). Las reglas actuales de ambos modos están en [MIXED_ACCESS_API.md](MIXED_ACCESS_API.md). Usar la clave **publishable** en React; nunca claves secretas o `service_role`. Conservar `intercambio_private` fuera de **Data API > Exposed schemas**. No hay escrituras directas a tablas desde el navegador.
 
 ## Tablas para SELECT
 
@@ -48,7 +48,7 @@ await supabase.rpc('intercambio_create_event', {
 
 ### Invitaciones
 
-`get_participant_invites` es exclusivo del organizador y devuelve `[{participant_id,name,token,claimed,revealed}]`. La ampliación de NIP conserva el token para volver a compartirlo y añade `has_pin` y `account_linked`; `claimed` indica ahora que ya se creó un NIP. Los tokens se generan con dos UUID aleatorios seguros de PostgreSQL (244 bits aleatorios) y tienen 64 caracteres hexadecimales. Compartir mediante fragmento de URL, por ejemplo `/#invite=TOKEN`, para evitar enviarlos a registros HTTP o al encabezado Referer. Son credenciales de invitación: compartir cada uno solamente con su destinatario.
+`get_participant_invites` es exclusivo del organizador y devuelve `[{participant_id,name,token,claimed,revealed,has_pin,account_linked,guest_access_mode}]`. El token se conserva para volver a compartirlo; `claimed` indica NIP creado en modo `pin`, o cuenta vinculada en modo `account`. Los tokens se generan con dos UUID aleatorios seguros de PostgreSQL (244 bits aleatorios) y tienen 64 caracteres hexadecimales. Compartir mediante fragmento de URL, por ejemplo `/#invite=TOKEN`, para evitar enviarlos a registros HTTP o al encabezado Referer. Son credenciales de invitación: compartir cada uno solamente con su destinatario.
 
 `preview_invite` devuelve `{event_id,title,event_date,budget,gift_type,participant_id,participant_name,claimed,is_mine}`. No devuelve otras identidades, deseos ni asignaciones. `claim_participant` requiere una cuenta verificada y activa, y sólo admite invitaciones de eventos con modo `account`. Las invitaciones de modo `pin` no pueden vincularse a una cuenta para eludir el NIP.
 

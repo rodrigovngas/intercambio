@@ -44,7 +44,7 @@ Las funciones de creación, edición, altas/bajas, sorteo, archivo, invitaciones
 
 `claim_participant` se admite para usuarios registrados en eventos de modo `account`; se rechaza en eventos `pin`. No se pueden reclamar perfiles con una cuenta para eludir el NIP.
 
-`get_participant_invites` mantiene `participant_id`, `name`, `token`, `claimed` y `revealed`, y añade `has_pin` y `account_linked`. El token siempre está presente para volver a compartir la invitación. `claimed` y `has_pin` indican que ya se creó el NIP; `account_linked` conserva el estado de vinculación de cuenta anterior.
+`get_participant_invites` mantiene `participant_id`, `name`, `token`, `claimed` y `revealed`, y añade `has_pin`, `account_linked` y `guest_access_mode`. El token siempre está presente para volver a compartir la invitación. En modo `pin`, `claimed` indica NIP creado; en modo `account`, indica cuenta vinculada. `has_pin` y `account_linked` muestran cada estado por separado.
 
 ## Protección del servidor
 
