@@ -4,11 +4,11 @@ El frontend es una SPA de React con Vite. Supabase se encarga de Auth, PostgreSQ
 
 ## Destinos elegidos
 
-El proyecto de Vercel creado para esta migración se llama `intercambio` (`prj_27eaqEi9p0EvJdcye0FaNcOcwcZd`). La base de datos autorizada por el propietario es el proyecto de Supabase `Stocka` (`tinxltuanitszizxysjb`). Las tablas y funciones nuevas usan el prefijo `intercambio_` y el esquema privado `intercambio_private` para convivir con la aplicación existente. Estos identificadores no son credenciales. La creación del proyecto de alojamiento por sí sola no confirma un despliegue operativo; la URL y el resultado de publicación deben verificarse al terminar.
+La URL publicada es **https://intercambio-vngas.vercel.app/**. Vercel confirmó el despliegue como `READY` y se verificó una respuesta HTTP 200 y su vista de escritorio y móvil. El proyecto se llama `intercambio` (`prj_27eaqEi9p0EvJdcye0FaNcOcwcZd`). La base de datos autorizada es `Stocka` (`tinxltuanitszizxysjb`); la migración `20261027223953_intercambio_backend` quedó aplicada y registrada allí. Tablas y funciones usan el prefijo `intercambio_` y el esquema privado `intercambio_private`. Estos identificadores no son credenciales.
 
 ## Configuración del proyecto
 
-Usa el repositorio y la rama de esta migración en el equipo de Vercel elegido. La configuración esperada es:
+El primer despliegue se hizo con los archivos fuente a través de la API de Vercel. El código está respaldado en la rama `codex/react-supabase` y el PR https://github.com/rodrigovngas/intercambio/pull/1. Para despliegues automáticos posteriores, conectar esa rama al proyecto de Vercel. La configuración es:
 
 | Campo | Valor |
 | --- | --- |
@@ -33,9 +33,9 @@ Vite incorpora los valores `VITE_*` al JavaScript durante la compilación, así 
 
 ## Supabase antes de abrir registros
 
-Aplica las migraciones y verifica sus pruebas. En Authentication → URL Configuration configura `Site URL` con el dominio final HTTPS. Añade a Redirect URLs las direcciones exactas usadas por confirmación de correo y recuperación de contraseña y la URL local de desarrollo. Si necesitas vistas previas, autoriza un patrón limitado a tu propio proyecto/equipo, sin permitir globalmente cualquier dominio de Vercel. Fuente: [Redirect URLs de Supabase](https://supabase.com/docs/guides/auth/redirect-urls).
+Las pruebas SQL pasaron en PGlite y en Supabase con rollback de sus fixtures. En Authentication → URL Configuration, **conservar el Site URL de Stocka y sus URLs existentes**, porque el proyecto es compartido. Añadir a Redirect URLs `https://intercambio-vngas.vercel.app/` para los retornos explícitos de Intercambio; si se usará también el alias `https://intercambio-five.vercel.app/`, añadirlo de forma exacta. Para desarrollo pueden añadirse `http://127.0.0.1:5173/` y `http://localhost:5173/`. No permitir globalmente cualquier dominio de Vercel. Fuente: [Redirect URLs de Supabase](https://supabase.com/docs/guides/auth/redirect-urls).
 
-Configura un proveedor SMTP propio en Supabase para registros públicos y recuperación. El servicio predeterminado de Supabase está destinado a pruebas: actualmente sólo envía a direcciones que pertenecen al equipo del proyecto y limita los envíos a dos por hora. Los datos SMTP se configuran en Supabase, nunca en el frontend. Fuente: [SMTP de Supabase](https://supabase.com/docs/guides/auth/auth-smtp).
+La inspección del dashboard confirmó registro por correo habilitado, confirmación obligatoria y SMTP propio aún sin configurar. Para registros públicos y recuperación hay que configurar un proveedor SMTP. El servicio predeterminado está destinado a pruebas: actualmente sólo envía a direcciones que pertenecen al equipo del proyecto y limita los envíos a dos por hora. Los datos SMTP se configuran en Supabase, nunca en el frontend, y el cambio afectará al correo de ambas aplicaciones. Fuente: [SMTP de Supabase](https://supabase.com/docs/guides/auth/auth-smtp).
 
 ## Comprobación del despliegue
 
