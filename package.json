@@ -8,7 +8,10 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "test": "vitest run",
-    "db:test": "node scripts/test-database.mjs"
+    "db:test": "node scripts/test-database.mjs",
+    "check": "tsc --noEmit && npm run format:check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@supabase/supabase-js": "2.118.0",
@@ -26,6 +29,7 @@
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "pg": "8.23.1",
+    "prettier": "3.9.10",
     "supabase": "2.122.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",

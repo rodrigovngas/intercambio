@@ -10,13 +10,13 @@ La URL publicada es **https://intercambio-vngas.vercel.app/**. Vercel confirmó 
 
 El primer despliegue se hizo con los archivos fuente a través de la API de Vercel. El código está respaldado en la rama `codex/react-supabase` y el PR https://github.com/rodrigovngas/intercambio/pull/1. Para despliegues automáticos posteriores, conectar esa rama al proyecto de Vercel. La configuración es:
 
-| Campo | Valor |
-| --- | --- |
-| Framework | Vite |
-| Directorio raíz | Raíz del repositorio |
-| Instalación | `npm ci` |
-| Compilación | `npm run build` |
-| Directorio de salida | `dist` |
+| Campo                | Valor                |
+| -------------------- | -------------------- |
+| Framework            | Vite                 |
+| Directorio raíz      | Raíz del repositorio |
+| Instalación          | `npm ci`             |
+| Compilación          | `npm run build`      |
+| Directorio de salida | `dist`               |
 
 El archivo `vercel.json` de la aplicación mantiene el fallback de rutas a `index.html` para poder abrir directamente enlaces de la SPA. Vercel admite despliegues desde Git y genera vistas previas para ramas. Fuente: [Vite en Vercel](https://vercel.com/docs/frameworks/frontend/vite).
 

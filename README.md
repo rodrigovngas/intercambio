@@ -40,9 +40,12 @@ Variables del cliente: `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`. Nu
 
 ```sh
 npm run build
+npm run check
 npm test
 npm run db:test
 ```
+
+`npm run check` comprueba tipos, código local sin uso y formato. `npm run format` aplica el formato común. Las migraciones SQL aplicadas conservan su contenido original.
 
 Las pruebas usan PostgreSQL embebido con PGlite y pgcrypto real. Cubren aislamiento entre cuentas e invitados, bcrypt, intentos en solicitudes separadas, vencimiento/revocación de sesiones, dependientes, sorteos y borrados con rollback. El importador tiene pruebas de idempotencia y conservación del historial. Las pruebas locales no requieren credenciales ni modifican datos reales.
 
@@ -57,5 +60,7 @@ Las migraciones de producción se registran una sola vez. No volver a ejecutar l
 ## Despliegue e historial anterior
 
 [Vercel y autenticación](docs/VERCEL.md) describe el alojamiento y los ajustes de recuperación de contraseña del organizador. El correo SMTP no es necesario para el acceso por NIP de invitados; su configuración sigue pendiente para confirmaciones de registro y recuperación de contraseña con direcciones externas al equipo de Supabase.
+
+[Correo con Resend](docs/EMAIL.md) documenta la integración oficial con Supabase. Falta un dominio propio verificado para habilitar el envío a usuarios externos; no se requieren claves Resend en el frontend.
 
 [Migrar datos de Firestore](docs/MIGRATION.md) describe la importación de un respaldo sin trasladar PIN ni credenciales antiguas. El historial real de Firebase todavía no se ha importado. El sitio original de GitHub Pages sigue disponible mientras se revisa la migración.

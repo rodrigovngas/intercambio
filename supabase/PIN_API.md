@@ -12,15 +12,15 @@ No se publica una lista general de participantes ni resultados. La vista previa 
 
 Las llamadas se hacen con `supabase.rpc('intercambio_' + nombre, argumentos)` y la clave publishable habitual. Admiten los roles `anon` y `authenticated`; la autorización real depende de la invitación o del token de sesión, no de una cuenta.
 
-| Nombre | Argumentos | Retorno |
-| --- | --- | --- |
-| `guest_preview` | `p_token` | `{event_id,title,event_date,budget,gift_type,status,drawn_at,participant_id,participant_name,has_pin}` |
-| `guest_register` | `p_token`, `p_pin` | Respuesta de acceso indicada abajo |
-| `guest_login` | `p_token`, `p_pin` | Respuesta de acceso indicada abajo |
-| `guest_profile` | `p_session_token` | `{event,participant_id,expires_at,profiles}` |
-| `guest_assignment` | `p_session_token`, `p_participant_id` | `{participant_id,target_id,target_name,wishes,extra}` |
-| `guest_save_wishes` | `p_session_token`, `p_participant_id`, `p_wishes`, `p_extra=''` | void |
-| `guest_logout` | `p_session_token` | void |
+| Nombre              | Argumentos                                                      | Retorno                                                                                                |
+| ------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `guest_preview`     | `p_token`                                                       | `{event_id,title,event_date,budget,gift_type,status,drawn_at,participant_id,participant_name,has_pin}` |
+| `guest_register`    | `p_token`, `p_pin`                                              | Respuesta de acceso indicada abajo                                                                     |
+| `guest_login`       | `p_token`, `p_pin`                                              | Respuesta de acceso indicada abajo                                                                     |
+| `guest_profile`     | `p_session_token`                                               | `{event,participant_id,expires_at,profiles}`                                                           |
+| `guest_assignment`  | `p_session_token`, `p_participant_id`                           | `{participant_id,target_id,target_name,wishes,extra}`                                                  |
+| `guest_save_wishes` | `p_session_token`, `p_participant_id`, `p_wishes`, `p_extra=''` | void                                                                                                   |
+| `guest_logout`      | `p_session_token`                                               | void                                                                                                   |
 
 Una respuesta de registro o inicio correcto es `{ok:true,session_token,expires_at}`. Un error esperado devuelve `{ok:false,error,retry_after_seconds?}`. Es un resultado JSON, no una excepción: así el contador de intentos fallidos se confirma en la transacción.
 

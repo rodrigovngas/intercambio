@@ -1,32 +1,16 @@
-import { rpc } from './api'
-import type { Assignment } from './api'
+import { isOpaqueToken, rpc } from './api'
+import type { Assignment, ExchangeEvent, InvitePreview, Participant } from './api'
 
-export type GuestEvent = {
-  id: string
-  title: string
-  event_date: string
-  budget: string
-  gift_type: string
-  status: 'draft' | 'drawn' | 'archived'
-  drawn_at: string | null
-}
+type GuestEvent = Pick<
+  ExchangeEvent,
+  'id' | 'title' | 'event_date' | 'budget' | 'gift_type' | 'status' | 'drawn_at'
+>
 
-export type GuestPreview = Omit<GuestEvent, 'id'> & {
-  event_id: string
-  participant_id: string
-  participant_name: string
-  has_pin: boolean
-  guest_access_mode: 'pin' | 'account'
-  claimed?: boolean
-  is_mine?: boolean | null
-}
+export type GuestPreview = Omit<InvitePreview, 'claimed' | 'is_mine'> &
+  Pick<GuestEvent, 'status' | 'drawn_at'> &
+  Partial<Pick<InvitePreview, 'claimed' | 'is_mine'>>
 
-export type GuestProfile = {
-  id: string
-  name: string
-  is_child: boolean
-  wishes: string[]
-  extra: string
+type GuestProfile = Pick<Participant, 'id' | 'name' | 'is_child' | 'wishes' | 'extra'> & {
   revealed: boolean
 }
 
@@ -42,20 +26,20 @@ export type GuestSession = {
   expires_at: string
 }
 
-export type GuestPinResponse =
-  | ({ ok: true } & GuestSession)
-  | { ok: false; error: string; retry_after_seconds?: number }
+type GuestPinResponse =
+  ({ ok: true } & GuestSession) | { ok: false; error: string; retry_after_seconds?: number }
 
 const sessionKey = (invitation: string) => `intercambio_guest_${invitation}`
 
 export function validGuestSession(value: unknown): value is GuestSession {
   if (!value || typeof value !== 'object') return false
   const candidate = value as Partial<GuestSession>
-  return typeof candidate.session_token === 'string'
-    && /^[a-f0-9]{64}$/.test(candidate.session_token)
-    && typeof candidate.expires_at === 'string'
-    && Number.isFinite(Date.parse(candidate.expires_at))
-    && Date.parse(candidate.expires_at) > Date.now()
+  return (
+    isOpaqueToken(candidate.session_token) &&
+    typeof candidate.expires_at === 'string' &&
+    Number.isFinite(Date.parse(candidate.expires_at)) &&
+    Date.parse(candidate.expires_at) > Date.now()
+  )
 }
 
 // Only the short-lived guest session lives in this tab. A PIN never goes here.
@@ -71,12 +55,16 @@ export function readGuestSession(invitation: string): GuestSession | null {
 }
 
 export function rememberGuestSession(invitation: string, session: GuestSession) {
-  if (!validGuestSession(session)) throw new Error('El acceso recibido no es válido. Inténtalo de nuevo.')
+  if (!validGuestSession(session))
+    throw new Error('El acceso recibido no es válido. Inténtalo de nuevo.')
   try {
-    sessionStorage.setItem(sessionKey(invitation), JSON.stringify({
-      session_token: session.session_token,
-      expires_at: session.expires_at,
-    }))
+    sessionStorage.setItem(
+      sessionKey(invitation),
+      JSON.stringify({
+        session_token: session.session_token,
+        expires_at: session.expires_at,
+      }),
+    )
   } catch {
     // The current in-memory session remains usable without persistent storage.
   }
@@ -96,23 +84,30 @@ export function isGuestSessionError(error: unknown) {
 
 export const guestApi = {
   preview: (token: string) => rpc<GuestPreview>('guest_preview', { p_token: token }),
-  unlock: (token: string, pin: string, register: boolean) => rpc<GuestPinResponse>(
-    register ? 'guest_register' : 'guest_login',
-    { p_token: token, p_pin: pin },
-  ),
-  profile: (session: string) => rpc<GuestProfileBundle>('guest_profile', { p_session_token: session }),
-  assignment: (session: string, participantId: string) => rpc<Assignment>('guest_assignment', {
-    p_session_token: session,
-    p_participant_id: participantId,
-  }),
-  restoreAssignment: (session: string, participantId: string, drawnAt: string) => rpc<Assignment | null>('guest_restore_assignment', {
-    p_session_token: session,
-    p_participant_id: participantId,
-    p_expected_drawn_at: drawnAt,
-  }),
-  saveWishes: (session: string, participantId: string, wishes: string[], extra: string) => rpc<void>(
-    'guest_save_wishes',
-    { p_session_token: session, p_participant_id: participantId, p_wishes: wishes, p_extra: extra },
-  ),
+  unlock: (token: string, pin: string, register: boolean) =>
+    rpc<GuestPinResponse>(register ? 'guest_register' : 'guest_login', {
+      p_token: token,
+      p_pin: pin,
+    }),
+  profile: (session: string) =>
+    rpc<GuestProfileBundle>('guest_profile', { p_session_token: session }),
+  assignment: (session: string, participantId: string) =>
+    rpc<Assignment>('guest_assignment', {
+      p_session_token: session,
+      p_participant_id: participantId,
+    }),
+  restoreAssignment: (session: string, participantId: string, drawnAt: string) =>
+    rpc<Assignment | null>('guest_restore_assignment', {
+      p_session_token: session,
+      p_participant_id: participantId,
+      p_expected_drawn_at: drawnAt,
+    }),
+  saveWishes: (session: string, participantId: string, wishes: string[], extra: string) =>
+    rpc<void>('guest_save_wishes', {
+      p_session_token: session,
+      p_participant_id: participantId,
+      p_wishes: wishes,
+      p_extra: extra,
+    }),
   logout: (session: string) => rpc<void>('guest_logout', { p_session_token: session }),
 }

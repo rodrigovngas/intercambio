@@ -14,7 +14,9 @@ export function useAuth() {
     let mounted = true
     let receivedAuthEvent = false
 
-    const { data: { subscription } } = client.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange((event, session) => {
       if (!mounted) return
       receivedAuthEvent = true
       setUser(session?.user ?? null)
@@ -23,16 +25,20 @@ export function useAuth() {
       if (event === 'SIGNED_OUT') setRecovering(false)
     })
 
-    client.auth.getSession().then(({ data, error: sessionError }) => {
-      if (!mounted) return
-      if (!receivedAuthEvent) setUser(data.session?.user ?? null)
-      if (sessionError) setError('No pudimos recuperar tu sesión. Intenta iniciar sesión de nuevo.')
-      setLoading(false)
-    }).catch(() => {
-      if (!mounted) return
-      setError('No pudimos conectar con el servicio de cuentas.')
-      setLoading(false)
-    })
+    client.auth
+      .getSession()
+      .then(({ data, error: sessionError }) => {
+        if (!mounted) return
+        if (!receivedAuthEvent) setUser(data.session?.user ?? null)
+        if (sessionError)
+          setError('No pudimos recuperar tu sesión. Intenta iniciar sesión de nuevo.')
+        setLoading(false)
+      })
+      .catch(() => {
+        if (!mounted) return
+        setError('No pudimos conectar con el servicio de cuentas.')
+        setLoading(false)
+      })
 
     return () => {
       mounted = false

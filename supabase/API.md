@@ -16,29 +16,32 @@ RLS limita eventos al organizador o a una cuenta que ya reclamó un participante
 
 Usar `supabase.rpc('intercambio_' + nombre, argumentos)`.
 
-| Nombre | Argumentos | Retorno |
-|---|---|---|
-| `create_event` | `p_title`, `p_event_date`, `p_budget`, `p_gift_type`, `p_participants` | UUID del evento |
-| `update_event` | `p_event_id`, `p_title`, `p_event_date`, `p_budget`, `p_gift_type` | void |
-| `add_participant` | `p_event_id`, `p_name`, `p_is_child=false`, `p_guardian_id=null` | UUID participante |
-| `remove_participant` | `p_participant_id` | void |
-| `draw_event` | `p_event_id`, `p_expected_drawn_at=null` | nueva fecha de sorteo |
-| `archive_event` | `p_event_id`, `p_archived=true` | void |
-| `get_participant_invites` | `p_event_id` | JSON array de invitaciones |
-| `preview_invite` | `p_token` | JSON de invitación |
-| `claim_participant` | `p_token` | UUID de perfil reclamado |
-| `get_my_assignment` | `p_participant_id` | JSON de destinatario |
-| `save_wishes` | `p_participant_id`, `p_wishes`, `p_extra=''` | void |
-| `get_event_preview` | `p_code` | JSON metadatos evento |
+| Nombre                    | Argumentos                                                             | Retorno                    |
+| ------------------------- | ---------------------------------------------------------------------- | -------------------------- |
+| `create_event`            | `p_title`, `p_event_date`, `p_budget`, `p_gift_type`, `p_participants` | UUID del evento            |
+| `update_event`            | `p_event_id`, `p_title`, `p_event_date`, `p_budget`, `p_gift_type`     | void                       |
+| `add_participant`         | `p_event_id`, `p_name`, `p_is_child=false`, `p_guardian_id=null`       | UUID participante          |
+| `remove_participant`      | `p_participant_id`                                                     | void                       |
+| `draw_event`              | `p_event_id`, `p_expected_drawn_at=null`                               | nueva fecha de sorteo      |
+| `archive_event`           | `p_event_id`, `p_archived=true`                                        | void                       |
+| `get_participant_invites` | `p_event_id`                                                           | JSON array de invitaciones |
+| `preview_invite`          | `p_token`                                                              | JSON de invitación         |
+| `claim_participant`       | `p_token`                                                              | UUID de perfil reclamado   |
+| `get_my_assignment`       | `p_participant_id`                                                     | JSON de destinatario       |
+| `save_wishes`             | `p_participant_id`, `p_wishes`, `p_extra=''`                           | void                       |
+| `get_event_preview`       | `p_code`                                                               | JSON metadatos evento      |
 
 ### Crear evento
 
 ```ts
 await supabase.rpc('intercambio_create_event', {
-  p_title: 'Cena de Navidad', p_event_date: '2026-12-24',
-  p_budget: '$300', p_gift_type: 'Libros',
+  p_title: 'Cena de Navidad',
+  p_event_date: '2026-12-24',
+  p_budget: '$300',
+  p_gift_type: 'Libros',
   p_participants: [
-    { name: 'Ana' }, { name: 'Beto' },
+    { name: 'Ana' },
+    { name: 'Beto' },
     { name: 'Dani', is_child: true, guardian_index: 0 },
   ],
 })
