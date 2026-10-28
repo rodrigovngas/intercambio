@@ -16,6 +16,9 @@ export type GuestPreview = Omit<GuestEvent, 'id'> & {
   participant_id: string
   participant_name: string
   has_pin: boolean
+  guest_access_mode: 'pin' | 'account'
+  claimed?: boolean
+  is_mine?: boolean | null
 }
 
 export type GuestProfile = {
@@ -24,6 +27,7 @@ export type GuestProfile = {
   is_child: boolean
   wishes: string[]
   extra: string
+  revealed: boolean
 }
 
 export type GuestProfileBundle = {
@@ -100,6 +104,11 @@ export const guestApi = {
   assignment: (session: string, participantId: string) => rpc<Assignment>('guest_assignment', {
     p_session_token: session,
     p_participant_id: participantId,
+  }),
+  restoreAssignment: (session: string, participantId: string, drawnAt: string) => rpc<Assignment | null>('guest_restore_assignment', {
+    p_session_token: session,
+    p_participant_id: participantId,
+    p_expected_drawn_at: drawnAt,
   }),
   saveWishes: (session: string, participantId: string, wishes: string[], extra: string) => rpc<void>(
     'guest_save_wishes',

@@ -1,15 +1,17 @@
 import { supabase } from './supabase'
 export type ExchangeEvent = {
   id: string; owner_id: string; title: string; event_date: string; budget: string; gift_type: string;
-  status: 'draft' | 'drawn' | 'archived'; invite_code: string; drawn_at: string | null; created_at: string;
+  status: 'draft' | 'drawn' | 'archived'; invite_code: string; drawn_at: string | null; created_at: string; guest_access_mode: 'account' | 'pin';
 }
+export type AccountStatus = { can_organize: boolean; can_use_pin: boolean; deleted: boolean }
+export type MyProfileState = { drawn_at: string | null; profiles: { id: string; revealed: boolean }[] }
 export type Participant = {
   id: string; event_id: string; name: string; is_child: boolean; user_id: string | null;
   guardian_id: string | null; wishes: string[]; extra: string;
 }
 export type DraftParticipant = { name: string; is_child: boolean; guardian_index?: number }
 export type Invitation = { participant_id: string; name: string; token: string | null; claimed: boolean; has_pin: boolean; account_linked?: boolean; revealed?: boolean }
-export type InvitePreview = { event_id: string; title: string; event_date: string; budget: string; gift_type: string; participant_id: string; participant_name: string; claimed: boolean; is_mine: boolean | null }
+export type InvitePreview = { event_id: string; title: string; event_date: string; budget: string; gift_type: string; participant_id: string; participant_name: string; claimed: boolean; is_mine: boolean | null; guest_access_mode: 'account' | 'pin'; has_pin: boolean }
 export type Assignment = { participant_id: string; target_id: string; target_name: string; wishes: string[]; extra: string }
 export async function rpc<T = unknown>(name: string, args: Record<string, unknown> = {}): Promise<T> {
   if (!supabase) throw new Error('No se pudo conectar con Intercambio. Inténtalo más tarde.')

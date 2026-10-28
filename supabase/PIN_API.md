@@ -1,6 +1,6 @@
 # Acceso de invitados con NIP
 
-La migración `guest_pin_access` mantiene el evento, participantes, deseos y sorteo existentes. No crea cuentas de Supabase Auth ni cambia la configuración de autenticación de Stocka. La cuenta verificada seleccionada por el propietario (UUID `ca6ba7f9-77c8-4795-9d00-fb493fa29bbb`) es el único organizador autorizado por el servidor. El correo personal no se publica en el código ni en la documentación.
+La migración `guest_pin_access` mantiene el evento, participantes, deseos y sorteo existentes. No crea cuentas de Supabase Auth ni cambia la configuración de autenticación de Stocka. La cuenta verificada seleccionada por el propietario (UUID `ca6ba7f9-77c8-4795-9d00-fb493fa29bbb`) es el único perfil autorizado para habilitar NIP en sus eventos. Los demás usuarios pueden organizar eventos con invitados registrados; ver [MIXED_ACCESS_API.md](MIXED_ACCESS_API.md). El correo personal no se publica en el código ni en la documentación.
 
 ## Invitaciones personales
 
@@ -24,17 +24,17 @@ Las llamadas se hacen con `supabase.rpc('intercambio_' + nombre, argumentos)` y 
 
 Una respuesta de registro o inicio correcto es `{ok:true,session_token,expires_at}`. Un error esperado devuelve `{ok:false,error,retry_after_seconds?}`. Es un resultado JSON, no una excepción: así el contador de intentos fallidos se confirma en la transacción.
 
-`guest_profile.event` contiene `{id,title,event_date,budget,gift_type,status,drawn_at}`. `profiles` contiene únicamente el adulto de la sesión y sus dependientes, cada uno `{id,name,is_child,wishes,extra}`. La asignación se solicita después de pulsar Revelar; no viene incluida en el perfil. Guardar deseos o revelar un `p_participant_id` ajeno se rechaza con SQLSTATE `42501`.
+`guest_profile.event` contiene `{id,title,event_date,budget,gift_type,status,drawn_at,guest_access_mode}`. `profiles` contiene únicamente el adulto de la sesión y sus dependientes, cada uno `{id,name,is_child,wishes,extra,revealed}`. El primer resultado se solicita al pulsar Revelar; después se restaura mediante `guest_restore_assignment`, descrito en [MIXED_ACCESS_API.md](MIXED_ACCESS_API.md). Guardar deseos o revelar un `p_participant_id` ajeno se rechaza con SQLSTATE `42501`.
 
 Una sesión caducada, revocada, de un evento archivado o desconocida produce SQLSTATE **`28000`** y el mensaje «Tu sesión de invitado terminó. Abre tu invitación e ingresa tu NIP de nuevo». La interfaz puede limpiar la sesión al recibir ese código. Los demás errores, por ejemplo un fallo de conexión, no deben borrar una sesión válida.
 
 ## Organizador
 
-`intercambio_is_organizer()` retorna boolean y requiere una sesión autenticada. Comprueba tanto el UUID permitido como su correo confirmado en `auth.users`; no confía en metadatos editables ni en una comprobación del correo en React.
+`intercambio_is_organizer()` retorna boolean para una cuenta activa de Intercambio. El privilegio NIP se consulta con `account_status().can_use_pin`; ver el contrato actualizado. Este privilegio comprueba tanto el UUID permitido como su correo confirmado en `auth.users`; no confía en metadatos editables ni en una comprobación del correo en React.
 
 Además exige una fila en `intercambio_private.organizer_access`, inicialmente creada sólo para esa cuenta existente. La fila conserva únicamente su UUID y el SHA-256 del correo normalizado, calculado dentro de la base de datos al instalar la migración. El servidor compara ese valor con el correo confirmado actual; cambiarlo impide acceder aunque el UUID sea el mismo. La baja de Intercambio elimina esa fila sin borrar la identidad de Supabase Auth. Los roles del navegador no pueden consultar el hash ni recrear o modificar el acceso.
 
-Las funciones existentes de creación, edición, altas/bajas, sorteo, archivo, invitaciones y vinculación legacy exigen ahora ese organizador y conservan las comprobaciones de propiedad. Otras cuentas del proyecto Stocka no pueden administrar Intercambio. La lectura y escritura autenticada de perfiles existentes conserva sus permisos anteriores.
+Las funciones de creación, edición, altas/bajas, sorteo, archivo, invitaciones y vinculación legacy exigen una cuenta activa de Intercambio y conservan las comprobaciones de propiedad. Cada usuario administra sus propios eventos; sólo el perfil privilegiado puede crear eventos NIP. Tener una cuenta en Stocka no concede acceso a eventos ajenos de Intercambio.
 
 `intercambio_reset_pin(p_participant_id)` permite al organizador propietario restablecer sólo el NIP de un adulto. Revoca sus sesiones; no elimina deseos, dependientes ni asignaciones. El mismo enlace podrá usarse para elegir un nuevo NIP.
 
@@ -42,7 +42,7 @@ Las funciones existentes de creación, edición, altas/bajas, sorteo, archivo, i
 
 `intercambio_delete_account(p_confirmation)` exige exactamente `BORRAR CUENTA`. Elimina todos los eventos del organizador y sus cascadas, además de su acceso en `organizer_access`. **Conserva la identidad de `auth.users`, credenciales compartidas y todas las tablas de Stocka**. La autorización vuelve a comprobarse en el servidor; una sesión de Supabase todavía abierta no recupera el acceso a Intercambio. La operación se serializa con la creación y administración de eventos para evitar que una solicitud concurrente deje datos después de la baja.
 
-La función antigua `claim_participant` ya no admite ejecución por roles del navegador. Los perfiles vinculados a cuentas antes del cambio conservan su acceso, pero no se pueden reclamar perfiles nuevos con una cuenta para eludir el NIP.
+`claim_participant` se admite para usuarios registrados en eventos de modo `account`; se rechaza en eventos `pin`. No se pueden reclamar perfiles con una cuenta para eludir el NIP.
 
 `get_participant_invites` mantiene `participant_id`, `name`, `token`, `claimed` y `revealed`, y añade `has_pin` y `account_linked`. El token siempre está presente para volver a compartir la invitación. `claimed` y `has_pin` indican que ya se creó el NIP; `account_linked` conserva el estado de vinculación de cuenta anterior.
 

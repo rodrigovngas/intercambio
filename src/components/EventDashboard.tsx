@@ -1,11 +1,11 @@
-import {useEffect,useState} from 'react'
+import {useEffect,useRef,useState} from 'react'
 import {ArrowLeft,Archive,RotateCcw,CalendarDays,Gift,Users,Link as LinkIcon,Pencil,Shuffle,Copy,Share2,LoaderCircle,Plus,X,RefreshCw,ChevronRight,CheckCircle2,Trash2,KeyRound} from 'lucide-react'
 import {QRCodeSVG} from 'qrcode.react'
 import confetti from 'canvas-confetti'
 import {Modal} from './Modal'
 import {EventForm} from './EventForm'
 import {loadEvent,rpc,formatDate,friendlyError,invitationUrl} from '../lib/api'
-import type {Assignment,ExchangeEvent,Participant,Invitation} from '../lib/api'
+import type {Assignment,ExchangeEvent,Participant,Invitation,MyProfileState} from '../lib/api'
 export function EventDashboard({id,userId,onBack,onToast}:{id:string;userId:string;onBack:()=>void;onToast:(s:string)=>void}) {
   const [event,setEvent]=useState<ExchangeEvent|null>(null)
   const [people,setPeople]=useState<Participant[]>([])
@@ -23,21 +23,53 @@ export function EventDashboard({id,userId,onBack,onToast}:{id:string;userId:stri
   const [newChild,setNewChild]=useState(false)
   const [guardian,setGuardian]=useState('')
   const [active,setActive]=useState('')
-  const [assignment,setAssignment]=useState<Assignment|null>(null)
+  const [storedAssignment,setStoredAssignment]=useState<{key:string;value:Assignment}|null>(null)
+  const [profileState,setProfileState]=useState<MyProfileState|null>(null)
+  const [resultLoading,setResultLoading]=useState(false)
+  const [resultRevision,setResultRevision]=useState(0)
+  const resultCache=useRef(new Map<string,Assignment>())
   const [wishes,setWishes]=useState(['','',''])
   const [extra,setExtra]=useState('')
   const [invitesOpen,setInvitesOpen]=useState(false)
   const owner=event?.owner_id===userId
+  const pinMode=event?.guest_access_mode==='pin'
   const mine=people.filter(p=>p.user_id===userId||people.some(g=>g.id===p.guardian_id&&g.user_id===userId))
   const profile=mine.find(p=>p.id===active)??mine[0]
   const myIds=mine.map(p=>p.id).join(',')
+  const assignmentKey=profile&&event?.drawn_at?`${event.drawn_at}:${profile.id}`:''
+  const assignment=storedAssignment?.key===assignmentKey?storedAssignment.value:null
   const selectedInviteToken=invite?.token??null
+  const profileRevealed=Boolean(profile&&profileState?.drawn_at===event?.drawn_at&&profileState?.profiles.some(p=>p.id===profile.id&&p.revealed))
   async function refresh() {
     setError('')
-    try {const result=await loadEvent(id);setEvent(result.event);setPeople(result.participants)}catch(e){setError(friendlyError(e))}finally{setLoading(false)}
+    resultCache.current.clear()
+    try {const [result,state]=await Promise.all([loadEvent(id),rpc<MyProfileState>('my_profile_state',{p_event_id:id})]);setEvent(result.event);setPeople(result.participants);setProfileState(state);setResultRevision(value=>value+1)}catch(e){setError(friendlyError(e))}finally{setLoading(false)}
   }
-  useEffect(()=>{let stopped=false;setLoading(true);loadEvent(id).then(r=>{if(!stopped){setEvent(r.event);setPeople(r.participants)}}).catch(e=>{if(!stopped)setError(friendlyError(e))}).finally(()=>{if(!stopped)setLoading(false)});return()=>{stopped=true}},[id])
-  useEffect(()=>{setAssignment(null)},[profile?.id,myIds,event?.drawn_at])
+  useEffect(()=>{let stopped=false;setLoading(true);Promise.all([loadEvent(id),rpc<MyProfileState>('my_profile_state',{p_event_id:id})]).then(([result,state])=>{if(!stopped){setEvent(result.event);setPeople(result.participants);setProfileState(state)}}).catch(e=>{if(!stopped)setError(friendlyError(e))}).finally(()=>{if(!stopped)setLoading(false)});return()=>{stopped=true}},[id,userId])
+  useEffect(()=>{resultCache.current.clear()},[event?.drawn_at])
+  useEffect(()=>{
+    let stopped=false
+    setStoredAssignment(null)
+    const profileId=profile?.id
+    const drawnAt=event?.drawn_at
+    if(!profileId||!drawnAt){setResultLoading(false);return}
+    const key=`${drawnAt}:${profileId}`
+    const cached=resultCache.current.get(key)
+    if(cached){setStoredAssignment({key,value:cached});setResultLoading(false);return}
+    if(!profileRevealed){setResultLoading(false);return}
+    setResultLoading(true)
+    rpc<Assignment|null>('restore_my_assignment',{p_participant_id:profileId,p_expected_drawn_at:drawnAt}).then(data=>{
+      if(stopped)return
+      if(data){resultCache.current.set(key,data);setStoredAssignment({key,value:data})}
+      else{setProfileState(null);void refresh()}
+    }).catch(e=>{if(!stopped)setError(friendlyError(e))}).finally(()=>{if(!stopped)setResultLoading(false)})
+    return()=>{stopped=true}
+  },[profile?.id,event?.drawn_at,profileRevealed,resultRevision])
+  function rememberAssignment(data:Assignment){
+    resultCache.current.set(`${event?.drawn_at}:${data.participant_id}`,data)
+    setStoredAssignment({key:`${event?.drawn_at}:${data.participant_id}`,value:data})
+    setProfileState(current=>current?{...current,profiles:current.profiles.map(p=>p.id===data.participant_id?{...p,revealed:true}:p)}:current)
+  }
   useEffect(()=>{if(profile){setWishes([0,1,2].map(i=>profile.wishes?.[i]??''));setExtra(profile.extra??'')}},[profile?.id,myIds])
   async function action(fn:()=>Promise<void>) {setBusy(true);setError('');try{await fn()}catch(e){setError(friendlyError(e))}finally{setBusy(false)}}
   async function showInvites(){await action(async()=>{const data=await rpc<Invitation[]>('get_participant_invites',{p_event_id:id});setInvites(data);setInvitesOpen(true)})}
@@ -57,7 +89,7 @@ export function EventDashboard({id,userId,onBack,onToast}:{id:string;userId:stri
       if(type==='archive')await rpc('archive_event',{p_event_id:id,p_archived:event.status!=='archived'})
       else await rpc('draw_event',{p_event_id:id,p_expected_drawn_at:type==='redraw'?event.drawn_at:null})
       setConfirm(null)
-      setAssignment(null)
+      setStoredAssignment(null)
       await refresh()
       onToast(type==='archive'?'Evento actualizado':'¡Sorteo listo!')
     })
@@ -72,10 +104,11 @@ export function EventDashboard({id,userId,onBack,onToast}:{id:string;userId:stri
     <div className="my-5 flex items-center justify-center gap-2 text-xs text-gray-400"><span className={`size-1.5 rounded-full ${event.status==='drawn'?'bg-emerald-500':event.status==='draft'?'bg-amber-400':'bg-gray-400'}`}/>{event.status==='draft'?'Listo para organizar':event.status==='drawn'?'Sorteo realizado':'Evento archivado'}{owner&&<><span>·</span><span>Eres el organizador</span></>}</div>
     {error&&<p role="alert" className="mb-4 rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950 dark:text-red-300">{error}</p>}
     {owner&&<div className="space-y-3">
+      <p className="text-center text-xs text-gray-400">{pinMode?'Invitados con NIP · sin cuenta':'Invitados con cuenta de usuario'}</p>
       {event.status!=='archived'&&<button className="btn-primary" onClick={()=>setConfirm(event.status==='drawn'?'redraw':'draw')} disabled={busy}><Shuffle size={18}/>{event.status==='drawn'?'Volver a sortear':'Generar sorteo'}</button>}
       <div className="grid grid-cols-2 gap-2"><button className="btn-secondary" disabled={busy||event.status==='archived'} onClick={()=>void showInvites()}><LinkIcon size={16}/>Invitaciones</button><button className="btn-secondary" disabled={busy||event.status==='archived'} onClick={()=>setEditing(true)}><Pencil size={15}/>Editar evento</button></div>
       <div className="pt-4"><div className="mb-3 flex items-center justify-between"><h2 className="flex items-center gap-2 text-sm font-bold"><Users size={16}/>Participantes <span className="text-gray-400">{people.length}</span></h2>{event.status==='draft'&&<button className="btn-text !min-h-8 !text-xs" onClick={()=>setAddOpen(true)}><Plus size={14}/>Agregar</button>}</div>
-        <div className="space-y-2">{people.map(p=><div key={p.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-3 dark:border-gray-900"><div className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold dark:bg-gray-900">{p.name.slice(0,1).toUpperCase()}</span><div className="min-w-0"><p className="truncate text-sm font-semibold">{p.name}</p><p className="text-[11px] text-gray-400">{p.is_child?`Dependiente · ${people.find(g=>g.id===p.guardian_id)?.name??'adulto responsable'}`:p.user_id===userId?'Tu perfil de organizador':'Acceso con NIP'}</p></div></div>{event.status==='draft'&&<button className="icon-button !size-8 hover:!text-red-500" aria-label={`Quitar a ${p.name}`} disabled={busy} onClick={()=>void action(async()=>{await rpc('remove_participant',{p_participant_id:p.id});await refresh()})}><X size={15}/></button>}</div>)}</div>
+        <div className="space-y-2">{people.map(p=><div key={p.id} className="flex items-center justify-between rounded-xl border border-gray-100 px-3 py-3 dark:border-gray-900"><div className="flex min-w-0 items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold dark:bg-gray-900">{p.name.slice(0,1).toUpperCase()}</span><div className="min-w-0"><p className="truncate text-sm font-semibold">{p.name}</p><p className="text-[11px] text-gray-400">{p.is_child?`Dependiente · ${people.find(g=>g.id===p.guardian_id)?.name??'adulto responsable'}`:p.user_id===userId?'Tu perfil':pinMode?'Acceso con NIP':p.user_id?'Cuenta vinculada':'Registro pendiente'}</p></div></div>{event.status==='draft'&&<button className="icon-button !size-8 hover:!text-red-500" aria-label={`Quitar a ${p.name}`} disabled={busy} onClick={()=>void action(async()=>{await rpc('remove_participant',{p_participant_id:p.id});await refresh()})}><X size={15}/></button>}</div>)}</div>
         {event.status==='drawn'&&<p className="mt-3 text-xs leading-relaxed text-gray-400">Los participantes quedan fijos después del sorteo para conservar sus resultados.</p>}
       </div>
     </div>}
@@ -83,7 +116,8 @@ export function EventDashboard({id,userId,onBack,onToast}:{id:string;userId:stri
       {mine.length>1&&<><label htmlFor="profile" className="label !mt-0">Viendo perfil de</label><select id="profile" className="field mb-5" disabled={busy} value={profile?.id??''} onChange={e=>setActive(e.target.value)}>{mine.map(p=><option key={p.id} value={p.id}>{p.name}{p.is_child?' · Dependiente':''}</option>)}</select></>}
       <h2 className="mb-4 text-lg font-bold tracking-tight">Tu resultado{mine.length===1?<span className="float-right mt-1 text-xs font-medium text-gray-400">{profile?.name}</span>:null}</h2>
       {event.drawn_at?<div className="relative overflow-hidden rounded-2xl bg-gray-900 p-6 text-white">
-        {!assignment?<button className="flex min-h-48 w-full flex-col items-center justify-center gap-4 rounded-xl focus-visible:!outline-white" disabled={busy} onClick={()=>void action(async()=>{const data=await rpc<Assignment>('get_my_assignment',{p_participant_id:profile.id});if(!data)throw new Error('El sorteo todavía no está listo.');setAssignment(data);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) void confetti({particleCount:90,spread:65,origin:{y:.55}})})}><Gift size={45} strokeWidth={1.4}/><span className="text-xs font-bold tracking-widest">{busy?'CARGANDO…':'TOCA PARA REVELAR'}</span><span className="text-xs text-gray-400">Tu amigo secreto te espera</span></button>:<><p className="text-xs font-bold uppercase tracking-widest text-gray-400">Te tocó regalar a</p><h3 className="my-5 break-words text-4xl font-extrabold tracking-tight">{assignment.target_name}</h3><div className="mt-6 border-t border-white/15 pt-4"><p className="mb-3 text-xs font-semibold text-gray-400">Sus opciones:</p><ul className="space-y-3 text-sm">{assignment.wishes?.filter(Boolean).length?assignment.wishes.filter(Boolean).map((w,i)=><li key={i}><SafeText text={w}/></li>):<li className="italic text-gray-400">Sin opciones aún.</li>}</ul>{assignment.extra&&<p className="mt-4 border-t border-white/10 pt-4 text-sm"><SafeText text={assignment.extra}/></p>}</div><button className="mt-5 text-xs text-gray-400 underline" disabled={busy} onClick={()=>void action(async()=>setAssignment(await rpc<Assignment>('get_my_assignment',{p_participant_id:profile.id})))}>Actualizar preferencias</button></>}
+        {resultLoading?<div className="flex min-h-48 items-center justify-center gap-2 text-sm" role="status"><LoaderCircle size={20} className="animate-spin"/>Cargando tu resultado…</div>:
+        !assignment?<button className="flex min-h-48 w-full flex-col items-center justify-center gap-4 rounded-xl focus-visible:!outline-white" disabled={busy} onClick={()=>void action(async()=>{const data=await rpc<Assignment>('get_my_assignment',{p_participant_id:profile.id});if(!data)throw new Error('El sorteo todavía no está listo.');rememberAssignment(data);if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches) void confetti({particleCount:90,spread:65,origin:{y:.55}})})}><Gift size={45} strokeWidth={1.4}/><span className="text-xs font-bold tracking-widest">{busy?'CARGANDO…':'TOCA PARA REVELAR'}</span><span className="text-xs text-gray-400">Tu amigo secreto te espera</span></button>:<><p className="text-xs font-bold uppercase tracking-widest text-gray-400">Te tocó regalar a</p><h3 className="my-5 break-words text-4xl font-extrabold tracking-tight">{assignment.target_name}</h3><div className="mt-6 border-t border-white/15 pt-4"><p className="mb-3 text-xs font-semibold text-gray-400">Sus opciones:</p><ul className="space-y-3 text-sm">{assignment.wishes?.filter(Boolean).length?assignment.wishes.filter(Boolean).map((w,i)=><li key={i}><SafeText text={w}/></li>):<li className="italic text-gray-400">Sin opciones aún.</li>}</ul>{assignment.extra&&<p className="mt-4 border-t border-white/10 pt-4 text-sm"><SafeText text={assignment.extra}/></p>}</div><button className="mt-5 text-xs text-gray-400 underline" disabled={busy} onClick={()=>void action(async()=>{const data=await rpc<Assignment|null>('restore_my_assignment',{p_participant_id:profile.id,p_expected_drawn_at:event.drawn_at});if(data)rememberAssignment(data);else{setStoredAssignment(null);await refresh()}})}>Actualizar preferencias</button></>}
       </div>:<div className="panel text-center"><Gift className="mx-auto mb-3 text-gray-400" size={28}/><p className="text-sm text-gray-500">El organizador aún no realiza el sorteo.</p><p className="mt-1 text-xs text-gray-400">Mientras tanto, completa tus preferencias.</p></div>}
       <form className="mt-7" key={profile?.id} onSubmit={e=>{e.preventDefault();void action(async()=>{await rpc('save_wishes',{p_participant_id:profile.id,p_wishes:wishes,p_extra:extra});setPeople(current=>current.map(p=>p.id===profile.id?{...p,wishes:[...wishes],extra}:p));onToast('Preferencias guardadas')})}}><h2 className="text-lg font-bold tracking-tight">Llena el perfil</h2><p className="mt-1 text-sm text-gray-500">Ayuda a tu amigo secreto.</p>{[0,1,2].map(i=><div key={i}><label className="label" htmlFor={`wish-${i}`}>Opción {i+1}</label><input id={`wish-${i}`} className="field" maxLength={500} placeholder={['Ej. Libro de terror','Ej. Taza de Batman','Ej. Calcetas (o un enlace)'][i]} value={wishes[i]} onChange={e=>setWishes(wishes.map((w,j)=>j===i?e.target.value:w))}/></div>)}<label className="label" htmlFor="extra">{event.gift_type?`${event.gift_type} · Información extra`:'Información extra'}</label><textarea id="extra" className="field min-h-24 resize-y" maxLength={1000} placeholder="Talla, color favorito o alguna pista…" value={extra} onChange={e=>setExtra(e.target.value)}/><button className="btn-primary mt-5" disabled={busy||event.status==='archived'}>{busy&&<LoaderCircle className="animate-spin" size={17}/>}Guardar preferencias</button></form>
     </div>}
@@ -116,15 +150,15 @@ export function EventDashboard({id,userId,onBack,onToast}:{id:string;userId:stri
         <button className="btn-text -ml-3 mb-3" disabled={busy} onClick={()=>setInvite(null)}><ArrowLeft size={15}/>Ver participantes</button>
         <p className="text-center text-sm font-semibold">Invitación de {invite.name}</p>
         <div className="mx-auto my-5 w-fit rounded-xl bg-white p-3"><QRCodeSVG value={invitationUrl(selectedInviteToken)} size={176}/></div>
-        <p className="mb-4 text-center text-xs leading-relaxed text-gray-500">Compártela sólo con {invite.name}. Al abrirla podrá crear su NIP de seis dígitos y entrar sin una cuenta.</p>
+        <p className="mb-4 text-center text-xs leading-relaxed text-gray-500">Compártela sólo con {invite.name}. {pinMode?'Al abrirla podrá crear su NIP de seis dígitos y entrar sin una cuenta.':'Al abrirla deberá registrarse o iniciar sesión para vincular su perfil.'}</p>
         <div className="panel mb-4 break-all select-all text-xs">{invitationUrl(selectedInviteToken)}</div>
         <button className="btn-primary" disabled={busy} onClick={()=>void share(invitationUrl(selectedInviteToken),invite.name)}><Share2 size={17}/>Compartir invitación</button>
         <button className="btn-text mx-auto mt-2" disabled={busy} onClick={()=>void copy(invitationUrl(selectedInviteToken))}><Copy size={15}/>Copiar enlace</button>
-        {invite.has_pin&&<button className="btn-secondary mt-4" disabled={busy} onClick={()=>setResettingInvite(invite)}><KeyRound size={16}/>Restablecer NIP</button>}
+        {pinMode&&invite.has_pin&&<button className="btn-secondary mt-4" disabled={busy} onClick={()=>setResettingInvite(invite)}><KeyRound size={16}/>Restablecer NIP</button>}
       </>:<>
-        <p className="mb-4 text-sm leading-relaxed text-gray-500">Cada adulto entra con su enlace y NIP, sin crear una cuenta. Sus dependientes usarán el mismo acceso.</p>
-        {mine.length===0&&<p className="mb-4 rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-500 dark:bg-gray-900">Si también participas, abre tu propia invitación y crea tu NIP.</p>}
-        <div className="space-y-2">{invites.map(item=><button key={item.participant_id} disabled={!item.token||busy} className="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 p-3 text-left dark:border-gray-800" onClick={()=>{if(item.token)setInvite(item)}}><span className="truncate text-sm font-semibold">{item.name}</span><span className="flex shrink-0 items-center gap-2 text-xs text-gray-400">{item.has_pin?<><CheckCircle2 size={14}/>NIP creado</>:'Compartir'}<ChevronRight size={15}/></span></button>)}</div>
+        <p className="mb-4 text-sm leading-relaxed text-gray-500">{pinMode?'Cada adulto entra con su enlace y NIP, sin crear una cuenta.':'Cada adulto entra con su enlace y una cuenta de usuario.'} Sus dependientes usarán el mismo acceso.</p>
+        {mine.length===0&&<p className="mb-4 rounded-xl bg-gray-50 p-3 text-xs leading-relaxed text-gray-500 dark:bg-gray-900">Si también participas, abre tu propia invitación {pinMode?'y crea tu NIP.':'para vincular tu perfil con tu cuenta.'}</p>}
+        <div className="space-y-2">{invites.map(item=><button key={item.participant_id} disabled={!item.token||busy} className="flex w-full items-center justify-between gap-2 rounded-xl border border-gray-200 p-3 text-left dark:border-gray-800" onClick={()=>{if(item.token)setInvite(item)}}><span className="truncate text-sm font-semibold">{item.name}</span><span className="flex shrink-0 items-center gap-2 text-xs text-gray-400">{pinMode?(item.has_pin?<><CheckCircle2 size={14}/>NIP creado</>:'Compartir'):(item.account_linked?<><CheckCircle2 size={14}/>Cuenta vinculada</>:'Compartir')}<ChevronRight size={15}/></span></button>)}</div>
       </>}
     </Modal>}
     {addOpen&&<Modal title="Agregar participante" onClose={()=>setAddOpen(false)}><form onSubmit={e=>{e.preventDefault();void action(async()=>{await rpc('add_participant',{p_event_id:id,p_name:newName.trim(),p_is_child:newChild,p_guardian_id:newChild?guardian:null});setAddOpen(false);setNewName('');setNewChild(false);setGuardian('');await refresh()})}}><label htmlFor="new-name" className="label !mt-0">Nombre</label><input id="new-name" className="field" required maxLength={80} value={newName} onChange={e=>setNewName(e.target.value)}/><label className="mt-3 flex gap-2 text-sm"><input type="checkbox" checked={newChild} onChange={e=>setNewChild(e.target.checked)}/>Dependiente</label>{newChild&&<select className="field mt-3" aria-label="Adulto responsable" required value={guardian} onChange={e=>setGuardian(e.target.value)}><option value="">Selecciona un adulto</option>{people.filter(p=>!p.is_child).map(p=><option key={p.id} value={p.id}>{p.name}</option>)}</select>}{error&&<p className="mt-3 text-sm text-red-600" role="alert">{error}</p>}<button className="btn-primary mt-5" disabled={busy}>Agregar</button></form></Modal>}

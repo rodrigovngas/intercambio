@@ -20,6 +20,7 @@ export async function createTestDatabase() {
       id uuid primary key,
       email text,
       email_confirmed_at timestamptz,
+      is_anonymous boolean not null default false,
       raw_user_meta_data jsonb not null default '{}'::jsonb,
       raw_app_meta_data jsonb not null default '{}'::jsonb
     );
@@ -51,12 +52,37 @@ export async function createPinTestDatabase() {
   const db = await createTestDatabase()
   try {
     await seedOrganizer(db)
-    for (const file of await migrationFiles()) await applyMigration(db, file)
+    const files = await migrationFiles()
+    const pinIndex = files.findIndex((file) => file.endsWith('_guest_pin_access.sql'))
+    if (pinIndex < 0) throw new Error('The guest PIN migration is missing')
+    for (const file of files.slice(0, pinIndex + 1)) await applyMigration(db, file)
     return db
   } catch (error) {
     await db.close()
     throw error
   }
+}
+
+export async function createMixedTestDatabase() {
+  const db = await createPinTestDatabase()
+  try {
+    const files = await migrationFiles()
+    const pinIndex = files.findIndex((file) => file.endsWith('_guest_pin_access.sql'))
+    for (const file of files.slice(pinIndex + 1)) await applyMigration(db, file)
+    return db
+  } catch (error) { await db.close(); throw error }
+}
+
+export async function runMixedSqlSuite(db) {
+  await db.exec(await readFile(new URL('../tests/db/mixed_access.sql', import.meta.url), 'utf8'))
+  const { rows } = await db.query(`
+    select (select count(*)::int from auth.users where id <> $1::uuid) as extra_users,
+      (select count(*)::int from public.intercambio_events) as events,
+      (select count(*)::int from intercambio_private.pin_credentials) as pins,
+      (select count(*)::int from intercambio_private.guest_sessions) as sessions,
+      (select count(*)::int from intercambio_private.application_accounts where user_id <> $1::uuid) as extra_accounts
+  `, [ORGANIZER_ID])
+  if (Object.values(rows[0]).some((count) => count !== 0)) throw new Error('Mixed-access test fixtures were not rolled back')
 }
 
 export async function runPinSqlSuite(db) {

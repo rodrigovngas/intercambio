@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent, type RefObject } from 'react'
 import { ArrowLeft, CalendarDays, Eye, EyeOff, Gift, LoaderCircle, LockKeyhole, LogOut, RefreshCw } from 'lucide-react'
 import confetti from 'canvas-confetti'
 import { formatDate, friendlyError } from '../lib/api'
@@ -41,21 +41,37 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
   const [lockedUntil, setLockedUntil] = useState(0)
   const [now, setNow] = useState(Date.now())
   const [active, setActive] = useState('')
-  const [assignment, setAssignment] = useState<Assignment | null>(null)
+  const [storedAssignment, setStoredAssignment] = useState<{ key: string; value: Assignment } | null>(null)
+  const [restoringKey, setRestoringKey] = useState<string | null>(null)
+  const [restoreRevision, setRestoreRevision] = useState(0)
+  const [pinInvalid, setPinInvalid] = useState(false)
+  const [pinAnimating, setPinAnimating] = useState(false)
+  const [pinErrorRevision, setPinErrorRevision] = useState(0)
   const [wishes, setWishes] = useState(['', '', ''])
   const [extra, setExtra] = useState('')
   const mounted = useRef(true)
   const requestId = useRef(0)
+  const assignmentRequestId = useRef(0)
+  const pinResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pinInput = useRef<HTMLInputElement>(null)
   const prefix = useId()
   const profile = bundle?.profiles.find(person => person.id === active)
     ?? bundle?.profiles.find(person => person.id === bundle.participant_id)
     ?? bundle?.profiles[0]
   const remaining = Math.max(0, Math.ceil((lockedUntil - now) / 1000))
+  const assignmentKey = session && profile && bundle?.event.drawn_at
+    ? `${session.session_token}:${profile.id}:${bundle.event.drawn_at}` : ''
+  const assignment = storedAssignment?.key === assignmentKey ? storedAssignment.value : null
+  const restoringResult = restoringKey === assignmentKey && Boolean(assignmentKey)
 
   useEffect(() => {
     mounted.current = true
-    return () => { mounted.current = false; requestId.current += 1 }
+    return () => {
+      mounted.current = false
+      requestId.current += 1
+      assignmentRequestId.current += 1
+      if (pinResetTimer.current) clearTimeout(pinResetTimer.current)
+    }
   }, [])
 
   useEffect(() => {
@@ -97,11 +113,38 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
   }, [token, reload])
 
   useEffect(() => {
-    setAssignment(null)
     if (!profile) return
     setWishes([0, 1, 2].map(index => profile.wishes?.[index] ?? ''))
     setExtra(profile.extra ?? '')
   }, [profile?.id])
+
+  useEffect(() => {
+    const sessionToken = session?.session_token
+    const participantId = profile?.id
+    const drawnAt = bundle?.event.drawn_at
+    if (!sessionToken || !participantId || !drawnAt || !profile.revealed || assignment) return
+    let cancelled = false
+    const current = ++assignmentRequestId.current
+    setRestoringKey(assignmentKey)
+    // Restoration never marks a result as seen. The server checks the draw
+    // timestamp as well, so a simultaneous redraw remains a new surprise.
+    guestApi.restoreAssignment(sessionToken, participantId, drawnAt).then(async result => {
+      if (cancelled || !mounted.current || current !== assignmentRequestId.current) return
+      if (result) {
+        setStoredAssignment({ key: assignmentKey, value: result })
+      } else {
+        const updated = await guestApi.profile(sessionToken)
+        if (!cancelled && mounted.current && current === assignmentRequestId.current) setBundle(updated)
+      }
+    }).catch(caught => {
+      if (cancelled || !mounted.current || current !== assignmentRequestId.current) return
+      if (isGuestSessionError(caught)) sessionEnded()
+      else setError(friendlyError(caught))
+    }).finally(() => {
+      if (!cancelled && mounted.current && current === assignmentRequestId.current) setRestoringKey(null)
+    })
+    return () => { cancelled = true }
+  }, [session?.session_token, profile?.id, profile?.revealed, bundle?.event.drawn_at, assignmentKey, restoreRevision])
 
   useEffect(() => {
     if (!session) return
@@ -119,12 +162,19 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
     return () => clearInterval(timer)
   }, [lockedUntil])
 
+  useEffect(() => {
+    if (pinInvalid && !pinAnimating && !busy && remaining === 0) pinInput.current?.focus()
+  }, [pinInvalid, pinAnimating, busy, remaining])
+
   function sessionEnded() {
     requestId.current += 1
+    assignmentRequestId.current += 1
     forgetGuestSession(token)
     setSession(null)
     setBundle(null)
-    setAssignment(null)
+    setStoredAssignment(null)
+    setRestoringKey(null)
+    clearPinFeedback()
     setPin('')
     setConfirmation('')
     setBusy(false)
@@ -136,6 +186,31 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
     void guestApi.preview(token).then(data => {
       if (mounted.current && current === requestId.current) setPreview(data)
     }).catch(() => {})
+  }
+
+  function clearPinFeedback() {
+    if (pinResetTimer.current) clearTimeout(pinResetTimer.current)
+    pinResetTimer.current = null
+    setPinAnimating(false)
+    setPinInvalid(false)
+  }
+
+  function showIncorrectPin(currentRequest: number) {
+    clearPinFeedback()
+    setPinInvalid(true)
+    setPinErrorRevision(value => value + 1)
+    setConfirmation('')
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setPin('')
+      return
+    }
+    setPinAnimating(true)
+    pinResetTimer.current = setTimeout(() => {
+      pinResetTimer.current = null
+      if (!mounted.current || currentRequest !== requestId.current) return
+      setPin('')
+      setPinAnimating(false)
+    }, 350)
   }
 
   async function perform<T>(operation: () => Promise<T>, success: (value: T) => void) {
@@ -156,7 +231,8 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
 
   async function unlock(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!preview || busy || remaining > 0) return
+    if (!preview || busy || pinAnimating || remaining > 0) return
+    clearPinFeedback()
     setError('')
     if (!/^\d{6}$/.test(pin)) { setError('Tu NIP debe tener exactamente seis números.'); return }
     if (!preview.has_pin && pin !== confirmation) { setError('Los NIP no coinciden. Vuelve a confirmarlo.'); return }
@@ -165,10 +241,14 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
     try {
       const response = await guestApi.unlock(token, pin, !preview.has_pin)
       if (!mounted.current || current !== requestId.current) return
-      setPin('')
-      setConfirmation('')
       if (!response.ok) {
         setError(response.error)
+        if (/^El NIP no es correcto\.|^Demasiados intentos\./i.test(response.error)) {
+          showIncorrectPin(current)
+        } else {
+          setPin('')
+          setConfirmation('')
+        }
         if (/ya tiene un NIP|Primero crea tu NIP/i.test(response.error)) {
           try {
             const refreshed = await guestApi.preview(token)
@@ -188,6 +268,9 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
         pinInput.current?.focus()
         return
       }
+      setPin('')
+      setConfirmation('')
+      clearPinFeedback()
       if (!validGuestSession(response)) throw new Error('El acceso recibido no es válido. Inténtalo de nuevo.')
       const nextSession = { session_token: response.session_token, expires_at: response.expires_at }
       rememberGuestSession(token, nextSession)
@@ -197,11 +280,12 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
       if (!mounted.current || current !== requestId.current) return
       setBundle(data)
       setActive(data.participant_id)
-      setAssignment(null)
+      setStoredAssignment(null)
       setLockedUntil(0)
       onToast(preview.has_pin ? '¡Bienvenido de nuevo!' : 'Tu NIP quedó guardado')
     } catch (caught) {
       if (!mounted.current || current !== requestId.current) return
+      clearPinFeedback()
       setPin('')
       setConfirmation('')
       if (isGuestSessionError(caught)) sessionEnded()
@@ -218,6 +302,8 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
 
   async function leave() {
     const current = ++requestId.current
+    assignmentRequestId.current += 1
+    clearPinFeedback()
     setBusy(true)
     try {
       if (session) await guestApi.logout(session.session_token)
@@ -228,7 +314,8 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
       if (mounted.current && current === requestId.current) {
         setSession(null)
         setBundle(null)
-        setAssignment(null)
+        setStoredAssignment(null)
+        setRestoringKey(null)
         setPin('')
         setConfirmation('')
         setBusy(false)
@@ -240,7 +327,7 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
   function refresh() {
     if (!session) return
     void perform(() => guestApi.profile(session.session_token), data => {
-      if (bundle?.event.drawn_at !== data.event.drawn_at) setAssignment(null)
+      if (bundle?.event.drawn_at !== data.event.drawn_at) setStoredAssignment(null)
       setBundle(data)
       const selected = data.profiles.find(person => person.id === profile?.id)
         ?? data.profiles.find(person => person.id === data.participant_id)
@@ -263,7 +350,7 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
   </section>
 
   if (!session || !bundle || !profile) return <section className="screen pt-4">
-    <button className="btn-text -ml-3 mb-6" disabled={busy} onClick={() => void leave()}><ArrowLeft size={17} />Inicio</button>
+    <button className="btn-text -ml-3 mb-6" disabled={busy || pinAnimating} onClick={() => void leave()}><ArrowLeft size={17} />Inicio</button>
     <div className="mx-auto mb-5 flex size-14 items-center justify-center rounded-2xl border border-gray-200 dark:border-gray-800"><LockKeyhole size={26} strokeWidth={1.6} /></div>
     <h1 className="heading">Hola, {preview?.participant_name}</h1>
     <p className="subheading">{preview?.title}</p>
@@ -271,14 +358,11 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
     <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">{preview?.has_pin ? 'Ingresa tu NIP para ver tu intercambio.' : 'Crea un NIP para proteger tu intercambio.'}<br /><span className="text-xs">No necesitas crear una cuenta.</span></p>
     <form onSubmit={event => void unlock(event)} aria-busy={busy}>
       <label className="label" htmlFor={`${prefix}-pin`}>{preview?.has_pin ? 'Tu NIP' : 'Crea tu NIP de seis números'}</label>
-      <div className="relative">
-        <input ref={pinInput} id={`${prefix}-pin`} type={showPin ? 'text' : 'password'} inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} autoComplete={preview?.has_pin ? 'off' : 'new-password'} autoCapitalize="none" spellCheck={false} className="field pr-12 text-center text-xl tracking-[.55em]" placeholder="••••••" value={pin} onChange={event => setPin(event.target.value.replace(/\D/g, '').slice(0, 6))} disabled={busy || remaining > 0} required />
-        <button type="button" aria-label={showPin ? 'Ocultar NIP' : 'Mostrar NIP'} aria-pressed={showPin} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-gray-500" disabled={busy} onClick={() => setShowPin(value => !value)}>{showPin ? <EyeOff size={19} /> : <Eye size={19} />}</button>
-      </div>
-      {!preview?.has_pin && <><label className="label" htmlFor={`${prefix}-confirmation`}>Confirma tu NIP</label><input id={`${prefix}-confirmation`} type={showPin ? 'text' : 'password'} inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} autoComplete="new-password" className="field text-center text-xl tracking-[.55em]" placeholder="••••••" value={confirmation} onChange={event => setConfirmation(event.target.value.replace(/\D/g, '').slice(0, 6))} disabled={busy || remaining > 0} required /><p className="mt-3 text-xs leading-relaxed text-gray-400">Recuerda tu NIP. Lo necesitarás al volver a abrir tu invitación.</p></>}
-      {error && <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
+      <PinInput id={`${prefix}-pin`} inputRef={pinInput} value={pin} onChange={value=>{clearPinFeedback();setPin(value)}} visible={showPin} onToggleVisibility={()=>setShowPin(value=>!value)} disabled={busy || pinAnimating || remaining > 0} invalid={pinInvalid} errorId={error?`${prefix}-pin-error`:undefined} shakeRevision={pinErrorRevision} />
+      {!preview?.has_pin && <><label className="label" htmlFor={`${prefix}-confirmation`}>Confirma tu NIP</label><PinInput id={`${prefix}-confirmation`} value={confirmation} onChange={setConfirmation} visible={showPin} disabled={busy || pinAnimating || remaining > 0} errorId={error?`${prefix}-pin-error`:undefined} /><p className="mt-3 text-xs leading-relaxed text-gray-400">Recuerda tu NIP. Lo necesitarás al volver a abrir tu invitación.</p></>}
+      {error && <p id={`${prefix}-pin-error`} role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
       {remaining > 0 && <p role="status" className="mt-3 text-center text-xs text-gray-500">Podrás intentar de nuevo en {Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, '0')}.</p>}
-      <button className="btn-primary mt-6" disabled={busy || remaining > 0}>{busy && <LoaderCircle size={18} className="animate-spin" />}{busy ? 'Un momento…' : preview?.has_pin ? 'Entrar a mi intercambio' : 'Guardar NIP y entrar'}</button>
+      <button className="btn-primary mt-6" disabled={busy || pinAnimating || remaining > 0}>{busy && <LoaderCircle size={18} className="animate-spin" />}{busy ? 'Un momento…' : preview?.has_pin ? 'Entrar a mi intercambio' : 'Guardar NIP y entrar'}</button>
     </form>
     {preview?.has_pin && <p className="mt-5 text-center text-xs leading-relaxed text-gray-400">¿Olvidaste tu NIP? Pídele al organizador que lo restablezca.</p>}
   </section>
@@ -294,10 +378,17 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
       {bundle.profiles.length > 1 ? <><label className="label !mt-0" htmlFor={`${prefix}-profile`}>Viendo perfil de</label><select id={`${prefix}-profile`} className="field mb-5" value={profile.id} disabled={busy} onChange={change => setActive(change.target.value)}>{bundle.profiles.map(person => <option key={person.id} value={person.id}>{person.name}{person.is_child ? ' · Dependiente' : ''}</option>)}</select></> : <p className="mb-5 text-center text-sm font-semibold">{profile.name}</p>}
       <h2 className="mb-4 text-lg font-bold tracking-tight">Tu resultado</h2>
       {event.drawn_at ? <div className="overflow-hidden rounded-2xl border border-neutral-800 bg-black p-6 text-white">
-        {!assignment ? <button className="flex min-h-48 w-full flex-col items-center justify-center gap-4 rounded-xl focus-visible:outline-white" disabled={busy} onClick={() => void perform(() => guestApi.assignment(session.session_token, profile.id), data => {
-          setAssignment(data)
+        {!assignment ? profile.revealed ? <div className="flex min-h-48 flex-col items-center justify-center gap-4 text-center">
+          {restoringResult ? <><LoaderCircle size={30} className="animate-spin" aria-hidden="true"/><p role="status" className="text-sm text-gray-300">Cargando tu resultado…</p></> : <><Gift size={38} strokeWidth={1.4}/><p className="text-sm text-gray-300">Tu resultado ya fue revelado.</p><button className="min-h-11 rounded-lg px-3 text-sm font-semibold underline underline-offset-4" disabled={busy} onClick={()=>setRestoreRevision(value=>value+1)}>Volver a cargar resultado</button></>}
+        </div> : <button className="flex min-h-48 w-full flex-col items-center justify-center gap-4 rounded-xl focus-visible:outline-white" disabled={busy} onClick={() => void perform(() => guestApi.assignment(session.session_token, profile.id), data => {
+          setStoredAssignment({key:assignmentKey,value:data})
+          setBundle(current=>current?{...current,profiles:current.profiles.map(person=>person.id===profile.id?{...person,revealed:true}:person)}:current)
           if (!matchMedia('(prefers-reduced-motion: reduce)').matches) void confetti({ particleCount: 90, spread: 65, origin: { y: .55 } })
-        })}><Gift size={45} strokeWidth={1.4} /><span className="text-xs font-bold tracking-widest">{busy ? 'CARGANDO…' : 'TOCA PARA REVELAR'}</span><span className="text-xs text-gray-400">Tu amigo secreto te espera</span></button> : <><p className="text-xs font-bold uppercase tracking-widest text-gray-400">Te tocó regalar a</p><h3 className="my-5 break-words text-4xl font-extrabold tracking-tight">{assignment.target_name}</h3><div className="mt-6 border-t border-white/15 pt-4"><p className="mb-3 text-xs font-semibold text-gray-400">Sus opciones:</p><ul className="space-y-3 text-sm">{assignment.wishes?.some(Boolean) ? assignment.wishes.filter(Boolean).map((wish, index) => <li key={index}><SafeText text={wish} /></li>) : <li className="italic text-gray-400">Sin opciones aún.</li>}</ul>{assignment.extra && <p className="mt-4 border-t border-white/10 pt-4 text-sm"><SafeText text={assignment.extra} /></p>}</div><button type="button" className="mt-5 min-h-8 text-xs text-gray-400 underline" disabled={busy} onClick={() => void perform(() => guestApi.assignment(session.session_token, profile.id), setAssignment)}>Actualizar preferencias</button></>}
+        })}><Gift size={45} strokeWidth={1.4} /><span className="text-xs font-bold tracking-widest">{busy ? 'CARGANDO…' : 'TOCA PARA REVELAR'}</span><span className="text-xs text-gray-400">Tu amigo secreto te espera</span></button> : <><p className="text-xs font-bold uppercase tracking-widest text-gray-400">Te tocó regalar a</p><h3 className="my-5 break-words text-4xl font-extrabold tracking-tight">{assignment.target_name}</h3><div className="mt-6 border-t border-white/15 pt-4"><p className="mb-3 text-xs font-semibold text-gray-400">Sus opciones:</p><ul className="space-y-3 text-sm">{assignment.wishes?.some(Boolean) ? assignment.wishes.filter(Boolean).map((wish, index) => <li key={index}><SafeText text={wish} /></li>) : <li className="italic text-gray-400">Sin opciones aún.</li>}</ul>{assignment.extra && <p className="mt-4 border-t border-white/10 pt-4 text-sm"><SafeText text={assignment.extra} /></p>}</div><button type="button" className="mt-5 min-h-8 text-xs text-gray-400 underline" disabled={busy} onClick={() => void perform(() => guestApi.restoreAssignment(session.session_token, profile.id, event.drawn_at!), data=>{
+          if(data)setStoredAssignment({key:assignmentKey,value:data})
+          else {setStoredAssignment(null);refresh()}
+        })}>Actualizar preferencias</button></>}
+
       </div> : <div className="panel text-center"><Gift size={28} className="mx-auto mb-3 text-gray-400" /><p className="text-sm text-gray-500">El organizador aún no realiza el sorteo.</p><p className="mt-1 text-xs text-gray-400">Mientras tanto, completa tus preferencias.</p></div>}
       <form className="mt-7" onSubmit={submit => {
         submit.preventDefault()
@@ -314,6 +405,27 @@ function GuestExperience({ token, onExit, onToast }: GuestExchangeProps) {
       </form>
     </div>
   </section>
+}
+
+type PinInputProps = {
+  id: string
+  value: string
+  onChange: (value: string) => void
+  visible: boolean
+  disabled: boolean
+  inputRef?: RefObject<HTMLInputElement | null>
+  onToggleVisibility?: () => void
+  invalid?: boolean
+  errorId?: string
+  shakeRevision?: number
+}
+
+function PinInput({id,value,onChange,visible,disabled,inputRef,onToggleVisibility,invalid=false,errorId,shakeRevision=0}:PinInputProps) {
+  return <div className="field pin-field" data-invalid={invalid} data-visible={visible} data-disabled={disabled} data-toggle={Boolean(onToggleVisibility)}>
+    <input ref={inputRef} id={id} type={visible?'text':'password'} inputMode="numeric" pattern="[0-9]{6}" minLength={6} maxLength={6} autoComplete="off" autoCapitalize="none" spellCheck={false} className="pin-native-input" aria-invalid={invalid||undefined} aria-describedby={errorId} value={value} onChange={event=>onChange(event.target.value.replace(/\D/g,'').slice(0,6))} disabled={disabled} required />
+    {!visible&&<div key={shakeRevision} className={`pin-dots${invalid?' pin-shake':''}`} aria-hidden="true">{Array.from({length:6},(_,index)=><span key={index} className="pin-dot" data-filled={index<value.length}/>)}</div>}
+    {onToggleVisibility&&<button type="button" aria-label={visible?'Ocultar NIP':'Mostrar NIP'} aria-pressed={visible} className="absolute right-1 top-1/2 z-10 flex size-11 -translate-y-1/2 items-center justify-center rounded-lg text-gray-500" disabled={disabled} onClick={onToggleVisibility}>{visible?<EyeOff size={19}/>:<Eye size={19}/>}</button>}
+  </div>
 }
 
 function SafeText({ text }: { text: string }) {

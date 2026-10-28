@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { createTestDatabase, migrationFiles, applyMigration, seedOrganizer, runPinSqlSuite } from './test-pin-database.mjs'
+import { createTestDatabase, migrationFiles, applyMigration, seedOrganizer, runPinSqlSuite, runMixedSqlSuite } from './test-pin-database.mjs'
 
 const db = await createTestDatabase()
 try {
@@ -13,9 +13,15 @@ try {
   console.log('PASS: original database permissions, invitations, dependents, draw invariants and rollback.')
 
   await seedOrganizer(db)
-  for (const file of files.slice(baseIndex + 1)) await applyMigration(db, file)
+  const pinIndex = files.findIndex((file) => file.endsWith('_guest_pin_access.sql'))
+  if (pinIndex < 0) throw new Error('The guest PIN migration is missing')
+  for (const file of files.slice(baseIndex + 1, pinIndex + 1)) await applyMigration(db, file)
   await runPinSqlSuite(db)
   console.log('PASS: real bcrypt, guest privacy, lockout, sessions, dependents, reset and scoped deletions verified.')
+
+  for (const file of files.slice(pinIndex + 1)) await applyMigration(db, file)
+  await runMixedSqlSuite(db)
+  console.log('PASS: multi-user ownership, private PIN privilege, account invitations and persistent reveals verified.')
 } finally {
   await db.close()
 }

@@ -2,7 +2,7 @@ import {useState} from 'react'
 import {ArrowLeft, Plus, Trash2, LoaderCircle, UserRound, Baby} from 'lucide-react'
 import {formatDate, friendlyError, rpc, validParticipants} from '../lib/api'
 import type {ExchangeEvent, DraftParticipant} from '../lib/api'
-export function EventForm({event,onSaved,onCancel}: {event?:ExchangeEvent;onSaved:(id:string)=>void;onCancel:()=>void}) {
+export function EventForm({event,onSaved,onCancel,canUsePin=false}: {event?:ExchangeEvent;onSaved:(id:string)=>void;onCancel:()=>void;canUsePin?:boolean}) {
   const [title,setTitle]=useState(event?.title??'')
   const [date,setDate]=useState(event?.event_date??'')
   const [budget,setBudget]=useState(event?.budget??'Libre')
@@ -13,6 +13,7 @@ export function EventForm({event,onSaved,onCancel}: {event?:ExchangeEvent;onSave
   const [guardian,setGuardian]=useState('')
   const [busy,setBusy]=useState(false)
   const [error,setError]=useState('')
+  const [accessMode,setAccessMode]=useState<'account'|'pin'>(canUsePin?'pin':'account')
   function add() {
     if(people.length>=100) {setError('El límite es de 100 participantes por evento.');return}
     const p={name:name.trim(),is_child:child,...(child?{guardian_index:Number(guardian)}:{})}
@@ -35,7 +36,7 @@ export function EventForm({event,onSaved,onCancel}: {event?:ExchangeEvent;onSave
     setBusy(true)
     try {
       const args={p_title:title.trim(),p_event_date:date,p_budget:budget,p_gift_type:gift.trim()}
-      const id=event ? (await rpc('update_event',{...args,p_event_id:event.id}),event.id) : await rpc<string>('create_event',{...args,p_participants:people})
+      const id=event ? (await rpc('update_event',{...args,p_event_id:event.id}),event.id) : await rpc<string>('create_event_with_access',{...args,p_participants:people,p_guest_access_mode:canUsePin?accessMode:'account'})
       onSaved(id)
     }catch(err){setError(friendlyError(err))}finally{setBusy(false)}
   }
@@ -45,7 +46,9 @@ export function EventForm({event,onSaved,onCancel}: {event?:ExchangeEvent;onSave
       <label className="label" htmlFor="event-title">Título del evento</label><input id="event-title" className="field" required maxLength={100} placeholder="Ej. Cena de Navidad" value={title} onChange={e=>setTitle(e.target.value)}/>
       <label className="label" htmlFor="event-date">Fecha</label><input id="event-date" type="date" className="field" required value={date} onChange={e=>setDate(e.target.value)}/>
       <div className="grid grid-cols-2 gap-3"><div><label className="label" htmlFor="budget">Presupuesto</label><select id="budget" className="field" value={budget} onChange={e=>setBudget(e.target.value)}>{['Libre',...Array.from({length:19},(_,i)=>`$${(i+2)*50}`)].map(b=><option key={b}>{b}</option>)}</select></div><div><label className="label" htmlFor="gift">¿Qué se regala?</label><input id="gift" className="field" maxLength={80} placeholder="Ej. Pijamas" value={gift} onChange={e=>setGift(e.target.value)}/></div></div>
-      {!event&&<><label className="label" htmlFor="participant-name">Participantes <span className="float-right">{people.length}/100</span></label>
+      {!event&&<>
+      {canUsePin?<><label className="label" htmlFor="guest-access">Acceso de tus invitados</label><select id="guest-access" className="field" value={accessMode} onChange={e=>setAccessMode(e.target.value as 'account'|'pin')}><option value="pin">NIP · sin crear cuenta</option><option value="account">Cuenta de usuario</option></select><p className="mt-2 text-xs leading-relaxed text-gray-400">Tu cuenta permite invitar con NIP. Puedes elegir que este evento requiera una cuenta.</p></>:<p className="panel mt-5 text-xs leading-relaxed text-gray-500">Tus invitados necesitarán registrarse o iniciar sesión para entrar al evento.</p>}
+      <label className="label" htmlFor="participant-name">Participantes <span className="float-right">{people.length}/100</span></label>
       <div className="flex gap-2"><input id="participant-name" className="field" placeholder="Nombre…" maxLength={80} value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'){e.preventDefault();add()}}}/><button type="button" aria-label="Agregar participante" className="btn-primary !w-13 !shrink-0 !px-0" disabled={people.length>=100} onClick={add}><Plus size={21}/></button></div>
       <label className="mt-3 flex items-center gap-2 text-sm text-gray-500"><input type="checkbox" className="size-4 accent-gray-900" checked={child} onChange={e=>setChild(e.target.checked)}/>Dependiente</label>
       {child&&<select aria-label="Adulto responsable" className="field mt-3" value={guardian} onChange={e=>setGuardian(e.target.value)}><option value="">Selecciona su adulto responsable</option>{people.map((p,i)=>!p.is_child&&<option key={i} value={i}>{p.name}</option>)}</select>}

@@ -51,7 +51,7 @@ export function AccountSettings({ email, onClose, onDeleted }: AccountSettingsPr
         {error && <p role="alert" className="mt-4 text-sm leading-relaxed text-red-700 dark:text-red-300">{error}</p>}
         <button type="button" className="btn-primary mt-6" disabled={busy} onClick={onClose}>Cerrar</button>
       </> : <>
-        <p id={`${prefix}-scope`} className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">Se eliminarán tu acceso a Intercambio y todos tus eventos, participantes, preferencias y sorteos. Tu cuenta y datos de Stocka se conservarán.</p>
+        <p id={`${prefix}-scope`} className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">Se eliminarán tu acceso a Intercambio y los eventos que organizas, junto con sus participantes, preferencias y sorteos. En eventos de otras personas se desvinculará tu cuenta y se borrarán tus preferencias; esos eventos se conservarán. Tu identidad de inicio de sesión y los datos de Stocka se conservarán.</p>
         <p className="mt-3 text-sm font-semibold text-red-700 dark:text-red-300">Esta acción no se puede deshacer.</p>
         <form onSubmit={event => void removeAccount(event)} aria-describedby={`${prefix}-scope`}>
           <label htmlFor={`${prefix}-confirmation`} className="label">Escribe BORRAR CUENTA para confirmar</label>

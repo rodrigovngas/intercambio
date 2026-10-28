@@ -4,11 +4,11 @@ Aplicación de intercambios de regalos de VNGAS, migrada a React, TypeScript, Ta
 
 Sitio publicado: https://intercambio-vngas.vercel.app/
 
-## Organizador e invitados
+## Cuentas, eventos e invitados
 
-Sólo el perfil verificado configurado en el servidor puede crear y administrar eventos. Su acceso usa la cuenta existente de Supabase Auth; no hay registro público de cuentas en Intercambio.
+Cualquier persona puede registrarse, iniciar sesión y crear sus propios eventos. En los eventos normales, los invitados también necesitan una cuenta para vincular su perfil y consultar su resultado. Los permisos del servidor mantienen privados los eventos y perfiles ajenos.
 
-Las personas invitadas abren su enlace personal o QR, crean un **NIP de seis dígitos** la primera vez y usan ese mismo NIP en visitas posteriores. No necesitan correo ni cuenta de usuario. Cada adulto administra también las preferencias y el resultado de sus dependientes.
+Sólo el perfil privilegiado configurado en el servidor puede elegir **NIP sin cuenta** al crear un evento. Esa excepción se aplica al evento completo: sus invitados abren su enlace personal o QR y crean un NIP de seis dígitos, sin registrarse. Ese perfil también puede elegir el acceso normal por cuenta. Los demás usuarios no pueden habilitar NIP, ni siquiera llamando directamente a la API. Cada adulto administra sus dependientes en ambos modos.
 
 El NIP se verifica en el servidor y se guarda como hash bcrypt con sal. Los resultados y deseos de otras personas permanecen privados. Cinco intentos incorrectos bloquean el acceso durante quince minutos. Las sesiones de invitado vencen en doce horas y sólo se recuerdan dentro de la pestaña.
 
@@ -18,12 +18,12 @@ El NIP se verifica en el servidor y se guarda como hash bcrypt con sal. Los resu
 - Borradores editables antes del primer sorteo y dependientes vinculados a un adulto.
 - Invitaciones personales con QR generado localmente, compartir y copiar enlace.
 - Sorteo transaccional: nadie se regala a sí mismo y cada persona da y recibe una vez.
-- Revelado privado, tres preferencias de regalo e información extra.
+- Revelado privado la primera vez; después el resultado se restaura automáticamente al volver. Un sorteo nuevo vuelve a quedar oculto. Tres preferencias de regalo e información extra.
 - Restablecer el NIP de un invitado conservando sus preferencias y resultado.
 - Reasignación con confirmación, archivo/restauración y eliminación definitiva de eventos.
 - Borrar la cuenta y los datos de Intercambio, conservando la identidad y los datos de Stocka.
 
-Las acciones definitivas exigen escribir `ELIMINAR` o `BORRAR CUENTA` antes de confirmar. Borrar una cuenta de Intercambio también revoca su permiso de organizador; iniciar sesión de nuevo no restaura ese acceso automáticamente.
+Las acciones definitivas exigen escribir `ELIMINAR` o `BORRAR CUENTA` antes de confirmar. Borrar una cuenta de Intercambio elimina sus eventos, desvincula sus perfiles de eventos ajenos y revoca su acceso a esta aplicación; iniciar sesión de nuevo no restaura ese acceso automáticamente.
 
 ## Desarrollo
 
@@ -48,14 +48,14 @@ Las pruebas usan PostgreSQL embebido con PGlite y pgcrypto real. Cubren aislamie
 
 ## Backend y datos
 
-Las migraciones están en [supabase/migrations](supabase/migrations). El contrato actual de invitados está en [supabase/PIN_API.md](supabase/PIN_API.md), y [docs/PIN_ACCESS.md](docs/PIN_ACCESS.md) describe el uso y las eliminaciones. [supabase/API.md](supabase/API.md) conserva la referencia de las operaciones iniciales de eventos.
+Las migraciones están en [supabase/migrations](supabase/migrations). El contrato actual de cuentas y modos de acceso está en [supabase/MIXED_ACCESS_API.md](supabase/MIXED_ACCESS_API.md); el acceso por NIP se describe también en [supabase/PIN_API.md](supabase/PIN_API.md), y [docs/PIN_ACCESS.md](docs/PIN_ACCESS.md) describe el uso y las eliminaciones. [supabase/API.md](supabase/API.md) conserva la referencia de las operaciones iniciales de eventos.
 
-El proyecto Supabase autorizado es **Stocka** (`tinxltuanitszizxysjb`). Tablas y funciones de Intercambio usan su propio prefijo; NIP, sesiones y permiso de organizador están en `intercambio_private`, fuera del Data API. Borrar la cuenta de Intercambio no elimina `auth.users`, perfiles, membresías ni datos de negocio de Stocka.
+El proyecto Supabase autorizado es **Stocka** (`tinxltuanitszizxysjb`). Tablas y funciones de Intercambio usan su propio prefijo; NIP, sesiones, cuentas de la aplicación y privilegio de NIP están en `intercambio_private`, fuera del Data API. Borrar la cuenta de Intercambio no elimina `auth.users`, perfiles, membresías ni datos de negocio de Stocka.
 
 Las migraciones de producción se registran una sola vez. No volver a ejecutar la migración de NIP tras una baja para recrear el acceso del organizador; cualquier recuperación requiere una decisión administrativa explícita.
 
 ## Despliegue e historial anterior
 
-[Vercel y autenticación](docs/VERCEL.md) describe el alojamiento y los ajustes de recuperación de contraseña del organizador. El correo SMTP no es necesario para el acceso por NIP de invitados; su configuración sigue pendiente para los flujos de correo.
+[Vercel y autenticación](docs/VERCEL.md) describe el alojamiento y los ajustes de recuperación de contraseña del organizador. El correo SMTP no es necesario para el acceso por NIP de invitados; su configuración sigue pendiente para confirmaciones de registro y recuperación de contraseña con direcciones externas al equipo de Supabase.
 
 [Migrar datos de Firestore](docs/MIGRATION.md) describe la importación de un respaldo sin trasladar PIN ni credenciales antiguas. El historial real de Firebase todavía no se ha importado. El sitio original de GitHub Pages sigue disponible mientras se revisa la migración.

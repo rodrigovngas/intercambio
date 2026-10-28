@@ -29,3 +29,20 @@
 @keyframes enter { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
 .screen { animation:enter .2s ease-out; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none!important; transition:none!important; } }
+
+.pin-field { position:relative; display:flex; align-items:center; justify-content:center; }
+.pin-field:focus-within { border-color:#6b7280; box-shadow:0 0 0 4px rgb(107 114 128 / .1); }
+.pin-field[data-invalid="true"] { border-color:#dc2626; }
+.pin-field[data-disabled="true"] { opacity:.65; }
+.pin-native-input { position:absolute; inset:0; z-index:1; width:100%; height:100%; padding:.875rem 1rem; border:0; border-radius:inherit; background:transparent; color:transparent; caret-color:transparent; text-align:center; font:inherit; font-size:1.25rem; letter-spacing:.55em; outline:none; }
+.pin-native-input:focus-visible { outline:none; }
+.pin-field[data-visible="true"] .pin-native-input { color:inherit; caret-color:currentColor; }
+.pin-field[data-toggle="true"] .pin-native-input { padding-right:3rem; }
+.pin-dots { display:flex; min-height:1.4rem; align-items:center; justify-content:center; gap:1rem; pointer-events:none; }
+.pin-field[data-toggle="true"] .pin-dots { margin-right:2rem; }
+.pin-dot { display:block; width:.75rem; height:.75rem; border:2px solid currentColor; border-radius:50%; opacity:.3; }
+.pin-dot[data-filled="true"] { background:currentColor; opacity:1; }
+.pin-field[data-invalid="true"] .pin-dots { color:#dc2626; }
+.pin-shake { animation:pin-shake 350ms ease-in-out; }
+@keyframes pin-shake { 0%,100% { transform:translateX(0); } 15%,45%,75% { transform:translateX(-6px); } 30%,60%,90% { transform:translateX(6px); } }
+@media (prefers-reduced-motion:reduce) { .pin-shake { animation:none; } }
